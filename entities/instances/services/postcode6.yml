@@ -30,7 +30,7 @@ metadata:
   - woningen
   - CBS
   attribution: '© CBS, © ESRI Nederland; Bron: Centraal Bureau voor de Statistiek (CBS), CBS Postcode6 2024'
-  version: '261119095916'
+  version: '261119131110'
 api:
 - buildingBlock: COMMON
   additionalLinks:

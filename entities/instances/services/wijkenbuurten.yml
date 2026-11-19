@@ -24,7 +24,7 @@ metadata:
   - CBS
   attribution: 'Bron: Centraal Bureau voor de Statistiek (CBS), Wijk- en Buurtkaart 2026'
   # the version of this configuration (date of the last change, yymmdd)
-  version: '261119095916'
+  version: '261119131110'
 api:
 - buildingBlock: COMMON
   additionalLinks:

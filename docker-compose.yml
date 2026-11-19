@@ -6,7 +6,8 @@ services:
     container_name: db_bag
     restart: unless-stopped
     ports:
-      - "5436:5432"
+      # only on this host: the database is not meant to be reachable from other machines
+      - "127.0.0.1:5436:5432"
     environment:
       # account and password from .env (see README.md), the defaults are meant for local use only;
       # PostgreSQL applies them only on the first start, when db/data is empty
@@ -46,7 +47,8 @@ services:
     container_name: ldproxy_bag
     ports:
       - "7080:7080"
-      - "7081:7081"
+      # the admin port only on this host
+      - "127.0.0.1:7081:7081"
     volumes:
       - ".:/data"
     depends_on:

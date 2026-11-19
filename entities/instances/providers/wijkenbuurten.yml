@@ -87,7 +87,7 @@ types:
         type: FEATURE_REF
         refType: gemeente
         label: gemeente
-        description: De gemeente waarin de wijk ligt. De titel van de verwijzing is de naam van de gemeente.
+        description: De gemeente waarin de wijk ligt, als gemeentecode (bijvoorbeeld 0307). De titel van de verwijzing is de naam van de gemeente; filter op de naam met gemeentenaam.
         constraints:
           regex: ^[0-9]{4}$
           required: true
@@ -98,6 +98,15 @@ types:
           title:
             sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam FROM cbs.gemeente x_r WHERE x_r.id = $T$.gemeente)}'
             type: STRING
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeente)}'
+        type: STRING
+        label: gemeentenaam
+        description: De naam van de gemeente waarin de wijk ligt, om op te filteren; in de uitvoer staat de naam als titel bij de verwijzing gemeente.
+        excludedScopes:
+        - RETURNABLE
+        - RECEIVABLE
+        - SORTABLE
       water:
         sourcePath: water
         type: BOOLEAN
@@ -141,7 +150,7 @@ types:
         type: FEATURE_REF
         refType: wijk
         label: wijk
-        description: De wijk waarin de buurt ligt. De titel van de verwijzing is de naam van de wijk.
+        description: De wijk waarin de buurt ligt, als wijkcode (bijvoorbeeld WK030701). De titel van de verwijzing is de naam van de wijk; filter op de naam met wijknaam, samen met de gemeente, want wijknamen zijn alleen binnen een gemeente uniek.
         constraints:
           regex: ^WK[0-9]{6}$
           required: true
@@ -156,7 +165,7 @@ types:
         type: FEATURE_REF
         refType: gemeente
         label: gemeente
-        description: De gemeente waarin de buurt ligt. De titel van de verwijzing is de naam van de gemeente.
+        description: De gemeente waarin de buurt ligt, als gemeentecode (bijvoorbeeld 0307). De titel van de verwijzing is de naam van de gemeente; filter op de naam met gemeentenaam.
         constraints:
           regex: ^[0-9]{4}$
           required: true
@@ -167,6 +176,24 @@ types:
           title:
             sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam FROM cbs.gemeente x_r WHERE x_r.id = $T$.gemeente)}'
             type: STRING
+      wijknaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.wijk x_n WHERE x_n.id = $T$.wijk)}'
+        type: STRING
+        label: wijknaam
+        description: De naam van de wijk waarin de buurt ligt, om op te filteren; in de uitvoer staat de naam als titel bij de verwijzing wijk.
+        excludedScopes:
+        - RETURNABLE
+        - RECEIVABLE
+        - SORTABLE
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeente)}'
+        type: STRING
+        label: gemeentenaam
+        description: De naam van de gemeente waarin de buurt ligt, om op te filteren; in de uitvoer staat de naam als titel bij de verwijzing gemeente.
+        excludedScopes:
+        - RETURNABLE
+        - RECEIVABLE
+        - SORTABLE
       water:
         sourcePath: water
         type: BOOLEAN

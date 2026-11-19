@@ -22,6 +22,8 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `verkeerseiland`: Ondersteunend wegdeel van beperkte omvang, uitgevoerd als verhoging of wegmarkering, dat wordt omsloten door wegdelen en ten doel heeft verkeersstromen te scheiden.
 - `berm`: Een strook grond langs een weg of spoorweg.
 
+`transitie` komt in de gegevens voor, maar staat niet in de waardelijsten; een definitie is niet gepubliceerd.
+
 ## plusFunctie (waardelijst TypeOndersteunendWegdeelPlus; IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt)
 
 Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

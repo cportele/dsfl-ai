@@ -24,6 +24,8 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `tram`: Spoor voor een railvoertuig voor personenvervoer voor de korte afstand.
 - `niet-bgt`: Het object is geen BGT object.
 
+`transitie` komt in de gegevens voor, maar staat niet in de waardelijsten; een definitie is niet gepubliceerd.
+
 ## plusFunctie (waardelijst FunctieSpoorPlus; IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt)
 
 - `(haven)kraan`: Spoorbaan waarop een hefkraan (bij een haven) zich voortbeweegt.

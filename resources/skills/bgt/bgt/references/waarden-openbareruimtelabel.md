@@ -10,6 +10,8 @@ in de gegevens voorkomen (stand 30 oktober 2026). Hoe men de waarden opgeeft, st
 
 - `bestaand`: Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd.
 
+Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
+
 ## plusStatus (waardelijst StatusPlus; IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt)
 
 - `plan`: Situatie die ontstaat op het moment van verlening van een beschikking voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik.

@@ -24,3 +24,5 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `straalzender`: Zender voor radio, televisie en telecommunicatie signalen die in smalle stralenbundels uitzendt.
 - `zendmast`: Mast bestemd voor het uitzenden van radio, televisie of telecommunicatie signalen.
 - `radarmast`: Vaste of neerklapbare constructie waarop de radarantenne bevestigd is.
+
+Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

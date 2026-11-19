@@ -22,6 +22,8 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `oever, slootkant`: De strook land die in direct contact staat met water, inclusief het gebied tussen de hoogwaterlijn en laagwaterlijn.
 - `slik`: Buitendijks aangeslibde, onbegroeide grond die bij vrijwel elk hoogwater onderloopt.
 
+`transitie` komt in de gegevens voor, maar staat niet in de waardelijsten; een definitie is niet gepubliceerd.
+
 ## plusType (waardelijst TypeOndersteunendWaterdeelPlus; IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt)
 
 Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.

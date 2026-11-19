@@ -26,3 +26,5 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `inspectie- / rioolput`: Deksel van een constructie die toegang geeft tot een rioolstelsel.
 - `kolk`: Deksel van een ingegraven bak voor de opvang en afvoer van neerslag afkomstig van erop aangesloten oppervlakken.
 - `waterleidingput`: Deksel van een put met afsluitkraan ten behoeve van het ondergrondse leidingenstelsel voor watertransport.
+
+Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

@@ -29,3 +29,5 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `wegwijzer`: Constructie voorzien van een of meer panelen met informatie ten behoeve van de bewegwijzering.
 - `waarschuwingshek`: Constructie in de vorm van een hek, voorzien van rode en witte blokken of chevrons, die het verkeer attendeert op een gevarenpunt.
 - `dynamische snelheidsindicator`: Een snelheidsinformatiebord dat in "real time" de snelheid van de weggebruikers aanduidt.
+
+Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

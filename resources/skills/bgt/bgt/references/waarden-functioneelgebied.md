@@ -46,3 +46,5 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `carpoolplaats`: Parkeerplaats die qua ligging en ontsluiting geschikt is voor carpooling.
 - `benzinestation`: Geheel van installaties, verharding en opstallen waar brandstoffen ten behoeve van verbrandingsmotoren worden verkocht.
 - `verzorgingsplaats`: Langs de weg gelegen parkeergelegenheid, met inbegrip van de daarbij behorende verharde en onverharde banen en een of meer voorzieningen ten behoeve van reizigers en/of voertuigen.
+
+Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

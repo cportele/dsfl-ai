@@ -25,3 +25,5 @@ Daarnaast als reden voor het ontbreken van een waarde: `geenWaarde`.
 - `bloembak`: Bak in de openbare ruimte met een permanent karakter, waarin planten of struiken zijn geplant.
 - `zand- / zoutbak`: Een bak met strooisel ten behoeve van gladheidsbestrijding.
 - `container`: Nagelvast met de grond verbonden inzamelmiddel voor afvalstoffen, doorgaans van metaal of kunststof waarin afvalstoffen worden verzameld, bewaard en waaruit deze afvalstoffen vervolgens worden overgeladen in een inzamelvoertuig.
+
+Daarnaast als reden voor het ontbreken van een waarde: `waardeOnbekend`.

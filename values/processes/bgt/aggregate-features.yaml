@@ -2,7 +2,7 @@
 id: aggregate-features
 title: 'Objecten aggregeren'
 description: |
-  Telt objecten en berekent aggregaten van hun eigenschappen, in totaal en per groep, zonder de objecten zelf te leveren. Voor vragen als: hoeveel oppervlakte aan wegdelen, terreindelen, water en panden heeft een buurt, hoeveel groen of verharding ligt binnen 250 m van een punt, hoeveel bomen of banken staan er per buurt. De objecten worden geselecteerd zoals bij een verzoek van de objecten van een of meer collecties (`source.collection` met query-parameters in `source.parameters`, bijvoorbeeld buurtcode, relatieveHoogteligging of bgtFysiekVoorkomen) of van een opgeslagen zoekopdracht (`source.query` met haar parameters); bij meerdere collecties is de collectie ($collection) de eerste groepssleutel. Een object met meerdere waarden van een groepseigenschap telt in elke groep van zijn waarden mee, in het totaal één keer; een object zonder waarde valt in de groep null. De virtuele eigenschappen `$area` en `$length` zijn de oppervlakte (m²) en de lengte (m) van de geometrie, met `clip` alleen van het deel binnen het gebied; op maaiveldniveau (relatieveHoogteligging 0) tellen de afgesneden oppervlakten op tot de oppervlakte van het gebied. Per uitvoering worden hoogstens 100000 objecten gelezen; beperk de selectie anders.
+  Telt objecten en berekent aggregaten van hun eigenschappen, in totaal en per groep, zonder de objecten zelf te leveren. Voor vragen als: hoeveel oppervlakte aan wegdelen, terreindelen, water en panden heeft een buurt, hoeveel groen of verharding ligt binnen 250 m van een punt, hoeveel bomen of banken staan er per buurt. De objecten worden geselecteerd zoals bij een verzoek van de objecten van een of meer collecties (`source.collection` met query-parameters in `source.parameters`, bijvoorbeeld buurtcode, relatieveHoogteligging of bgtFysiekVoorkomen) of van een opgeslagen zoekopdracht (`source.query` met haar parameters); bij meerdere collecties is de collectie ($collection) de eerste groepssleutel. Een object met meerdere waarden van een groepseigenschap telt in elke groep van zijn waarden mee, in het totaal één keer; de objecten zonder waarde vormen een eigen groep, waarvan de sleutel deze eigenschap niet bevat. De virtuele eigenschappen `$area` en `$length` zijn de oppervlakte (m²) en de lengte (m) van de geometrie, met `clip` alleen van het deel binnen het gebied; op maaiveldniveau (relatieveHoogteligging 0) tellen de afgesneden oppervlakten op tot de oppervlakte van het gebied. Per uitvoering worden hoogstens 100000 objecten gelezen; beperk de selectie anders.
 version: 1.0.0
 jobControlOptions: [SYNC_EXECUTE]
 readOnly: true
@@ -29,7 +29,7 @@ inputs:
       type: array
   aggregates:
     title: 'Aggregaten'
-    description: 'De aggregaten, elk "count" of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}. Standaard is count.'
+    description: 'De aggregaten, elk "count" of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}. Standaard is count. Een aggregaat zonder waarden in een groep (bijvoorbeeld max van een eigenschap die daar niet voorkomt) ontbreekt in die groep.'
     minOccurs: 0
     schema:
       type: array

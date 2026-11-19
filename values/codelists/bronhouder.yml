@@ -1,0 +1,498 @@
+# generated - do not edit
+---
+label: Bronhouder
+description: 'De bronhouders van de BGT: gemeenten (G en de CBS-gemeentecode), provincies (P), waterschappen (W) en landelijke
+  organisaties (L, S, K), volgens de BGT-bronhoudercodes van het Kadaster per 1 januari 2024.'
+sourceType: TEMPLATES
+entries:
+  G0003: Gemeente Appingedam (vervallen per 01-01-2021)
+  G0005: Gemeente Bedum (vervallen per 01-01-2019)
+  G0007: Gemeente Bellingwedde (vervallen per 01-01-2018)
+  G0009: Gemeente Ten Boer (vervallen per 01-01-2019)
+  G0010: Gemeente Delfzijl (vervallen per 01-01-2021)
+  G0014: Gemeente Groningen
+  G0015: Gemeente Grootegast (vervallen per 01-01-2019)
+  G0017: Gemeente Haren (vervallen per 01-01-2019)
+  G0018: Gemeente Hoogezand-Sappemeer (vervallen per 01-01-2018)
+  G0022: Gemeente Leek (vervallen per 01-01-2019)
+  G0024: Gemeente Loppersum (vervallen per 01-01-2021)
+  G0025: Gemeente Marum (vervallen per 01-01-2019)
+  G0034: Gemeente Almere
+  G0037: Gemeente Stadskanaal
+  G0040: Gemeente Slochteren (vervallen per 01-01-2018)
+  G0047: Gemeente Veendam
+  G0048: Gemeente Vlagtwedde (vervallen per 01-01-2018)
+  G0050: Gemeente Zeewolde
+  G0051: Gemeente Skarsterlân (vervallen per 01-01-2014)
+  G0053: Gemeente Winsum (vervallen per 01-01-2019)
+  G0055: Gemeente Boarnsterhim (vervallen per 01-01-2014)
+  G0056: Gemeente Zuidhorn (vervallen per 01-01-2019)
+  G0058: Gemeente Dongeradeel (vervallen per 01-01-2019)
+  G0059: Gemeente Achtkarspelen
+  G0060: Gemeente Ameland
+  G0063: Gemeente het Bildt (vervallen per 01-01-2018)
+  G0070: Gemeente Franekeradeel (vervallen per 01-01-2018)
+  G0072: Gemeente Harlingen
+  G0074: Gemeente Heerenveen
+  G0079: Gemeente Kollumerland en Nieuwkruisland (vervallen per 01-01-2019)
+  G0080: Gemeente Leeuwarden
+  G0081: Gemeente Leeuwarderadeel (vervallen per 01-01-2018)
+  G0082: Gemeente Lemsterland (vervallen per 01-01-2014)
+  G0085: Gemeente Ooststellingwerf
+  G0086: Gemeente Opsterland
+  G0088: Gemeente Schiermonnikoog
+  G0090: Gemeente Smallingerland
+  G0093: Gemeente Terschelling
+  G0096: Gemeente Vlieland
+  G0098: Gemeente Weststellingwerf
+  G0106: Gemeente Assen
+  G0109: Gemeente Coevorden
+  G0114: Gemeente Emmen
+  G0118: Gemeente Hoogeveen
+  G0119: Gemeente Meppel
+  G0140: Gemeente Littenseradiel (vervallen per 01-01-2018)
+  G0141: Gemeente Almelo
+  G0147: Gemeente Borne
+  G0148: Gemeente Dalfsen
+  G0150: Gemeente Deventer
+  G0153: Gemeente Enschede
+  G0158: Gemeente Haaksbergen
+  G0160: Gemeente Hardenberg
+  G0163: Gemeente Hellendoorn
+  G0164: Gemeente Hengelo (O)
+  G0166: Gemeente Kampen
+  G0168: Gemeente Losser
+  G0171: Gemeente Noordoostpolder
+  G0173: Gemeente Oldenzaal
+  G0175: Gemeente Ommen
+  G0177: Gemeente Raalte
+  G0180: Gemeente Staphorst
+  G0183: Gemeente Tubbergen
+  G0184: Gemeente Urk
+  G0189: Gemeente Wierden
+  G0193: Gemeente Zwolle
+  G0196: Gemeente Rijnwaarden (vervallen per 01-01-2018)
+  G0197: Gemeente Aalten
+  G0200: Gemeente Apeldoorn
+  G0202: Gemeente Arnhem
+  G0203: Gemeente Barneveld
+  G0209: Gemeente Beuningen
+  G0213: Gemeente Brummen
+  G0214: Gemeente Buren
+  G0216: Gemeente Culemborg
+  G0221: Gemeente Doesburg
+  G0222: Gemeente Doetinchem
+  G0225: Gemeente Druten
+  G0226: Gemeente Duiven
+  G0228: Gemeente Ede
+  G0230: Gemeente Elburg
+  G0232: Gemeente Epe
+  G0233: Gemeente Ermelo
+  G0236: Gemeente Geldermalsen (vervallen per 01-01-2019)
+  G0241: Gemeente Groesbeek (vervallen per 01-01-2016)
+  G0243: Gemeente Harderwijk
+  G0244: Gemeente Hattem
+  G0246: Gemeente Heerde
+  G0252: Gemeente Heumen
+  G0262: Gemeente Lochem
+  G0263: Gemeente Maasdriel
+  G0265: Gemeente Millingen aan de Rijn (vervallen per 01-01-2015)
+  G0267: Gemeente Nijkerk
+  G0268: Gemeente Nijmegen
+  G0269: Gemeente Oldebroek
+  G0273: Gemeente Putten
+  G0274: Gemeente Renkum
+  G0275: Gemeente Rheden
+  G0277: Gemeente Rozendaal
+  G0279: Gemeente Scherpenzeel
+  G0281: Gemeente Tiel
+  G0282: Gemeente Ubbergen (vervallen per 01-01-2015)
+  G0285: Gemeente Voorst
+  G0289: Gemeente Wageningen
+  G0293: Gemeente Westervoort
+  G0294: Gemeente Winterswijk
+  G0296: Gemeente Wijchen
+  G0297: Gemeente Zaltbommel
+  G0299: Gemeente Zevenaar
+  G0301: Gemeente Zutphen
+  G0302: Gemeente Nunspeet
+  G0303: Gemeente Dronten
+  G0304: Gemeente Neerijnen (vervallen per 01-01-2019)
+  G0307: Gemeente Amersfoort
+  G0308: Gemeente Baarn
+  G0310: Gemeente De Bilt
+  G0312: Gemeente Bunnik
+  G0313: Gemeente Bunschoten
+  G0317: Gemeente Eemnes
+  G0321: Gemeente Houten
+  G0327: Gemeente Leusden
+  G0331: Gemeente Lopik
+  G0335: Gemeente Montfoort
+  G0339: Gemeente Renswoude
+  G0340: Gemeente Rhenen
+  G0342: Gemeente Soest
+  G0344: Gemeente Utrecht
+  G0345: Gemeente Veenendaal
+  G0351: Gemeente Woudenberg
+  G0352: Gemeente Wijk bij Duurstede
+  G0353: Gemeente IJsselstein
+  G0355: Gemeente Zeist
+  G0356: Gemeente Nieuwegein
+  G0358: Gemeente Aalsmeer
+  G0361: Gemeente Alkmaar
+  G0362: Gemeente Amstelveen
+  G0363: Gemeente Amsterdam
+  G0365: Gemeente Graft-De Rijp (vervallen per 01-01-2015)
+  G0370: Gemeente Beemster (vervallen per 01-01-2022)
+  G0373: Gemeente Bergen (NH)
+  G0375: Gemeente Beverwijk
+  G0376: Gemeente Blaricum
+  G0377: Gemeente Bloemendaal
+  G0381: Gemeente Bussum (vervallen per 01-01-2016)
+  G0383: Gemeente Castricum
+  G0384: Gemeente Diemen
+  G0385: Gemeente Edam-Volendam
+  G0388: Gemeente Enkhuizen
+  G0392: Gemeente Haarlem
+  G0393: Gemeente Haarlemmerliede en Spaarnwoude (vervallen per 01-01-2019)
+  G0394: Gemeente Haarlemmermeer
+  G0395: Gemeente Harenkarspel (vervallen per 01-01-2013)
+  G0396: Gemeente Heemskerk
+  G0397: Gemeente Heemstede
+  G0398: Gemeente Heerhugowaard (vervallen per 01-01-2022)
+  G0399: Gemeente Heiloo
+  G0400: Gemeente Den Helder
+  G0402: Gemeente Hilversum
+  G0405: Gemeente Hoorn
+  G0406: Gemeente Huizen
+  G0415: Gemeente Landsmeer
+  G0416: Gemeente Langedijk (vervallen per 01-01-2022)
+  G0417: Gemeente Laren
+  G0420: Gemeente Medemblik
+  G0424: Gemeente Muiden (vervallen per 01-01-2016)
+  G0425: Gemeente Naarden (vervallen per 01-01-2016)
+  G0431: Gemeente Oostzaan
+  G0432: Gemeente Opmeer
+  G0437: Gemeente Ouder-Amstel
+  G0439: Gemeente Purmerend
+  G0441: Gemeente Schagen
+  G0448: Gemeente Texel
+  G0450: Gemeente Uitgeest
+  G0451: Gemeente Uithoorn
+  G0453: Gemeente Velsen
+  G0457: Gemeente Weesp (vervallen per 24-03-2022)
+  G0458: Gemeente Schermer (vervallen per 01-01-2015)
+  G0473: Gemeente Zandvoort
+  G0476: Gemeente Zijpe (vervallen per 01-01-2013)
+  G0478: Gemeente Zeevang (vervallen per 01-01-2016)
+  G0479: Gemeente Zaanstad
+  G0482: Gemeente Alblasserdam
+  G0484: Gemeente Alphen aan den Rijn
+  G0489: Gemeente Barendrecht
+  G0491: Gemeente Bergambacht (vervallen per 01-01-2015)
+  G0498: Gemeente Drechterland
+  G0499: Gemeente Boskoop (vervallen per 01-01-2014)
+  G0501: Gemeente Brielle (vervallen per 01-01-2023)
+  G0502: Gemeente Capelle aan den IJssel
+  G0503: Gemeente Delft
+  G0504: Gemeente Dirksland (vervallen per 01-01-2013)
+  G0505: Gemeente Dordrecht
+  G0511: Gemeente Goedereede (vervallen per 01-01-2013)
+  G0512: Gemeente Gorinchem
+  G0513: Gemeente Gouda
+  G0518: Gemeente 's-Gravenhage
+  G0523: Gemeente Hardinxveld-Giessendam
+  G0530: Gemeente Hellevoetsluis (vervallen per 01-01-2023)
+  G0531: Gemeente Hendrik-Ido-Ambacht
+  G0532: Gemeente Stede Broec
+  G0534: Gemeente Hillegom
+  G0537: Gemeente Katwijk
+  G0542: Gemeente Krimpen aan den IJssel
+  G0545: Gemeente Leerdam (vervallen per 01-01-2019)
+  G0546: Gemeente Leiden
+  G0547: Gemeente Leiderdorp
+  G0553: Gemeente Lisse
+  G0556: Gemeente Maassluis
+  G0559: Gemeente Middelharnis (vervallen per 01-01-2013)
+  G0568: Gemeente Bernisse (vervallen per 01-01-2015)
+  G0569: Gemeente Nieuwkoop
+  G0571: Gemeente Nieuw-Lekkerland (vervallen per 01-01-2013)
+  G0575: Gemeente Noordwijk
+  G0576: Gemeente Noordwijkerhout (vervallen per 01-01-2019)
+  G0579: Gemeente Oegstgeest
+  G0580: Gemeente Oostflakkee (vervallen per 01-01-2013)
+  G0584: Gemeente Oud-Beijerland (vervallen per 01-01-2019)
+  G0585: Gemeente Binnenmaas (vervallen per 01-01-2019)
+  G0588: Gemeente Korendijk (vervallen per 01-01-2019)
+  G0589: Gemeente Oudewater
+  G0590: Gemeente Papendrecht
+  G0597: Gemeente Ridderkerk
+  G0599: Gemeente Rotterdam
+  G0603: Gemeente Rijswijk
+  G0606: Gemeente Schiedam
+  G0608: Gemeente Schoonhoven (vervallen per 01-01-2015)
+  G0610: Gemeente Sliedrecht
+  G0611: Gemeente Cromstrijen (vervallen per 01-01-2019)
+  G0612: Gemeente Spijkenisse (vervallen per 01-01-2015)
+  G0613: Gemeente Albrandswaard
+  G0614: Gemeente Westvoorne (vervallen per 01-01-2023)
+  G0617: Gemeente Strijen (vervallen per 01-01-2019)
+  G0620: Gemeente Vianen (vervallen per 01-01-2019)
+  G0622: Gemeente Vlaardingen
+  G0623: Gemeente Vlist (vervallen per 01-01-2015)
+  G0626: Gemeente Voorschoten
+  G0627: Gemeente Waddinxveen
+  G0629: Gemeente Wassenaar
+  G0632: Gemeente Woerden
+  G0637: Gemeente Zoetermeer
+  G0638: Gemeente Zoeterwoude
+  G0642: Gemeente Zwijndrecht
+  G0643: Gemeente Nederlek (vervallen per 01-01-2015)
+  G0644: Gemeente Ouderkerk (vervallen per 01-01-2015)
+  G0653: Gemeente Gaasterlân-Sleat (vervallen per 01-01-2014)
+  G0654: Gemeente Borsele
+  G0664: Gemeente Goes
+  G0668: Gemeente West Maas en Waal
+  G0677: Gemeente Hulst
+  G0678: Gemeente Kapelle
+  G0687: Gemeente Middelburg
+  G0689: Gemeente Giessenlanden (vervallen per 01-01-2019)
+  G0693: Gemeente Graafstroom (vervallen per 01-01-2013)
+  G0694: Gemeente Liesveld (vervallen per 01-01-2013)
+  G0703: Gemeente Reimerswaal
+  G0707: Gemeente Zederik (vervallen per 01-01-2019)
+  G0715: Gemeente Terneuzen
+  G0716: Gemeente Tholen
+  G0717: Gemeente Veere
+  G0718: Gemeente Vlissingen
+  G0733: Gemeente Lingewaal (vervallen per 01-01-2019)
+  G0736: Gemeente De Ronde Venen
+  G0737: Gemeente Tytsjerksteradiel
+  G0738: Gemeente Aalburg (vervallen per 01-01-2019)
+  G0743: Gemeente Asten
+  G0744: Gemeente Baarle-Nassau
+  G0748: Gemeente Bergen op Zoom
+  G0753: Gemeente Best
+  G0755: Gemeente Boekel
+  G0756: Gemeente Boxmeer (vervallen per 01-01-2022)
+  G0757: Gemeente Boxtel
+  G0758: Gemeente Breda
+  G0762: Gemeente Deurne
+  G0765: Gemeente Pekela
+  G0766: Gemeente Dongen
+  G0770: Gemeente Eersel
+  G0772: Gemeente Eindhoven
+  G0777: Gemeente Etten-Leur
+  G0779: Gemeente Geertruidenberg
+  G0784: Gemeente Gilze en Rijen
+  G0785: Gemeente Goirle
+  G0786: Gemeente Grave (vervallen per 01-01-2022)
+  G0788: Gemeente Haaren (vervallen per 01-01-2021)
+  G0794: Gemeente Helmond
+  G0796: Gemeente 's-Hertogenbosch
+  G0797: Gemeente Heusden
+  G0798: Gemeente Hilvarenbeek
+  G0809: Gemeente Loon op Zand
+  G0815: Gemeente Mill en Sint Hubert (vervallen per 01-01-2022)
+  G0820: Gemeente Nuenen, Gerwen en Nederwetten
+  G0823: Gemeente Oirschot
+  G0824: Gemeente Oisterwijk
+  G0826: Gemeente Oosterhout
+  G0828: Gemeente Oss
+  G0840: Gemeente Rucphen
+  G0844: Gemeente Schijndel (vervallen per 01-01-2017)
+  G0845: Gemeente Sint-Michielsgestel
+  G0846: Gemeente Sint-Oedenrode (vervallen per 01-01-2017)
+  G0847: Gemeente Someren
+  G0848: Gemeente Son en Breugel
+  G0851: Gemeente Steenbergen
+  G0852: Gemeente Waterland
+  G0855: Gemeente Tilburg
+  G0856: Gemeente Uden (vervallen per 01-01-2022)
+  G0858: Gemeente Valkenswaard
+  G0860: Gemeente Veghel (vervallen per 01-01-2017)
+  G0861: Gemeente Veldhoven
+  G0865: Gemeente Vught
+  G0866: Gemeente Waalre
+  G0867: Gemeente Waalwijk
+  G0870: Gemeente Werkendam (vervallen per 01-01-2019)
+  G0873: Gemeente Woensdrecht
+  G0874: Gemeente Woudrichem (vervallen per 01-01-2019)
+  G0879: Gemeente Zundert
+  G0880: Gemeente Wormerland
+  G0881: Gemeente Onderbanken (vervallen per 01-01-2019)
+  G0882: Gemeente Landgraaf
+  G0888: Gemeente Beek
+  G0889: Gemeente Beesel
+  G0893: Gemeente Bergen (L)
+  G0899: Gemeente Brunssum
+  G0907: Gemeente Gennep
+  G0917: Gemeente Heerlen
+  G0928: Gemeente Kerkrade
+  G0935: Gemeente Maastricht
+  G0938: Gemeente Meerssen
+  G0944: Gemeente Mook en Middelaar
+  G0946: Gemeente Nederweert
+  G0951: Gemeente Nuth (vervallen per 01-01-2019)
+  G0957: Gemeente Roermond
+  G0962: Gemeente Schinnen (vervallen per 01-01-2019)
+  G0965: Gemeente Simpelveld
+  G0971: Gemeente Stein
+  G0981: Gemeente Vaals
+  G0983: Gemeente Venlo
+  G0984: Gemeente Venray
+  G0986: Gemeente Voerendaal
+  G0988: Gemeente Weert
+  G0994: Gemeente Valkenburg aan de Geul
+  G0995: Gemeente Lelystad
+  G1507: Gemeente Horst aan de Maas
+  G1509: Gemeente Oude IJsselstreek
+  G1525: Gemeente Teylingen
+  G1581: Gemeente Utrechtse Heuvelrug
+  G1586: Gemeente Oost Gelre
+  G1598: Gemeente Koggenland
+  G1621: Gemeente Lansingerland
+  G1640: Gemeente Leudal
+  G1641: Gemeente Maasgouw
+  G1651: Gemeente Eemsmond (vervallen per 01-01-2019)
+  G1652: Gemeente Gemert-Bakel
+  G1655: Gemeente Halderberge
+  G1658: Gemeente Heeze-Leende
+  G1659: Gemeente Laarbeek
+  G1663: Gemeente De Marne (vervallen per 01-01-2019)
+  G1667: Gemeente Reusel-De Mierden
+  G1669: Gemeente Roerdalen
+  G1671: Gemeente Maasdonk (vervallen per 01-01-2015)
+  G1672: Gemeente Rijnwoude (vervallen per 01-01-2014)
+  G1674: Gemeente Roosendaal
+  G1676: Gemeente Schouwen-Duiveland
+  G1680: Gemeente Aa en Hunze
+  G1681: Gemeente Borger-Odoorn
+  G1684: Gemeente Cuijk (vervallen per 01-01-2022)
+  G1685: Gemeente Landerd (vervallen per 01-01-2022)
+  G1690: Gemeente De Wolden
+  G1695: Gemeente Noord-Beveland
+  G1696: Gemeente Wijdemeren
+  G1699: Gemeente Noordenveld
+  G1700: Gemeente Twenterand
+  G1701: Gemeente Westerveld
+  G1702: Gemeente Sint Anthonis (vervallen per 01-01-2022)
+  G1705: Gemeente Lingewaard
+  G1706: Gemeente Cranendonck
+  G1708: Gemeente Steenwijkerland
+  G1709: Gemeente Moerdijk
+  G1711: Gemeente Echt-Susteren
+  G1714: Gemeente Sluis
+  G1719: Gemeente Drimmelen
+  G1721: Gemeente Bernheze
+  G1722: Gemeente Ferwerderadiel (vervallen per 01-01-2019)
+  G1723: Gemeente Alphen-Chaam
+  G1724: Gemeente Bergeijk
+  G1728: Gemeente Bladel
+  G1729: Gemeente Gulpen-Wittem
+  G1730: Gemeente Tynaarlo
+  G1731: Gemeente Midden-Drenthe
+  G1734: Gemeente Overbetuwe
+  G1735: Gemeente Hof van Twente
+  G1740: Gemeente Neder-Betuwe
+  G1742: Gemeente Rijssen-Holten
+  G1771: Gemeente Geldrop-Mierlo
+  G1773: Gemeente Olst-Wijhe
+  G1774: Gemeente Dinkelland
+  G1783: Gemeente Westland
+  G1842: Gemeente Midden-Delfland
+  G1859: Gemeente Berkelland
+  G1876: Gemeente Bronckhorst
+  G1883: Gemeente Sittard-Geleen
+  G1884: Gemeente Kaag en Braassem
+  G1891: Gemeente Dantumadiel
+  G1892: Gemeente Zuidplas
+  G1894: Gemeente Peel en Maas
+  G1895: Gemeente Oldambt
+  G1896: Gemeente Zwartewaterland
+  G1900: Gemeente Súdwest-Fryslân
+  G1901: Gemeente Bodegraven-Reeuwijk
+  G1903: Gemeente Eijsden-Margraten
+  G1904: Gemeente Stichtse Vecht
+  G1908: Gemeente Menameradiel (vervallen per 01-01-2018)
+  G1911: Gemeente Hollands Kroon
+  G1916: Gemeente Leidschendam-Voorburg
+  G1921: Gemeente De Friese Meren (vervallen per 01-01-2016)
+  G1924: Gemeente Goeree-Overflakkee
+  G1926: Gemeente Pijnacker-Nootdorp
+  G1927: Gemeente Molenwaard (vervallen per 01-01-2019)
+  G1930: Gemeente Nissewaard
+  G1931: Gemeente Krimpenerwaard
+  G1940: Gemeente De Fryske Marren
+  G1942: Gemeente Gooise Meren
+  G1945: Gemeente Berg en Dal
+  G1948: Gemeente Meierijstad
+  G1949: Gemeente Waadhoeke
+  G1950: Gemeente Westerwolde
+  G1952: Gemeente Midden-Groningen
+  G1954: Gemeente Beekdaelen
+  G1955: Gemeente Montferland
+  G1959: Gemeente Altena
+  G1960: Gemeente West Betuwe
+  G1961: Gemeente Vijfheerenlanden
+  G1963: Gemeente Hoeksche Waard
+  G1966: Gemeente Het Hogeland
+  G1969: Gemeente Westerkwartier
+  G1970: Gemeente Noardeast-Fryslân
+  G1978: Gemeente Molenlanden
+  G1979: Gemeente Eemsdelta
+  G1980: Gemeente Dijk en Waard
+  G1982: Gemeente Land van Cuijk
+  G1987: Gemeente Menterwolde (vervallen per 01-01-2018)
+  G1991: Gemeente Maashorst
+  G1992: Gemeente Voorne aan Zee
+  K0001: Kadaster
+  L0001: Ministerie van Landbouw, Natuur en Voedselkwaliteit (LNV)
+  L0002: Ministerie van Infrastructuur en Waterstaat (IenW)
+  L0003: Ministerie van Defensie
+  L0004: Prorail
+  P0020: Provincie Groningen
+  P0021: Provincie Fryslân
+  P0022: Provincie Drenthe
+  P0023: Provincie Overijssel
+  P0024: Provincie Flevoland
+  P0025: Provincie Gelderland
+  P0026: Provincie Utrecht
+  P0027: Provincie Noord-Holland
+  P0028: Provincie Zuid-Holland
+  P0029: Provincie Zeeland
+  P0030: Provincie Noord-Brabant
+  P0031: Provincie Limburg
+  S0001: Samenwerkingsverband voor Bronhouders
+  W0151: Waterschap Groot Salland (vervallen per 01-01-2016)
+  W0152: Waterschap Rijn en IJssel
+  W0153: Waterschap Veluwe (vervallen per 01-01-2013)
+  W0154: Waterschap Vallei & Eem (vervallen per 01-01-2013)
+  W0155: Waterschap Amstel, Gooi en Vecht
+  W0201: Waterschap Regge en Dinkel (vervallen per 01-01-2014)
+  W0372: Hoogheemraadschap van Delfland
+  W0524: Waterschap Zeeuwse Eilanden (vervallen per 01-01-2011)
+  W0539: Waterschap De Dommel
+  W0585: Waterschap Roer en Overmaas (vervallen per 01-01-2017)
+  W0616: Hoogheemraadschap van Rijnland
+  W0621: Waterschap Rivierenland
+  W0636: Hoogheemraadschap De Stichtse Rijnlanden
+  W0638: Waterschap Peel en Maasvallei (vervallen per 01-01-2017)
+  W0646: Waterschap Hunze en Aa's
+  W0647: Waterschap Noorderzijlvest
+  W0648: Waterschap Reest en Wieden (vervallen per 01-01-2016)
+  W0649: Waterschap Velt en Vecht (vervallen per 01-01-2014)
+  W0650: Waterschap Zuiderzeeland
+  W0651: Hoogheemraadschap Hollands Noorderkwartier
+  W0652: Waterschap Brabantse Delta
+  W0653: Wetterskip Fryslân
+  W0654: Waterschap Aa en Maas
+  W0655: Waterschap Hollandse Delta
+  W0656: Hoogheemraadschap van Schieland en de Krimpenerwaard
+  W0659: Waterschapsbedrijf Limburg (vervallen per 01-01-2017)
+  W0661: Waterschap Scheldestromen
+  W0662: Waterschap Vallei en Veluwe
+  W0663: Waterschap Vechtstromen
+  W0664: Waterschap Drents Overijsselse Delta
+  W0665: Waterschap Limburg
+fallback: '{{value}}'

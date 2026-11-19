@@ -1,0 +1,238 @@
+{
+  "id": "verblijfsobjecten-in-de-buurt",
+  "title": "Verblijfsobjecten in de buurt van een punt",
+  "description": "De verblijfsobjecten met een van de gegeven gebruiksdoelen binnen een afstand van een punt, bijvoorbeeld de winkels (winkelfunctie) binnen 1000 meter van een woning. Het punt kan de ligging van een adres zijn (zoekopdracht adres-op-postcode). De afstand tot elk object berekent de gebruiker zelf uit de geometrieën. Eigenschappen in het resultaat, voor zover niet weggelaten: verblijfsobject: gebruiksdoel (alle gebruiksdoelen), oppervlakte (gebruiksoppervlakte in m²; 999999 is geen werkelijke oppervlakte), status, beginGeldigheid, heeftAlsHoofdadres en heeftAlsNevenadres (titel: het adres), maaktDeelUitVan (de panden), geometrie (een punt), bouwjaarPand (het oudste oorspronkelijk bouwjaar van die panden). Een verwijzing heeft een titel en, in een MCP-resultaat, de identificatie (id) of, in de API, een link (href); de titel van een ingetrokken adres, straat of woonplaats eindigt op '(ingetrokken)'. English: units by use near a point or address, e.g. shops, schools or doctors within walking distance, proximity search.",
+  "parameters": {
+    "punt": {
+      "title": "punt",
+      "description": "Het punt als WKT of GeoJSON in WGS84-lengte/breedtegraad, bijvoorbeeld POINT(5.3842 52.1567).",
+      "format": "geometry-point"
+    },
+    "afstand": {
+      "title": "afstand",
+      "description": "De maximale afstand in meter.",
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 1000
+    },
+    "gebruiksdoel": {
+      "title": "gebruiksdoel",
+      "description": "Een of meer gebruiksdoelen van het verblijfsobject volgens het Bouwbesluit 2012; een verblijfsobject voldoet als het ten minste een van de gebruiksdoelen heeft. Bijvoorbeeld sportfunctie voor sporthallen, winkelfunctie voor winkels, woonfunctie voor woningen. Het gebruiksdoel is het geregistreerde, toegestane gebruik, geen soort voorziening: sportfunctie omvat bijvoorbeeld sporthallen, fitnesscentra, bowlingcentra en clubgebouwen, maar ook de sportruimte van een hotel of winkelcentrum. Een verblijfsobject kan meerdere gebruiksdoelen hebben; de oppervlakte en de andere gebruiksdoelen helpen om het object te duiden. De BAG bevat geen namen van gebouwen of bedrijven; die komen uit andere bronnen, zoals een zoekdienst voor plaatsen of OpenStreetMap.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "woonfunctie",
+          "bijeenkomstfunctie",
+          "celfunctie",
+          "gezondheidszorgfunctie",
+          "industriefunctie",
+          "kantoorfunctie",
+          "logiesfunctie",
+          "onderwijsfunctie",
+          "sportfunctie",
+          "winkelfunctie",
+          "overige gebruiksfunctie"
+        ]
+      },
+      "minItems": 1
+    },
+    "status": {
+      "title": "status",
+      "description": "Een of meer statussen van het verblijfsobject. Standaard de bestaande objecten die in gebruik zijn ('Verblijfsobject in gebruik', 'Verblijfsobject in gebruik (niet ingemeten)', 'Verbouwing verblijfsobject'); andere statussen, bijvoorbeeld gesloopt, ingetrokken of in aanbouw, alleen als ze worden opgegeven.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Verblijfsobject gevormd",
+          "Niet gerealiseerd verblijfsobject",
+          "Verblijfsobject in gebruik (niet ingemeten)",
+          "Verblijfsobject in gebruik",
+          "Verblijfsobject ingetrokken",
+          "Verblijfsobject buiten gebruik",
+          "Verbouwing verblijfsobject",
+          "Verblijfsobject ten onrechte opgevoerd"
+        ]
+      },
+      "default": [
+        "Verblijfsobject in gebruik",
+        "Verblijfsobject in gebruik (niet ingemeten)",
+        "Verbouwing verblijfsobject"
+      ]
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de registratiegegevens (geconstateerd, documentdatum, documentnummer, voorkomenidentificatie, tijdstipRegistratie, eindRegistratie, tijdstipRegistratieLV, tijdstipEindRegistratieLV) en de niet-BAG-gegevens (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam, bouwjaarPand, statusPand, objecttype); een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode. Ook elke andere eigenschap behalve identificatie is weg te laten (gebruiksdoel, oppervlakte, heeftAlsHoofdadres, heeftAlsNevenadres, maaktDeelUitVan, status, beginGeldigheid, eindGeldigheid, voorgaandeVersie, volgendeVersie), bijvoorbeeld bij veel verblijfsobjecten waarvan alleen adres, oppervlakte en gebruiksdoelen nodig zijn: heeftAlsNevenadres, maaktDeelUitVan, beginGeldigheid, status. 'geometrie' laat de punten weg; dan is de afstand niet meer te berekenen.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "geconstateerd",
+          "documentdatum",
+          "documentnummer",
+          "voorkomenidentificatie",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "tijdstipRegistratieLV",
+          "tijdstipEindRegistratieLV",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "bouwjaarPand",
+          "statusPand",
+          "objecttype",
+          "gebruiksdoel",
+          "oppervlakte",
+          "heeftAlsHoofdadres",
+          "heeftAlsNevenadres",
+          "maaktDeelUitVan",
+          "status",
+          "beginGeldigheid",
+          "eindGeldigheid",
+          "voorgaandeVersie",
+          "volgendeVersie"
+        ]
+      },
+      "default": [
+        "geconstateerd",
+        "documentdatum",
+        "documentnummer",
+        "voorkomenidentificatie",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "tijdstipRegistratieLV",
+        "tijdstipEindRegistratieLV",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "bouwjaarPand",
+        "statusPand",
+        "objecttype"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "beginGeldigheid"
+          },
+          {
+            "property": "eindGeldigheid"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "verblijfsobject"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "=",
+            "args": [
+              {
+                "function": {
+                  "name": "S_DWITHIN",
+                  "args": [
+                    {
+                      "property": "geometrie"
+                    },
+                    {
+                      "$parameter": {
+                        "punt": {
+                          "$ref": "#/parameters/punt"
+                        }
+                      }
+                    },
+                    {
+                      "$parameter": {
+                        "afstand": {
+                          "$ref": "#/parameters/afstand"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              true
+            ]
+          },
+          {
+            "op": "a_overlaps",
+            "args": [
+              {
+                "property": "gebruiksdoel"
+              },
+              {
+                "$parameter": {
+                  "gebruiksdoel": {
+                    "$ref": "#/parameters/gebruiksdoel"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "status"
+              },
+              {
+                "$parameter": {
+                  "status": {
+                    "$ref": "#/parameters/status"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

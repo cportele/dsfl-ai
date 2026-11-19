@@ -1,0 +1,4572 @@
+{
+  "id": "wijzigingen-in-gebied",
+  "title": "Wijzigingen in een gebied in een periode",
+  "description": "De versies van de objecten in een gemeente, wijk of buurt die in een periode zijn geregistreerd, en de objecten die in die periode zijn beëindigd. Per versie: bij een nieuw object heeft de versie geen link 'predecessor-version' (en objectBeginTijd is de datum van tijdstipRegistratie), bij een gewijzigd object verwijst de link 'predecessor-version' naar de vorige versie; een link 'successor-version' verwijst naar de volgende versie, als die er is. Een beëindigd object heeft een objectEindTijd (de laatste versie, met eindRegistratie op die dag). Een nieuwe versie kan een wijziging in de werkelijkheid of een correctie van de registratie zijn; de BGT maakt dat onderscheid niet. Grote wijzigingen in een wijk (nieuwbouw, herinrichting van een straat) leveren veel versies; begin met een buurt of een korte periode. In het resultaat heeft elk object zijn objecttype (objecttype, de naam van de collectie) en de eigenschappen van zijn collectie; hun betekenis en de betekenis van alle waarden staan in het schema van de collectie (/bgt/collections/<collectie>/schema). Collecties: alle collecties. Standaard zonder geometrie; met de geometrie (weglaten zonder 'geometrie') is te zien waar de wijzigingen liggen. English: changes in an area in a period: new, changed and removed objects (roads, buildings, green, water), history of the topography.",
+  "parameters": {
+    "gebied": {
+      "title": "gebied",
+      "description": "De code van het gebied: een gemeentecode (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), een wijkcode (bijvoorbeeld WK030701) of een buurtcode (bijvoorbeeld BU03070100) volgens de CBS Wijk- en Buurtkaart 2026. De code bij een naam staat in de API Wijken en buurten (/wijkenbuurten), bijvoorbeeld /wijkenbuurten/collections/gemeente/items?naam=Amersfoort.",
+      "type": "string",
+      "pattern": "^([0-9]{4}|WK[0-9]{6}|BU[0-9]{8})$"
+    },
+    "sinds": {
+      "title": "sinds",
+      "description": "Begin van de periode (tijdstip, RFC 3339), bijvoorbeeld 2024-01-01T00:00:00Z.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "tot": {
+      "title": "tot",
+      "description": "Einde van de periode (niet inbegrepen). Standaard geen beperking.",
+      "type": "string",
+      "format": "date-time",
+      "default": "9999-12-31T00:00:00Z"
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de geometrie, de gebiedscodes en -namen (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam), de gegevens voor de kaart (nummeraanduidingreeks.*, hoek, kruinlijn), oppervlakte en lengte; een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Standaard wel geleverd: objecttype, de classificatie, objectBeginTijd, objectEindTijd, tijdstipRegistratie, eindRegistratie, de links naar de voorgaande en volgende versie, bronhouder; ook die en elke andere eigenschap behalve identificatie zijn weg te laten. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "objectBeginTijd",
+          "objectEindTijd",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "lvPublicatiedatum",
+          "inOnderzoek",
+          "bgtStatus",
+          "plusStatus",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "oppervlakte",
+          "lengte",
+          "nummeraanduidingreeks.tekst",
+          "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+          "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+          "nummeraanduidingreeks.plaatsingspunt",
+          "nummeraanduidingreeks.hoek",
+          "hoek",
+          "kruinlijn",
+          "objecttype",
+          "bronhouder",
+          "relatieveHoogteligging",
+          "plusType",
+          "voorgaandeVersie",
+          "volgendeVersie",
+          "bgtFysiekVoorkomen",
+          "plusFysiekVoorkomen",
+          "opTalud",
+          "bgtType",
+          "naam",
+          "bgtFunctie",
+          "plusFunctie",
+          "identificatieBAGOPR.id",
+          "identificatieBAGOPR.title",
+          "openbareRuimteNaam",
+          "openbareRuimteType",
+          "typeOverbruggingsdeel",
+          "hoortBijTypeOverbrugging",
+          "overbruggingIsBeweegbaar",
+          "hectometeraanduiding",
+          "identificatieBAGPND.id",
+          "identificatieBAGPND.title"
+        ]
+      },
+      "default": [
+        "geometrie",
+        "lvPublicatiedatum",
+        "inOnderzoek",
+        "bgtStatus",
+        "plusStatus",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "oppervlakte",
+        "lengte",
+        "nummeraanduidingreeks.tekst",
+        "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+        "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+        "nummeraanduidingreeks.plaatsingspunt",
+        "nummeraanduidingreeks.hoek",
+        "hoek",
+        "kruinlijn"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "wegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "spoor"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "begroeidterreindeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "onbegroeidterreindeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwaterdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "pand"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overigbouwwerk"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kunstwerkdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "scheiding"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overigescheiding"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overbruggingsdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "tunneldeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "gebouwinstallatie"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "functioneelgebied"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "openbareruimtelabel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ongeclassificeerdobject"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "bak"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "bord"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "installatie"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kast"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "mast"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "paal"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "put"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "sensor"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "straatmeubilair"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterinrichtingselement"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "weginrichtingselement"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "vegetatieobject"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "tijdstipRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "and",
+                "args": [
+                  {
+                    "op": "not",
+                    "args": [
+                      {
+                        "op": "isNull",
+                        "args": [
+                          {
+                            "property": "objectEindTijd"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "op": ">=",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "sinds": {
+                            "$ref": "#/parameters/sinds"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "op": "<",
+                    "args": [
+                      {
+                        "property": "eindRegistratie"
+                      },
+                      {
+                        "$parameter": {
+                          "tot": {
+                            "$ref": "#/parameters/tot"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

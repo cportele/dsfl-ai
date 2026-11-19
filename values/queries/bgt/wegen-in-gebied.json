@@ -1,0 +1,452 @@
+{
+  "id": "wegen-in-gebied",
+  "title": "Wegen in een gebied",
+  "description": "De wegdelen, ondersteunende wegdelen (verkeerseilanden, bermen) en sporen in een gemeente, wijk of buurt, met de parameters functie en fysiekVoorkomen te beperken, bijvoorbeeld functie=fietspad of fysiekVoorkomen=onverhard. Wegdelen en ondersteunende wegdelen hebben hun oppervlakte in m², sporen hun lengte in meter, zodat bijvoorbeeld de oppervlakte van de fietspaden of de lengte van het spoor in een wijk op te tellen is. De verharding staat in bgtFysiekVoorkomen (bijvoorbeeld 'gesloten verharding') en fijner in plusFysiekVoorkomen (bijvoorbeeld 'asfalt'), als de bronhouder die bijhoudt. Een weg over een brug of onder een overkapping heeft een andere relatieveHoogteligging. In het resultaat heeft elk object zijn objecttype (objecttype, de naam van de collectie) en de eigenschappen van zijn collectie; hun betekenis en de betekenis van alle waarden staan in het schema van de collectie (/bgt/collections/<collectie>/schema). Collecties: wegdeel, ondersteunendwegdeel, spoor. English: road network of an area: carriageways, footpaths, cycle paths, parking spaces, verges, railways, with their function, surface (asphalt, paving) and area or length.",
+  "parameters": {
+    "gebied": {
+      "title": "gebied",
+      "description": "De code van het gebied: een gemeentecode (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), een wijkcode (bijvoorbeeld WK030701) of een buurtcode (bijvoorbeeld BU03070100) volgens de CBS Wijk- en Buurtkaart 2026. De code bij een naam staat in de API Wijken en buurten (/wijkenbuurten), bijvoorbeeld /wijkenbuurten/collections/gemeente/items?naam=Amersfoort.",
+      "type": "string",
+      "pattern": "^([0-9]{4}|WK[0-9]{6}|BU[0-9]{8})$"
+    },
+    "functie": {
+      "title": "functie",
+      "description": "De functies (bgtFunctie), standaard alle: die van wegdelen (bijvoorbeeld 'rijbaan lokale weg', 'fietspad', 'voetpad', 'parkeervlak'), van ondersteunende wegdelen ('verkeerseiland', 'berm') en van sporen ('trein', 'tram', 'sneltram'). De betekenis staat bij bgtFunctie in het schema van de collecties.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "OV-baan",
+          "overweg",
+          "spoorbaan",
+          "baan voor vliegverkeer",
+          "rijbaan autosnelweg",
+          "rijbaan autoweg",
+          "rijbaan regionale weg",
+          "rijbaan lokale weg",
+          "fietspad",
+          "voetpad",
+          "voetpad op trap",
+          "ruiterpad",
+          "parkeervlak",
+          "voetgangersgebied",
+          "inrit",
+          "woonerf",
+          "transitie",
+          "verkeerseiland",
+          "berm",
+          "trein",
+          "sneltram",
+          "tram",
+          "niet-bgt"
+        ]
+      },
+      "default": [
+        "OV-baan",
+        "overweg",
+        "spoorbaan",
+        "baan voor vliegverkeer",
+        "rijbaan autosnelweg",
+        "rijbaan autoweg",
+        "rijbaan regionale weg",
+        "rijbaan lokale weg",
+        "fietspad",
+        "voetpad",
+        "voetpad op trap",
+        "ruiterpad",
+        "parkeervlak",
+        "voetgangersgebied",
+        "inrit",
+        "woonerf",
+        "transitie",
+        "verkeerseiland",
+        "berm",
+        "trein",
+        "sneltram",
+        "tram",
+        "niet-bgt"
+      ]
+    },
+    "fysiekVoorkomen": {
+      "title": "fysiekVoorkomen",
+      "description": "De verharding van wegdelen en ondersteunende wegdelen (bgtFysiekVoorkomen), standaard alle; geldt niet voor sporen.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "gesloten verharding",
+          "open verharding",
+          "half verhard",
+          "onverhard",
+          "transitie",
+          "groenvoorziening"
+        ]
+      },
+      "default": [
+        "gesloten verharding",
+        "open verharding",
+        "half verhard",
+        "onverhard",
+        "transitie",
+        "groenvoorziening"
+      ]
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de geometrie, de registratiegegevens (objectBeginTijd, objectEindTijd, tijdstipRegistratie, eindRegistratie, lvPublicatiedatum, inOnderzoek, bgtStatus, plusStatus), de gebiedscodes en -namen (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam) en de gegevens voor de kaart (kruinlijn); een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Standaard wel geleverd: objecttype, de classificatie, oppervlakte en lengte, bronhouder, relatieveHoogteligging; ook die en elke andere eigenschap behalve identificatie zijn weg te laten. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "objectBeginTijd",
+          "objectEindTijd",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "lvPublicatiedatum",
+          "inOnderzoek",
+          "bgtStatus",
+          "plusStatus",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "oppervlakte",
+          "lengte",
+          "kruinlijn",
+          "objecttype",
+          "bronhouder",
+          "relatieveHoogteligging",
+          "bgtFunctie",
+          "plusFunctie",
+          "bgtFysiekVoorkomen",
+          "plusFysiekVoorkomen",
+          "opTalud",
+          "voorgaandeVersie",
+          "volgendeVersie"
+        ]
+      },
+      "default": [
+        "geometrie",
+        "objectBeginTijd",
+        "objectEindTijd",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "lvPublicatiedatum",
+        "inOnderzoek",
+        "bgtStatus",
+        "plusStatus",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "kruinlijn"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "tijdstipRegistratie"
+          },
+          {
+            "property": "eindRegistratie"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "wegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "bgtFunctie"
+              },
+              {
+                "$parameter": {
+                  "functie": {
+                    "$ref": "#/parameters/functie"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "bgtFysiekVoorkomen"
+              },
+              {
+                "$parameter": {
+                  "fysiekVoorkomen": {
+                    "$ref": "#/parameters/fysiekVoorkomen"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "bgtFunctie"
+              },
+              {
+                "$parameter": {
+                  "functie": {
+                    "$ref": "#/parameters/functie"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "bgtFysiekVoorkomen"
+              },
+              {
+                "$parameter": {
+                  "fysiekVoorkomen": {
+                    "$ref": "#/parameters/fysiekVoorkomen"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "spoor"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "bgtFunctie"
+              },
+              {
+                "$parameter": {
+                  "functie": {
+                    "$ref": "#/parameters/functie"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

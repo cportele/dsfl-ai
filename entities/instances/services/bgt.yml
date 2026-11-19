@@ -1,0 +1,1133 @@
+# generated - do not edit
+---
+id: bgt
+entityStorageVersion: 2
+label: Basisregistratie Grootschalige Topografie (BGT)
+description: 'De Basisregistratie Grootschalige Topografie (BGT) is de digitale kaart van Nederland op het niveau van straten
+  en panden: wegdelen, terreindelen, waterdelen, panden, overige bouwwerken, kunstwerken, scheidingen en spoor, en als optionele
+  IMGeo-informatie (plus) ook inrichtingselementen zoals palen, putten, kasten, borden, straatmeubilair en bomen. De objecten
+  van het maaiveld (relatieveHoogteligging 0) dekken het gebied zonder gaten en overlappingen. Bron: BGT-extract van PDOK
+  (CityGML, met historie) voor de omgeving van Amersfoort, stand 30 oktober 2026.
+
+
+  Elk objecttype is een collectie. De BGT-classificatie staat in bgtFunctie, bgtFysiekVoorkomen of bgtType, een fijnere IMGeo-classificatie
+  in plusFunctie, plusFysiekVoorkomen of plusType (bijvoorbeeld wegdeel: bgtFunctie ''fietspad'', bgtFysiekVoorkomen ''gesloten
+  verharding'', plusFysiekVoorkomen ''asfalt''). Ontbreekt de plus-informatie, dan staat er een reden zoals ''waardeOnbekend''.
+  Elke zoekbare eigenschap kan als eigen parameter worden opgegeven, bijvoorbeeld `/bgt/collections/wegdeel/items?bgtFunctie=fietspad`;
+  als alternatief ondersteunt de API CQL2-filters (parameter `filter`), bijvoorbeeld `filter=bgtFunctie IN (''fietspad'',''voetpad'')`.
+  Panden en openbareruimtelabels verwijzen naar de BAG (`/bag`): identificatieBAGPND is de identificatie van het pand en identificatieBAGOPR
+  die van de openbare ruimte.
+
+
+  Om in een gebied te zoeken kunnen alle objecten gefilterd worden op `gemeentecode` (vier cijfers, bijvoorbeeld 0307 voor
+  Amersfoort), `wijkcode` (bijvoorbeeld WK030701) en `buurtcode` (bijvoorbeeld BU03070100), afgeleid uit de CBS Wijk- en Buurtkaart
+  2026 (API Wijken en buurten, `/wijkenbuurten`), of met `bbox`; de buurtcode bevat ook de gemeentecode en de wijkcode (BU03070100:
+  gemeente 0307, wijk WK030701). Standaard staan de codes niet in de uitvoer, net als het objecttype en de uit de geometrie
+  berekende `oppervlakte` (m²) en `lengte` (m); om resultaten per gebied te groeperen vraagt men ze op met `exclude-properties`
+  zonder `buurtcode` (een lege waarde levert alle eigenschappen) of met `properties`. De bronhouder (de organisatie die het
+  object bijhoudt) is een code, bijvoorbeeld G0307 (gemeente Amersfoort); de namen staan in de codelijst `/bgt/codelists/bronhouder`.
+
+
+  Voor veelvoorkomende vragen zijn er opgeslagen zoekopdrachten (stored queries) onder `/bgt/search`: de topografie van een
+  gebied met de oppervlakten (bijvoorbeeld hoeveel groen of verharding een buurt heeft), de inrichtingselementen in een gebied
+  (bijvoorbeeld banken, speeltoestellen of bomen), alles op of bij een punt, de wegen in een gebied, de wijzigingen in een
+  gebied in een periode en de overige objecten in een gebied (bijvoorbeeld functionele gebieden zoals parken en speeltuinen,
+  gebouwinstallaties, tunneldelen en openbareruimtelabels).
+
+
+  Alle objecten hebben versies. Zonder parameter `datetime` levert de API de versie die nu in de registratie staat, dus alleen
+  bestaande objecten; met `datetime=2020-01-01T00:00:00Z` de versies die op dat moment in de registratie stonden, ook van
+  objecten die sindsdien zijn beëindigd (objectEindTijd). De geometrie is in het Rijksdriehoeksstelsel vastgelegd; bogen blijven
+  bogen in JSON-FG (`f=json&profile=jsonfg`) en worden in GeoJSON door lijnstukken benaderd.
+
+
+  De volledige beschrijving van alle eigenschappen van een objecttype, met de betekenis van alle waarden, staat in het schema
+  van zijn collectie, bijvoorbeeld ${external.url:-https://bag.ldproxy.net}/bgt/collections/wegdeel/schema.'
+serviceType: OGC_API
+metadata:
+  contactName: Clemens Portele, interactive instruments GmbH
+  contactEmail: portele@interactive-instruments.de
+  creatorName: Bronhouders BGT, Landelijke Voorziening BGT (Kadaster)
+  creatorUrl: https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bgt
+  publisherName: interactive instruments GmbH
+  publisherUrl: https://www.interactive-instruments.de
+  publisherLogoUrl: https://www.interactive-instruments.de/wp-content/uploads/2017/05/ii-icon.png
+  licenseName: CC0 1.0 Universeel (CC0 1.0) Publiek Domein Verklaring
+  licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/deed.nl
+  keywords:
+  - BGT
+  - IMGeo
+  - topografie
+  - grootschalige topografie
+  - wegdelen
+  - terreindelen
+  - waterdelen
+  - panden
+  - inrichtingselementen
+  attribution: 'Bron: Basisregistratie Grootschalige Topografie (BGT), PDOK'
+  version: '261119095916'
+accessControl:
+  groups:
+    public:
+    - read
+    - processes:write
+api:
+- buildingBlock: COMMON
+  additionalLinks:
+  - title: Basisregistratie Grootschalige Topografie
+    href: https://www.geobasisregistraties.nl/basisregistraties/grootschalige-topografie
+    type: text/html
+    rel: describedby
+  - title: Gegevenscatalogus BGT 1.2
+    href: https://docs.geostandaarden.nl/imgeo/catalogus/bgt/
+    type: text/html
+    rel: describedby
+  - title: Gegevenscatalogus IMGeo 2.2
+    href: https://docs.geostandaarden.nl/imgeo/catalogus/imgeo/
+    type: text/html
+    rel: describedby
+  - title: IMGeo Objectenhandboek
+    href: https://geonovum.github.io/IMGeo-objectenhandboek/
+    type: text/html
+    rel: describedby
+- buildingBlock: FEATURES_CORE
+  embeddedFeatureLinkRels:
+  - predecessor-version
+  - successor-version
+- buildingBlock: HTML
+  collectionDescriptionsInOverview: true
+- buildingBlock: CRS
+  enabled: true
+  additionalCrs:
+  - code: 28992
+    forceAxisOrder: NONE
+  - code: 4258
+    forceAxisOrder: NONE
+  - code: 3857
+    forceAxisOrder: NONE
+- buildingBlock: SCHEMA
+  enabled: true
+  defaultProfiles:
+    codelist: codelists-inline
+- buildingBlock: CODELISTS
+  enabled: true
+- buildingBlock: QUERYABLES
+  enabled: true
+- buildingBlock: FILTER
+  enabled: true
+- buildingBlock: SORTING
+  enabled: true
+- buildingBlock: PROJECTIONS
+  enabled: true
+- buildingBlock: JSON_FG
+  enabled: true
+- buildingBlock: VERSIONED_FEATURES
+  enabled: true
+  timeAxis: TRANSACTION_TIME
+- buildingBlock: SEARCH
+  enabled: true
+- buildingBlock: MCP
+  enabled: true
+  apiDescriptionInTools: false
+  maxResultSize: 100000
+  filterOnlyQueryables:
+  - identificatie
+  - objectBeginTijd
+  - objectEindTijd
+  - tijdstipRegistratie
+  - eindRegistratie
+  - inOnderzoek
+  - gemeentenaam
+  - wijknaam
+  - buurtnaam
+  included:
+    collections:
+    - pand
+    - wegdeel
+    - ondersteunendwegdeel
+    - begroeidterreindeel
+    - onbegroeidterreindeel
+    - waterdeel
+    - overigbouwwerk
+    - scheiding
+    - kunstwerkdeel
+    - spoor
+    queries:
+    - '*'
+    processes:
+    - '*'
+- buildingBlock: PROCESSES_CORE
+  enabled: true
+- buildingBlock: PROCESSES_FEATURES
+  enabled: true
+collections:
+  wegdeel:
+    id: wegdeel
+    label: Wegdelen
+    description: 'Kleinste functioneel onafhankelijk stukje van een NEN 3610 Weg met gelijkblijvende, homogene eigenschappen
+      en relaties en primair bedoeld voor gebruik door weg-, spoor- en vliegverkeer te land. English: road part: carriageway,
+      footpath, cycle path, parking space, driveway, railway bed (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtFunctie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtFunctie
+      - plusFunctie
+      - bgtFysiekVoorkomen
+      - plusFysiekVoorkomen
+      - opTalud
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  ondersteunendwegdeel:
+    id: ondersteunendwegdeel
+    label: Ondersteunende wegdelen
+    description: 'Een deel van de weg dat niet primair bedoeld is voor gebruik door het verkeer. English: auxiliary road part:
+      traffic island, verge, road shoulder (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtFunctie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtFunctie
+      - plusFunctie
+      - bgtFysiekVoorkomen
+      - plusFysiekVoorkomen
+      - opTalud
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  spoor:
+    id: spoor
+    label: Sporen
+    description: 'De as van het spoor, dat wil zeggen het midden van twee stalen staven op een onderling vaste afstand, waarover
+      trein, tram, of sneltram rijdt. English: railway track, tram track (centre line).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtFunctie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtFunctie
+      - plusFunctie
+      - geometrie
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  begroeidterreindeel:
+    id: begroeidterreindeel
+    label: Begroeide terreindelen
+    description: 'Kleinste functioneel onafhankelijk stukje van een terrein dat er binnen het objecttype Terrein van NEN 3610
+      wordt onderscheiden, met aaneengesloten vegetatie. English: vegetated land: grass, forest, shrubs, green space, farmland
+      (land cover surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtFysiekVoorkomen}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtFysiekVoorkomen
+      - plusFysiekVoorkomen
+      - opTalud
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  onbegroeidterreindeel:
+    id: onbegroeidterreindeel
+    label: Onbegroeide terreindelen
+    description: 'Kleinste functioneel onafhankelijk stukje van een terrein, dat er binnen het objecttype Terrein van NEN
+      3610 wordt onderscheiden, zonder aaneengesloten vegetatie. English: unvegetated land: yard, paved or unpaved area, sand
+      (land cover surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtFysiekVoorkomen}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtFysiekVoorkomen
+      - plusFysiekVoorkomen
+      - opTalud
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  waterdeel:
+    id: waterdeel
+    label: Waterdelen
+    description: 'Kleinste functioneel onafhankelijk stukje water met gelijkblijvende, homogene eigenschappen en relaties
+      dat er binnen het objecttype Water van NEN 3610 wordt onderscheiden en dat permanent met water bedekt is. English: water
+      body: watercourse, canal, ditch, lake, pond (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  ondersteunendwaterdeel:
+    id: ondersteunendwaterdeel
+    label: Ondersteunende waterdelen
+    description: 'Object dat in het kader van de waterhuishouding periodiek gedeeltelijk of geheel met water is bedekt. English:
+      auxiliary water part: bank, shore, mudflat (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  pand:
+    id: pand
+    label: Panden
+    description: 'Een PAND is de kleinste bij de totstandkoming functioneel en bouwkundig-constructief zelfstandige eenheid
+      die direct en duurzaam met de aarde is verbonden en betreedbaar en afsluitbaar is. Het pand van de BGT is het bovenaanzicht
+      (grondvlak) van het pand in de BAG met dezelfde identificatie (identificatieBAGPND); bouwjaar, status en verblijfsobjecten
+      staan in de BAG. English: building footprint, as in the BAG (Basisregistratie Adressen en Gebouwen), with house number
+      labels.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatieBAGPND | unHtml}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - identificatieBAGPND
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  overigbouwwerk:
+    id: overigbouwwerk
+    label: Overige bouwwerken
+    description: 'Met de aarde verbonden duurzaam bouwwerk, dat niet valt onder de definities van een pand of kunstwerk. English:
+      other structure: shed, canopy, storage tank, wind turbine, basin (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  kunstwerkdeel:
+    id: kunstwerkdeel
+    label: Kunstwerkdelen
+    description: 'Onderdeel van een civiel-technisch werk voor de infrastructuur van wegen, water, spoorbanen, waterkeringen
+      en/of leidingen. English: civil engineering structure: lock, weir, pumping station, platform, jetty, culvert.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - geometrie
+      - oppervlakte
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  scheiding:
+    id: scheiding
+    label: Scheidingen
+    description: 'Kunstmatig obstakel met een werende functie. English: separation: wall, fence, quay wall, noise barrier,
+      sheet piling (line or surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - geometrie
+      - oppervlakte
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  overigescheiding:
+    id: overigescheiding
+    label: Overige scheidingen
+    description: 'Scheiding die geen BGT-inhoud is (IMGeo plus): de soorten zijn dezelfde als bij scheiding. Een overige scheiding
+      wordt alleen bijgehouden als de bronhouder dat wil. Geen BGT-inhoud maar optionele IMGeo-informatie (plus): alleen aanwezig
+      waar de bronhouder het bijhoudt; de soort staat in plusType. English: other separation (IMGeo, not BGT content): fence,
+      wall (line or surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - oppervlakte
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  overbruggingsdeel:
+    id: overbruggingsdeel
+    label: Overbruggingsdelen
+    description: 'Onderdeel van een beweegbare of vaste verbinding tussen twee punten, die door water, een weg of anderszins
+      gescheiden zijn, dat essentieel is voor de constructie . English: bridge part: deck, abutment, pillar of a bridge or
+      viaduct (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{typeOverbruggingsdeel}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - typeOverbruggingsdeel
+      - hoortBijTypeOverbrugging
+      - overbruggingIsBeweegbaar
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  tunneldeel:
+    id: tunneldeel
+    label: Tunneldelen
+    description: 'Onderdeel van een kunstmatig aangelegde, kokervormige onderdoorgang dat essentieel is voor de constructie.
+      English: tunnel part (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  gebouwinstallatie:
+    id: gebouwinstallatie
+    label: Gebouwinstallaties
+    description: 'Een component aan de buitenzijde van een gebouw, die het aanzicht van het gebouw mede bepaalt. Geen BGT-inhoud
+      maar optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType.
+      English: building installation: stairs, canopy, platform at a building entrance (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  functioneelgebied:
+    id: functioneelgebied
+    label: Functionele gebieden
+    description: 'Begrensd en benoemd gebied dat door een functionele eenheid beschreven wordt. English: functional area:
+      dike (flood defence), playground, sports field, park, dog area.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{bgtType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - bgtType
+      - plusType
+      - naam
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  openbareruimtelabel:
+    id: openbareruimtelabel
+    label: Openbareruimtelabels
+    description: 'Naam en plaatsingspunten van een in de BAG geregistreerde OPENBARE RUIMTE. English: street name label: name
+      and label positions of a public space (street) of the BAG.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{openbareRuimteNaam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - identificatieBAGOPR
+      - openbareRuimteType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+      - openbareRuimteNaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  ongeclassificeerdobject:
+    id: ongeclassificeerdobject
+    label: Ongeclassificeerde objecten
+    description: 'Object dat (nog) niet in een van de andere objecttypen is ingedeeld. English: unclassified object (surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - oppervlakte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  bak:
+    id: bak
+    label: Bakken
+    description: 'Object met een permanent karakter dat dient om iets in te bergen of te verzamelen. Geen BGT-inhoud maar
+      optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English:
+      container: waste bin, flower box, grit bin (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  bord:
+    id: bord
+    label: Borden
+    description: 'Een paneel waarop informatie wordt afgebeeld. Geen BGT-inhoud maar optionele IMGeo-informatie (plus): alleen
+      aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: sign: traffic sign, street name sign,
+      information board (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  installatie:
+    id: installatie
+    label: Installaties
+    description: 'Samenhangend systeem dat een bepaald doel dient. Geen BGT-inhoud maar optionele IMGeo-informatie (plus):
+      alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: installation: pump, solar panel
+      (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  kast:
+    id: kast
+    label: Kasten
+    description: 'Object met een permanent karakter dat dient om iets in te bergen en te beschermen. Geen BGT-inhoud maar
+      optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English:
+      cabinet: electricity, telecom, cable TV, traffic light control box (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  mast:
+    id: mast
+    label: Masten
+    description: 'Hoge draagconstructie. Geen BGT-inhoud maar optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder
+      het bijhoudt; de soort staat in plusType. English: mast: transmitter mast, radio mast (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  paal:
+    id: paal
+    label: Palen
+    description: 'Langwerpig stuk hout, ijzer, steen enz., dat in de grond staat. Geen BGT-inhoud maar optionele IMGeo-informatie
+      (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: pole: lamp post, bollard,
+      hectometre post, traffic light (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - hectometeraanduiding
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  put:
+    id: put
+    label: Putten
+    description: 'Gegraven of geboorde kokervormige diepte waarin zich (vloei)stoffen bevinden. Geen BGT-inhoud maar optionele
+      IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: pit:
+      manhole, drain, gully, fire hydrant, well (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  sensor:
+    id: sensor
+    label: Sensoren
+    description: 'Apparaat voor de meting van een fysieke grootheid (bijv. temperatuur, licht, druk, elektriciteit). Geen
+      BGT-inhoud maar optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in
+      plusType. English: sensor: induction loop, camera, weather station (point or line).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  straatmeubilair:
+    id: straatmeubilair
+    label: Straatmeubilair
+    description: 'Een ruimtelijk object ter inrichting van de openbare ruimte. Geen BGT-inhoud maar optionele IMGeo-informatie
+      (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: street furniture: bench,
+      bicycle rack, playground equipment, bus shelter, letter box (point).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  waterinrichtingselement:
+    id: waterinrichtingselement
+    label: Waterinrichtingselementen
+    description: 'Een ruimtelijk object ter inrichting van het water. Geen BGT-inhoud maar optionele IMGeo-informatie (plus):
+      alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: water furnishing: mooring post,
+      buoy, fish ladder (point or line).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  weginrichtingselement:
+    id: weginrichtingselement
+    label: Weginrichtingselementen
+    description: 'Een ruimtelijk object dat dient voor de inrichting van de openbare weg. Geen BGT-inhoud maar optionele IMGeo-informatie
+      (plus): alleen aanwezig waar de bronhouder het bijhoudt; de soort staat in plusType. English: road furnishing: crash
+      barrier, tree pit, cattle grid, speed bump (point, line or surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - oppervlakte
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd
+  vegetatieobject:
+    id: vegetatieobject
+    label: Vegetatieobjecten
+    description: 'Solitair vegetatieobject of lijn- of vlakvormige groep gelijksoortige vegetatieobjecten met een beperkte
+      omvang. Geen BGT-inhoud maar optionele IMGeo-informatie (plus): alleen aanwezig waar de bronhouder het bijhoudt; de
+      soort staat in plusType. English: vegetation object: tree, hedge (point, line or surface).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{plusType}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - plusType
+      - geometrie
+      - oppervlakte
+      - lengte
+      - bronhouder
+      - inOnderzoek
+      - relatieveHoogteligging
+      - objectBeginTijd
+      - objectEindTijd
+      - tijdstipRegistratie
+      - eindRegistratie
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+    - buildingBlock: SORTING
+      included:
+      - objectBeginTijd

@@ -1,0 +1,126 @@
+---
+id: postcode6
+entityStorageVersion: 2
+label: Postcodegebieden 2024 (CBS)
+description: |
+  Statistische gegevens per postcode (PC6) van het Centraal Bureau voor de Statistiek (CBS) op 1 januari 2024: inwoners naar geslacht, leeftijd en herkomst, particuliere huishoudens naar samenstelling en woningen naar bouwjaar, eigendom en bewoning. Elk postcodegebied (bijvoorbeeld 3811LM) is een object; de gebieden dekken Nederland zonder gaten, ook gebieden zonder inwoners. Bron: CBS Postcode6 2024, eerste versie (maart 2025); geboorten, WOZ-waarde, energieverbruik en de nabijheid van voorzieningen publiceert het CBS pas in een latere versie, ze ontbreken daarom.
+
+  Aantallen zijn op vijftallen afgerond, percentages op tientallen. Ontbreekt een waarde, dan is ze 0 tot 4, geheim of niet aanwezig; het CBS publiceert een gegeven alleen bij ten minste vijf inwoners, huishoudens of woningen, percentages naar herkomst bij ten minste tien inwoners en percentages koop- en huurwoningen bij ten minste tien woningen. Sommen over postcodegebieden zijn daardoor benaderingen die meestal te laag uitvallen; voor een buurt, wijk of gemeente zijn de Kerncijfers wijken en buurten van het CBS nauwkeuriger. De herkomst van een in Nederland geboren inwoner is het geboorteland van de moeder, of van de vader als de moeder in Nederland is geboren of haar geboorteland onbekend is.
+
+  Elke zoekbare eigenschap kan als eigen parameter worden opgegeven, bijvoorbeeld `/postcode6/collections/postcode6/items?buurtcode=BU03070100`; als alternatief ondersteunt de API CQL2-filters (parameter `filter`), bijvoorbeeld `filter=aantal_inwoners >= 500` of `filter=postcode LIKE '3811%'` voor alle postcodes die met 3811 beginnen. Om in een gebied te zoeken kunnen de postcodegebieden gefilterd worden op `gemeentecode` (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), `wijkcode` (bijvoorbeeld WK030701) en `buurtcode` (bijvoorbeeld BU03070100), afgeleid uit de CBS Wijk- en Buurtkaart 2026 (API Wijken en buurten, `/wijkenbuurten`) met een punt binnen het postcodegebied, of met `bbox`. In de uitvoer zijn de drie eigenschappen verwijzingen naar de gemeente, de wijk en de buurt in de API Wijken en buurten, met de naam als titel. De adressen met een postcode staan in de API Basisregistratie Adressen en Gebouwen (`/bag`), bijvoorbeeld `/bag/collections/nummeraanduiding/items?postcode=3811LM`; daar verwijst de postcode van een nummeraanduiding naar het postcodegebied in deze API.
+
+  De volledige beschrijving van alle eigenschappen staat in het schema van de collectie, ${external.url:-https://bag.ldproxy.net}/postcode6/collections/postcode6/schema.
+serviceType: OGC_API
+metadata:
+  contactName: Clemens Portele, interactive instruments GmbH
+  contactEmail: portele@interactive-instruments.de
+  creatorName: Centraal Bureau voor de Statistiek (CBS)
+  creatorUrl: https://www.cbs.nl/
+  publisherName: interactive instruments GmbH
+  publisherUrl: https://www.interactive-instruments.de
+  publisherLogoUrl: https://www.interactive-instruments.de/wp-content/uploads/2017/05/ii-icon.png
+  licenseName: Creative Commons Naamsvermelding 4.0 Internationaal (CC BY 4.0)
+  licenseUrl: https://creativecommons.org/licenses/by/4.0/deed.nl
+  keywords:
+  - postcode
+  - PC6
+  - statistiek
+  - inwoners
+  - huishoudens
+  - woningen
+  - CBS
+  attribution: '© CBS, © ESRI Nederland; Bron: Centraal Bureau voor de Statistiek (CBS), CBS Postcode6 2024'
+  version: '261119095916'
+api:
+- buildingBlock: COMMON
+  additionalLinks:
+  - title: Gegevens per postcode (CBS)
+    href: https://www.cbs.nl/nl-nl/dossier/nederland-regionaal/geografische-data/gegevens-per-postcode
+    type: text/html
+    rel: describedby
+  - title: Statistische gegevens per vierkant en postcode 2022-2023-2024 (CBS, toelichting)
+    href: https://www.cbs.nl/nl-nl/longread/diversen/2025/statistische-gegevens-per-vierkant-en-postcode-2022-2023-2024
+    type: text/html
+    rel: describedby
+- buildingBlock: HTML
+  collectionDescriptionsInOverview: true
+- buildingBlock: CRS
+  enabled: true
+  additionalCrs:
+  - code: 28992
+    forceAxisOrder: NONE
+  - code: 4258
+    forceAxisOrder: NONE
+  - code: 3857
+    forceAxisOrder: NONE
+- buildingBlock: SCHEMA
+  enabled: true
+- buildingBlock: QUERYABLES
+  enabled: true
+- buildingBlock: FILTER
+  enabled: true
+- buildingBlock: SORTING
+  enabled: true
+- buildingBlock: PROJECTIONS
+  enabled: true
+- buildingBlock: JSON_FG
+  enabled: true
+- buildingBlock: GEOMETRY_SIMPLIFICATION
+  enabled: true
+  zoomLevelPrecision: true
+- buildingBlock: MCP
+  enabled: true
+  apiDescriptionInTools: false
+  # larger results fail with a hint and the link to the result in the HTTP API, instead of filling the
+  # context of the model
+  maxResultSize: 100000
+  # the statistics are available in the argument filter, the tool keeps the area arguments
+  filterOnlyQueryables:
+  - aantal_mannen
+  - aantal_vrouwen
+  - aantal_inwoners_0_tot_15_jaar
+  - aantal_inwoners_15_tot_25_jaar
+  - aantal_inwoners_25_tot_45_jaar
+  - aantal_inwoners_45_tot_65_jaar
+  - aantal_inwoners_65_jaar_en_ouder
+  - percentage_geb_nederland_herkomst_nederland
+  - percentage_geb_nederland_herkomst_overig_europa
+  - percentage_geb_nederland_herkomst_buiten_europa
+  - percentage_geb_buiten_nederland_herkomst_europa
+  - percentage_geb_buiten_nederland_herkmst_buiten_europa
+  - aantal_part_huishoudens
+  - aantal_eenpersoonshuishoudens
+  - aantal_meerpersoonshuishoudens_zonder_kind
+  - aantal_eenouderhuishoudens
+  - aantal_tweeouderhuishoudens
+  - gemiddelde_huishoudensgrootte
+  - aantal_woningen_bouwjaar_voor_1945
+  - aantal_woningen_bouwjaar_45_tot_65
+  - aantal_woningen_bouwjaar_65_tot_75
+  - aantal_woningen_bouwjaar_75_tot_85
+  - aantal_woningen_bouwjaar_85_tot_95
+  - aantal_woningen_bouwjaar_95_tot_05
+  - aantal_woningen_bouwjaar_05_tot_15
+  - aantal_woningen_bouwjaar_15_en_later
+  - aantal_meergezins_woningen
+  - percentage_koopwoningen
+  - percentage_huurwoningen
+  - aantal_huurwoningen_in_bezit_woningcorporaties
+  - aantal_niet_bewoonde_woningen
+  - aantal_personen_met_uitkering_onder_aowlft
+  included:
+    collections:
+    - '*'
+collections:
+  postcode6:
+    id: postcode6
+    label: Postcodegebieden (PC6)
+    description: 'Postcodegebieden met de statistische gegevens van het CBS op 1 januari 2024. De postcode (bijvoorbeeld 3811LM) is de id van elk object, niet een eigenschap. De begrenzing komt van ESRI Nederland, afgeleid uit de adressen in de BAG. Voor een kaart volstaan vereenvoudigde grenzen met de parameter zoom-level, bijvoorbeeld zoom-level=14 voor een buurt; dat geeft een veel kleiner antwoord. Zonder de geometrie (exclude-properties=geometrie) zijn de antwoorden het kleinst.'
+    enabled: true
+    api:
+    - buildingBlock: QUERYABLES
+      included:
+      - '*'
+    - buildingBlock: SORTING
+      included:
+      - '*'

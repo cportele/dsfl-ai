@@ -1,0 +1,253 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+# examples changed to Stadhuisplein 1, Amersfoort
+# documenten-op-peildatum and regels-op-peildatum return selected values for agents, with the ids for
+# regeling-detail (06) and ow-tekst-ophalen (02), instead of the complete responses
+arazzo: 1.0.1
+info:
+  title: DSO • Wat gold hier op datum X? — drie tijdsassen
+  version: 0.1.0
+  summary: Documenten op een peildatum (Ontsluiten), versiehistorie van één regeling en de regels die op die datum golden
+    (Presenteren).
+  description: 'Registratietijdstip (wanneer het stelsel het opnam), inwerkingtreding (vanaf wanneer
+
+    het geldt) en geldigheid zijn drie verschillende dingen. Presenteren kent daarvoor
+
+    `beschikbaarOp`, `inWerkingOp` en `geldigOp`; Ontsluiten kent `geldigOp` en
+
+    `beschikbaarOp`. Kies bewust welke as je vraag beantwoordt. Een verkeerde keuze
+
+    leidt tot herhaald ophalen "voor de zekerheid".
+
+
+    Verzamel geen versies zelf: laat de tijdreisparameter het werk doen.
+
+    Voor wat er vóór de Omgevingswet gold: IHR (03) of de PDOK-ATOM-download.
+
+    '
+sourceDescriptions:
+- name: ontsluiten
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsinformatie/api/ontsluiten/v2/openapi.json
+  type: openapi
+  x-dso-budget:
+    pauzeTussenCallsSeconden: 0.4
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+workflows:
+- workflowId: documenten-op-peildatum
+  x-ldproxy-readOnly: true
+  summary: Welke documenten golden op dit punt op de peildatum.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - rdX
+    - rdY
+    - peildatum
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      rdX:
+        type: number
+        examples:
+        - 155000
+      rdY:
+        type: number
+        examples:
+        - 463000
+      peildatum:
+        type: string
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+        examples:
+        - 2025-01-01
+  steps:
+  - stepId: documenten
+    operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: size
+      in: query
+      value: 200
+    - name: geldigOp
+      in: query
+      value: $inputs.peildatum
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+    outputs:
+      typen:
+        context: $response.body
+        selector: $._embedded.documenten[*].type
+        type: jsonpath
+      titels:
+        context: $response.body
+        selector: $._embedded.documenten[*].titel
+        type: jsonpath
+      uriIdentificaties:
+        context: $response.body
+        selector: $._embedded.documenten[*].uriIdentificatie
+        type: jsonpath
+  outputs:
+    typen: $steps.documenten.outputs.typen
+    titels: $steps.documenten.outputs.titels
+    uriIdentificaties: $steps.documenten.outputs.uriIdentificaties
+  description: Levert per document het type, de titel en de uriIdentificatie, in drie lijsten in dezelfde volgorde. De details
+    van een document volgen met regeling-detail en de uriIdentificatie (alleen voor documenten volgens de Omgevingswet, niet
+    voor bestemmingsplannen en structuurvisies), de regels op een punt met regels-op-peildatum.
+- workflowId: versiehistorie
+  x-ldproxy-readOnly: true
+  summary: Alle voorkomens (versies) van één regeling.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - uriIdentificatie
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      uriIdentificatie:
+        type: string
+        examples:
+        - _akn_nl_act_gm0307_2020_omgevingsplan
+  steps:
+  - stepId: voorkomens
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1voorkomens/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    - name: size
+      in: query
+      value: 200
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      voorkomens: $response.body
+  outputs:
+    voorkomens: $steps.voorkomens.outputs.voorkomens
+- workflowId: regels-op-peildatum
+  x-ldproxy-readOnly: true
+  summary: De annotaties op een punt zoals ze op de peildatum golden én in werking waren.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - uriIdentificatie
+    - rdX
+    - rdY
+    - peildatum
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      uriIdentificatie:
+        type: string
+        examples:
+        - _akn_nl_act_gm0307_2020_omgevingsplan
+      rdX:
+        type: number
+      rdY:
+        type: number
+      peildatum:
+        type: string
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+  steps:
+  - stepId: annotaties
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1regeltekstannotaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    - name: locatieSelectie
+      in: query
+      value: primair
+    - name: geldigOp
+      in: query
+      value: $inputs.peildatum
+    - name: inWerkingOp
+      in: query
+      value: $inputs.peildatum
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      activiteiten:
+        context: $response.body
+        selector: $.activiteiten[*].naam
+        type: jsonpath
+      activiteitIdentificaties:
+        context: $response.body
+        selector: $.activiteiten[*].identificatie
+        type: jsonpath
+      regeltekstWIds:
+        context: $response.body
+        selector: $.regelteksten[*].wId
+        type: jsonpath
+  outputs:
+    activiteiten: $steps.annotaties.outputs.activiteiten
+    activiteitIdentificaties: $steps.annotaties.outputs.activiteitIdentificaties
+    regeltekstWIds: $steps.annotaties.outputs.regeltekstWIds
+  description: Levert de activiteiten op het punt (naam en identificatie, in twee lijsten in dezelfde volgorde) en de wId
+    van elke regeltekst. De tekst van een regel volgt met ow-tekst-ophalen, met de uriIdentificatie van de regeling, de wId
+    en dezelfde peildatum.
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992

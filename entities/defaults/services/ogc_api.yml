@@ -1,0 +1,13 @@
+---
+api:
+- buildingBlock: FEATURES_CORE
+  # larger pages exceed the message size of MCP clients
+  maximumPageSize: 5000
+  coordinatePrecision:
+    metre: 3
+    degree: 8
+- buildingBlock: HTML
+  legalName: Juridische informatie
+  legalUrl: https://www.interactive-instruments.de/en/about/impressum/
+  privacyName: Privacyverklaring
+  privacyUrl: https://www.interactive-instruments.de/en/about/datenschutzerklarung/

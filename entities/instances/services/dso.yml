@@ -1,0 +1,99 @@
+---
+id: dso
+entityStorageVersion: 2
+label: Digitaal Stelsel Omgevingswet (DSO), werkstromen
+description: |
+  Vragen over de regels van de Omgevingswet op een adres, beantwoord met de API's van het Digitaal Stelsel Omgevingswet (DSO) en de API Basisregistratie Adressen en Gebouwen (`/bag`) van deze server. Elke vraag is een werkstroom (Arazzo) die deze server uitvoert: de werkstroom roept de API's in de juiste volgorde aan, kiest de juiste documenten en geeft het antwoord terug. De antwoorden komen live uit de API's van het DSO; deze server bewaart geen gegevens. De werkstromen zijn onofficiële, bewerkte versies van werkstromen van het DSO-team, bedoeld om te testen in het project DSFL AI; officiële werkstromen worden naar verwachting later gepubliceerd op https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/. Een werkstroom kan enkele seconden tot een halve minuut duren.
+
+  - `regels-over-wonen`: de woonregels op een adres, uit het omgevingsplan en uit de geldende bestemmingsplannen (Wro), met de tekst.
+  - `dakkapel-hier`: mag ik hier een dakkapel (of een andere activiteit) bouwen? De vergunningcheck werkt in rondes: zonder `antwoorden` geeft de werkstroom de vragen van de vergunningcheck terug (`vragenVergunningcheck`, `vraagIds`); stel die vragen aan de gebruiker en roep de werkstroom opnieuw aan met de antwoorden als lijst van `{id, antwoord}`, tot er een `conclusie` is (bijvoorbeeld Vergunningplicht of Toestemmingsvrij). Daarnaast levert de werkstroom de artikelen uit het omgevingsplan bij de activiteit en de maatvoering uit de bestemmingsplannen.
+  - `wat-verandert-hier`: de lopende ontwerpen op een adres, wat ze daar wijzigen, en de besluiten die al vaststaan maar nog niet gelden.
+  - `verzoek-voorbereiden`: de voorbereiding van een aanvraag of melding op een adres: activiteit, bevoegd gezag, vragen en of het verzoek indienbaar is. De werkstroom dient niets in.
+  - `documenten-op-peildatum`, `versiehistorie` en `regels-op-peildatum`: de documenten en regels zoals ze op een eerdere datum golden. `documenten-op-peildatum` en `regels-op-peildatum` leveren de identificaties; de details volgen met `regeling-detail` (een regeling volgens de Omgevingswet, met de `uriIdentificatie`) en `ow-tekst-ophalen` (de tekst van een regel, met de `uriIdentificatie` van de regeling en de `wId`). Deze werkstromen vragen een punt in het Rijksdriehoeksstelsel (`rdX`, `rdY`); de coördinaten van een adres geeft de API Basisregistratie Adressen en Gebouwen (`/bag`) met `crs=http://www.opengis.net/def/crs/EPSG/0/28992`.
+
+  Een adres is een postcode zonder spatie (bijvoorbeeld 3811LM) en een huisnummer, zonder huisletter of toevoeging; het moet in de BAG van deze server staan en een verblijfsobject hebben. De toepasbare regels (vergunningcheck) verwachten een `datum` als dd-MM-jjjj, meestal vandaag.
+serviceType: OGC_API
+metadata:
+  contactName: Clemens Portele, interactive instruments GmbH
+  contactEmail: portele@interactive-instruments.de
+  creatorName: Digitaal Stelsel Omgevingswet (DSO)
+  creatorUrl: https://developer.omgevingswet.overheid.nl/
+  publisherName: interactive instruments GmbH
+  publisherUrl: https://www.interactive-instruments.de
+  publisherLogoUrl: https://www.interactive-instruments.de/wp-content/uploads/2017/05/ii-icon.png
+  keywords:
+  - Omgevingswet
+  - DSO
+  - omgevingsplan
+  - vergunningcheck
+  - Arazzo
+  attribution: 'Bron: Digitaal Stelsel Omgevingswet (DSO) en Kadaster, Basisregistratie Adressen en Gebouwen (BAG)'
+  # the version of this configuration (UTC timestamp of the last change, yymmddHHMMSS)
+  version: '261119111612'
+accessControl:
+  groups:
+    public: [read, 'processes:write']
+api:
+- buildingBlock: COMMON
+  additionalLinks:
+  - title: DSO API-register
+    href: https://developer.omgevingswet.overheid.nl/api-register/
+    type: text/html
+    rel: related
+- buildingBlock: COLLECTIONS
+  enabled: false
+- buildingBlock: FEATURES_CORE
+  enabled: false
+- buildingBlock: FEATURES_HTML
+  enabled: false
+- buildingBlock: GEO_JSON
+  enabled: false
+- buildingBlock: CRS
+  enabled: false
+- buildingBlock: MCP
+  enabled: true
+  apiDescriptionInTools: false
+  included:
+    processes:
+    - '*'
+- buildingBlock: PROCESSES_CORE
+  enabled: true
+- buildingBlock: PROCESSES_ARAZZO
+  enabled: true
+  # a question runs up to about 35 requests, each with the steps of nested workflows and loops
+  maximumSteps: 300
+  publishedWorkflows:
+  - regels-over-wonen
+  - dakkapel-hier
+  - wat-verandert-hier
+  - verzoek-voorbereiden
+  - documenten-op-peildatum
+  - versiehistorie
+  - regels-op-peildatum
+  - ow-tekst-ophalen
+  - regeling-detail
+  allowedExternalUris:
+  - https://service.omgevingswet.overheid.nl/publiek/
+  - https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/
+  # the keys come from the environment variables DSO_APIKEY and DSO_IHRAPIKEY
+  externalApiHeaders:
+    https://service.omgevingswet.overheid.nl/publiek/:
+      x-api-key: '${dso.apikey:-}'
+    https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/:
+      x-api-key: '${dso.ihrapikey:-}'
+  # the DSO and IHR documents send no-store; they change rarely, keep them for an hour
+  externalApiDocumentMaxAge:
+    https://service.omgevingswet.overheid.nl/publiek/: 3600
+    https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/: 3600
+  # these OpenAPI documents have no servers
+  externalApiServers:
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/rtrgegevens/v2/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/rtrgegevens/v2
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerengegevens/v1/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerengegevens/v1
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerenservices/v2/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerenservices/v2
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/samengestelderegistratietoepasbareregelsservices/v2/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/samengestelderegistratietoepasbareregelsservices/v2
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/verzoeksroutering/v2/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/verzoeksroutering/v2
+    https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/zoekinterface/v2/openapi.json: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/zoekinterface/v2
+  serverInputs:
+    apiKey: '${dso.apikey:-}'
+    ihrApiKey: '${dso.ihrapikey:-}'
+    userAgent: 'ldproxy DSO werkstromen (experimenteel)'

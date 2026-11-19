@@ -1,0 +1,235 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+arazzo: 1.0.1
+info:
+  title: DSO • Een eigen voorraad opbouwen — de lijst-sweep
+  version: 0.1.0
+  summary: De landelijke regelingenlijst in ±11 calls, per regeling eenmalig detail en annotaties, daarna lokaal bevragen.
+  description: 'Eerst de vraag: heb je een eigen kopie nodig? Voor vragen over één locatie, het
+
+    tonen van één document of een assistent die per vraag opzoekt: nee (gebruik 01–05).
+
+    Wél als je over het hele corpus zoekt, analyses over de tijd doet, of beschikbaar
+
+    moet zijn als het stelsel dat niet is. Tussenweg: een cache per FRBR-expressie is
+
+    geen kopie, maar vangt het grootste deel van de herhaling af.
+
+
+    Draai de richting om ten opzichte van 01: niet per locatie Ontsluiten bevragen
+
+    (zwakst geschaald, geen bulk-ingang), maar de lijst sweepen en de locatietoetsen
+
+    lokaal doen. Vuistregel: Ontsluiten voor een vraag, de lijst-sweep voor een voorraad.
+
+    '
+sourceDescriptions:
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+  x-dso-budget:
+    maxRequestsPerSeconde: 50
+    maxGelijktijdig: 50
+    voorkeursvenster: 22:00–06:00 CET
+    readTimeoutSeconden:
+    - 30
+    - 60
+workflows:
+- workflowId: regelingen-pagina
+  x-ldproxy-readOnly: true
+  summary: Eén pagina van de landelijke regelingenlijst, 200 per keer, zonder bevoegdGezag-filter.
+  description: 'Zonder filter met size=200 kost de hele landelijke voorraad ongeveer tien calls
+
+    (gemeten 19-10-2026: 2.026 regelingen, 11 pagina''s). Per bronhouder pollen kost er
+
+    honderden voor dezelfde informatie.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - pagina
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      pagina:
+        type: integer
+        minimum: 1
+        examples:
+        - 1
+  steps:
+  - stepId: lijst
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: size
+      in: query
+      value: 200
+    - name: page
+      in: query
+      value: $inputs.pagina
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+      x-dso-leegIs: alarm
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      regelingen: $response.body#/_embedded/regelingen
+      totaalPaginas: $response.body#/page/totalPages
+      totaalRegelingen: $response.body#/page/totalElements
+  outputs:
+    regelingen: $steps.lijst.outputs.regelingen
+    totaalPaginas: $steps.lijst.outputs.totaalPaginas
+    totaalRegelingen: $steps.lijst.outputs.totaalRegelingen
+  x-dso-paginering:
+    waaromNietInArazzo: Arazzo 1.0.1 kan een parameter niet ophogen en geen lus maken; een volgende-link is geen operationPath.
+    regel: Volg `_links.next.href` tot hij ontbreekt. Zet er een harde bovengrens op (bijv. 2 × totalPages bij de eerste call).
+      Een onbegrensde lus op een API die één keer hikt, is hoe je per ongeluk een stresstest draait.
+  x-dso-skipGuard:
+    sleutel: regelingen[].expressionId
+    regel: Ken je deze expressionId al, sla de regeling dan volledig over. Een FRBR-expressie is onveranderlijk; dit bespaart
+      meer dan elke andere maatregel.
+  x-dso-delta:
+    niet: Geen watermark op `geregistreerdMet.tijdstipRegistratie`. Registraties worden niet gegarandeerd op volgorde zichtbaar;
+      stoppen bij het eerste oudere tijdstip mist stil hele regelingen.
+    wel: Altijd de volledige lijst (±11 calls), lokaal filteren, de skip-guard doet het werk.
+    verwijderingen: Een voorwaartse delta ziet nooit een verwijdering. Periodiek omgekeerd vergelijken (jouw voorraad tegen
+      de lijst), niet volledig herharvesten. Een voorbereidingsbesluit dat van rechtswege vervalt, is geen intrekking.
+  x-dso-vervolg:
+    per: regelingen[] waarvan expressionId nog niet bekend is
+    workflows:
+    - regeling-detail
+    - regeling-annotaties
+- workflowId: regeling-detail
+  x-ldproxy-readOnly: true
+  summary: Detail van één regeling mét pons en regelingsgebied in één call.
+  description: '`_expand=true` scheelt de N+1 waarin pons en regelingsgebied apart worden
+
+    opgehaald. Wie een Wro-voorraad bijhoudt, heeft de pons hier nodig:
+
+    effectieve Wro-dekking = plangebied MINUS pons-geometrie. Op deze route moet je
+
+    dat wél zelf doen; anders toon je plannen zonder gelding.
+
+    '
+  inputs:
+    $ref: '#/components/inputs/regeling'
+  steps:
+  - stepId: detail
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    - name: _expand
+      in: query
+      value: true
+    - name: locatieSelectie
+      in: query
+      value: primair
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      regeling: $response.body
+      expressionId: $response.body#/expressionId
+  outputs:
+    regeling: $steps.detail.outputs.regeling
+    expressionId: $steps.detail.outputs.expressionId
+  x-dso-transform:
+    naar: uriIdentificatie
+    van: regelingen[].identificatie (bijv. /akn/nl/act/pv27/2023/vbbNH2022_2_gm0498)
+    regel: Vervang zowel '/' als '-' door '_'. Alleen de slashes vervangen geeft 404 op elke regeling met een datum- of UUID-segment.
+      Geldt ook voor regeling-annotaties.
+    waaromNietInArazzo: Geen stringbewerking in runtime-expressies. (Op route 01 hoeft dit niet; Ontsluiten levert de gecodeerde
+      vorm al.)
+- workflowId: regeling-annotaties
+  x-ldproxy-readOnly: true
+  summary: Alle annotaties van één regeling, eenmalig, met gebiedengroepen in plaats van losse gebieden.
+  description: Voor documenten met vrijetekststructuur het pad `/divisieannotaties` nemen in plaats van `/regeltekstannotaties`.
+  inputs:
+    $ref: '#/components/inputs/regeling'
+  steps:
+  - stepId: annotaties
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1regeltekstannotaties/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    - name: locatieSelectie
+      in: query
+      value: primair
+      x-dso-waarom: Bij grote verordeningen ruim tienduizend locaties zonder, ruim honderd met.
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      annotaties: $response.body
+    x-dso-leegIs: antwoord
+  outputs:
+    annotaties: $steps.annotaties.outputs.annotaties
+components:
+  inputs:
+    regeling:
+      type: object
+      required:
+      - apiKey
+      - userAgent
+      - uriIdentificatie
+      properties:
+        apiKey:
+          type: string
+          format: password
+        userAgent:
+          type: string
+        uriIdentificatie:
+          type: string
+          examples:
+          - _akn_nl_act_pv27_2023_vbbNH2022_2_gm0498
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+      x-dso-backoff:
+      - 2
+      - 5
+      - 15
+      - 30
+    stopBijClientfout:
+      name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500

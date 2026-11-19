@@ -1,0 +1,123 @@
+---
+id: wijkenbuurten
+entityStorageVersion: 2
+label: Wijken en buurten 2026 (CBS)
+description: |
+  De gemeenten, wijken en buurten van Nederland per 1 januari 2026 volgens de Wijk- en Buurtkaart 2026 van het Centraal Bureau voor de Statistiek (CBS). Een gemeente is ingedeeld in wijken, een wijk in buurten. De gemeentegrenzen komen uit de Basisregistratie Kadaster.
+
+  De codes worden in de API Basisregistratie Adressen en Gebouwen (`/bag`) gebruikt om panden, verblijfsobjecten, ligplaatsen en standplaatsen op gemeente (`gemeentecode`, bijvoorbeeld 0307), wijk (`wijkcode`, bijvoorbeeld WK030701) of buurt (`buurtcode`, bijvoorbeeld BU03070100) te filteren. De code bij een naam vindt men met bijvoorbeeld `/wijkenbuurten/collections/gemeente/items?naam=Amersfoort`; wijk- en buurtnamen zijn alleen binnen een gemeente uniek, zoek dan bijvoorbeeld met `/wijkenbuurten/collections/buurt/items?gemeente=0307&naam=Oranjebuurt`.
+serviceType: OGC_API
+metadata:
+  contactName: Clemens Portele, interactive instruments GmbH
+  contactEmail: portele@interactive-instruments.de
+  creatorName: Centraal Bureau voor de Statistiek (CBS)
+  creatorUrl: https://www.cbs.nl/
+  publisherName: interactive instruments GmbH
+  publisherUrl: https://www.interactive-instruments.de
+  publisherLogoUrl: https://www.interactive-instruments.de/wp-content/uploads/2017/05/ii-icon.png
+  licenseName: Creative Commons Naamsvermelding 4.0 Internationaal (CC BY 4.0)
+  licenseUrl: https://creativecommons.org/licenses/by/4.0/deed.nl
+  keywords:
+  - gemeenten
+  - wijken
+  - buurten
+  - CBS
+  attribution: 'Bron: Centraal Bureau voor de Statistiek (CBS), Wijk- en Buurtkaart 2026'
+  # the version of this configuration (date of the last change, yymmdd)
+  version: '261119095916'
+api:
+- buildingBlock: COMMON
+  additionalLinks:
+  - title: Wijk- en Buurtkaart (CBS)
+    href: https://www.cbs.nl/nl-nl/dossier/nederland-regionaal/geografische-data/wijk-en-buurtkaart-2026
+    type: text/html
+    rel: describedby
+- buildingBlock: HTML
+  collectionDescriptionsInOverview: true
+- buildingBlock: CRS
+  enabled: true
+  additionalCrs:
+  - code: 28992
+    forceAxisOrder: NONE
+  - code: 4258
+    forceAxisOrder: NONE
+  - code: 3857
+    forceAxisOrder: NONE
+- buildingBlock: SCHEMA
+  enabled: true
+- buildingBlock: QUERYABLES
+  enabled: true
+- buildingBlock: FILTER
+  enabled: true
+- buildingBlock: SORTING
+  enabled: true
+- buildingBlock: PROJECTIONS
+  enabled: true
+- buildingBlock: JSON_FG
+  enabled: true
+- buildingBlock: GEOMETRY_SIMPLIFICATION
+  enabled: true
+  zoomLevelPrecision: true
+- buildingBlock: MCP
+  enabled: true
+  apiDescriptionInTools: false
+  # larger results fail with a hint and the link to the result in the HTTP API, instead of filling the
+  # context of the model (2,768 panden with geometry are about 1.1 million characters)
+  maxResultSize: 100000
+  included:
+    collections:
+    - '*'
+collections:
+  gemeente:
+    id: gemeente
+    label: Gemeenten
+    description: 'Gemeenten in Nederland per 1 januari 2026 met hun grondgebied. De code (bijvoorbeeld 0307) is de id van elk object, niet een eigenschap; met properties=naam krijgt men de code en de naam. Voor een kaart volstaan vereenvoudigde grenzen met de parameter zoom-level, bijvoorbeeld zoom-level=12 voor een gemeente en zoom-level=8 voor heel Nederland; dat geeft een veel kleiner antwoord, ook omdat de coördinaten dan alleen de decimalen hebben die het zoomniveau nodig heeft (bij zoom-level=12 vier). Elk vlak wordt afzonderlijk vereenvoudigd, zodat tussen aangrenzende vlakken kleine gaten en overlappingen ontstaan.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{naam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - code
+      - naam
+      - geometrie
+    - buildingBlock: SORTING
+      included:
+      - naam
+  wijk:
+    id: wijk
+    label: Wijken
+    description: 'Wijken volgens de CBS Wijk- en Buurtkaart 2026. Een stadsdeel of een nieuwbouwwijk kan uit meerdere wijken bestaan, vaak met hetzelfde begin van de naam. De code (bijvoorbeeld WK030701) is de id van elk object, niet een eigenschap; met properties=naam krijgt men de code en de naam. Voor een kaart volstaan vereenvoudigde grenzen met de parameter zoom-level, bijvoorbeeld zoom-level=12 voor een gemeente en zoom-level=8 voor heel Nederland; dat geeft een veel kleiner antwoord, ook omdat de coördinaten dan alleen de decimalen hebben die het zoomniveau nodig heeft (bij zoom-level=12 vier). Elk vlak wordt afzonderlijk vereenvoudigd, zodat tussen aangrenzende vlakken kleine gaten en overlappingen ontstaan.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{naam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - code
+      - naam
+      - gemeente
+      - water
+      - geometrie
+    - buildingBlock: SORTING
+      included:
+      - naam
+  buurt:
+    id: buurt
+    label: Buurten
+    description: 'Buurten volgens de CBS Wijk- en Buurtkaart 2026. De code (bijvoorbeeld BU03070100) is de id van elk object, niet een eigenschap; met properties=naam krijgt men de code en de naam. Voor een kaart volstaan vereenvoudigde grenzen met de parameter zoom-level, bijvoorbeeld zoom-level=12 voor een gemeente en zoom-level=8 voor heel Nederland; dat geeft een veel kleiner antwoord, ook omdat de coördinaten dan alleen de decimalen hebben die het zoomniveau nodig heeft (bij zoom-level=12 vier). Elk vlak wordt afzonderlijk vereenvoudigd, zodat tussen aangrenzende vlakken kleine gaten en overlappingen ontstaan.'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{naam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - code
+      - naam
+      - wijk
+      - gemeente
+      - water
+      - geometrie
+    - buildingBlock: SORTING
+      included:
+      - naam

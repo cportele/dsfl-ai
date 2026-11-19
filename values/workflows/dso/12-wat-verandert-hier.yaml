@@ -1,0 +1,345 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store;
+# the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.1.0
+info:
+  title: 'DSO • Functionele vraag: wat verandert hier binnenkort?'
+  version: 0.1.0
+  summary: Van adres naar de lopende ontwerpen die dit punt raken (met wat ze hier wijzigen) en naar de besluiten die al vastgesteld
+    zijn maar nog in werking moeten treden.
+  description: "Een vraag van een koper, buurman of adviseur: staat er iets op stapel? Het antwoord\nzit op drie plekken,\
+    \ elk met een eigen tijdsas:\n\n- Ontwerpen in inzage (Presenteren, ontwerponderwerpen): nog geen recht, wel\n  zienswijzen\
+    \ mogelijk. Filter op `inzagetermijn=huidigEnToekomstig`; zonder dat\n  filter komen ontwerpen van jaren terug mee.\n\
+    - Per ontwerp: wat het op dít punt wijzigt (renvooi, `_delta.bewerking`). Het\n  endpoint hangt af van het documenttype:\
+    \ artikelen → regeltekstannotaties,\n  vrije tekst → divisieannotaties. Het verkeerde geeft een 400.\n- Vastgesteld maar\
+    \ nog niet in werking (Ontsluiten met\n  `inclusiefToekomstigGeldig=true`), plus Wro-plannen die nog in procedure zijn.\n\
+    \nKetenstappen:\n1. BAG → punt en gemeentecode.\n2. Presenteren ontwerponderwerpen op het punt → de lopende ontwerpen.\n\
+    3. Per ontwerp: detail (titel, type, einde inzagetermijn) en, afhankelijk van het\n   type, de renvooi van regelteksten\
+    \ of van tekstdelen op het punt.\n4. Ontsluiten met toekomstig geldende documenten → wat al vaststaat.\n\nDe vertakking\
+    \ in stap 3 is gewoon Arazzo: een `goto` met een criterium op het\ntype uit het detail. Alleen de lus over de ontwerpen\
+    \ is `x-dso-forEach`.\n"
+sourceDescriptions:
+- name: bag
+  url: https://api.pdok.nl/kadaster/bag/ogc/v2/api?f=json
+  type: openapi
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+- name: ontsluiten
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsinformatie/api/ontsluiten/v2/openapi.json
+  type: openapi
+- name: bagAdres
+  url: ./bag-adres.yaml
+  type: arazzo
+workflows:
+- workflowId: wat-verandert-hier
+  x-ldproxy-readOnly: true
+  summary: Adres → lopende ontwerpen met hun wijzigingen hier, en vastgestelde maar nog niet geldende besluiten.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - postcode
+    - huisnummer
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      postcode:
+        type: string
+        examples:
+        - 3811LM
+      huisnummer:
+        type: string
+        examples:
+        - '1'
+  steps:
+  - stepId: adres
+    description: Het adres uit de BAG van deze server, in plaats van de collectie adres van PDOK.
+    workflowId: $sourceDescriptions.bagAdres.adres-rd
+    parameters:
+    - name: postcode
+      value: $inputs.postcode
+    - name: huisnummer
+      value: $inputs.huisnummer
+    outputs:
+      rdX: $outputs.rdX
+      rdY: $outputs.rdY
+      gemeentecode: $outputs.gemeentecode
+  - stepId: lopende-ontwerpen
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1ontwerponderwerpen~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: inzagetermijn
+      in: query
+      value: huidigEnToekomstig
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      ontwerpen:
+        context: $response.body
+        selector: $.ontwerpregelingen[*].technischId
+        type: jsonpath
+      vanDeGemeente:
+        context: $response.body
+        selector: $.ontwerpregelingen[?search(@.technischId, '_gm{$steps.adres.outputs.gemeentecode}_')].technischId
+        type: jsonpath
+        x-dso-waarom: De BAG geeft de kale code (0772), de identificatie bevat gm0772. Een ingebedde expressie in een string
+          is gewoon Arazzo.
+    x-dso-leegIs: antwoord
+  - stepId: per-ontwerp
+    workflowId: ontwerp-op-dit-punt
+    x-dso-forEach:
+      items: $steps.lopende-ontwerpen.outputs.ontwerpen
+      als: technischId
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: rdX
+      value: $steps.adres.outputs.rdX
+    - name: rdY
+      value: $steps.adres.outputs.rdY
+    outputs:
+      titels: $outputs.titel
+      typen: $outputs.type
+      eindeInzage: $outputs.eindeInzage
+      wijzigingenArtikelen: $outputs.artikelWijzigingen
+      wijzigingenTekst: $outputs.tekstWijzigingen
+  - stepId: al-vastgesteld
+    operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: size
+      in: query
+      value: 200
+    - name: inclusiefToekomstigGeldig
+      in: query
+      value: true
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+    outputs:
+      toekomstigGeldend:
+        context: $response.body
+        selector: $._embedded.documenten[?@.omgevingsdocumentMetadata.isToekomstig == true]['titel','inwerkingVanaf']
+        type: jsonpath
+      voorbescherming:
+        context: $response.body
+        selector: $._embedded.documenten[?search(@.type, '[Vv]oorbescherming')].titel
+        type: jsonpath
+      wroInProcedure:
+        context: $response.body
+        selector: $._embedded.documenten[?@.imroDocumentMetadata.regelStatus && @.imroDocumentMetadata.regelStatus != 'geldend']['titel','type']
+        type: jsonpath
+  outputs:
+    ontwerpen: $steps.per-ontwerp.outputs.titels
+    typen: $steps.per-ontwerp.outputs.typen
+    eindeInzage: $steps.per-ontwerp.outputs.eindeInzage
+    wijzigingenArtikelen: $steps.per-ontwerp.outputs.wijzigingenArtikelen
+    wijzigingenTekst: $steps.per-ontwerp.outputs.wijzigingenTekst
+    ontwerpenVanDeGemeente: $steps.lopende-ontwerpen.outputs.vanDeGemeente
+    toekomstigGeldend: $steps.al-vastgesteld.outputs.toekomstigGeldend
+    voorbescherming: $steps.al-vastgesteld.outputs.voorbescherming
+    wroInProcedure: $steps.al-vastgesteld.outputs.wroInProcedure
+- workflowId: ontwerp-op-dit-punt
+  x-ldproxy-readOnly: true
+  summary: Wat één ontwerp op dit punt wijzigt. Vertakt op documenttype.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - technischId
+    - rdX
+    - rdY
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      technischId:
+        type: string
+      rdX:
+        type: number
+      rdY:
+        type: number
+  steps:
+  - stepId: detail
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1ontwerpregelingen~1{technischId}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: technischId
+      in: path
+      value: $inputs.technischId
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    onSuccess:
+    - name: vrije-tekst
+      type: goto
+      stepId: tekst-wijzigingen
+      criteria:
+      - context: $response.body
+        condition: $[?@.type.waarde == 'Omgevingsvisie' || @.type.waarde == 'Programma' || @.type.waarde == 'Instructie']
+        type: jsonpath
+      x-dso-waarom: Documenten met vrijetekststructuur hebben geen regelteksten. Het artikel-endpoint geeft dan 400 'Deze
+        regeling ondersteunt geen Regeltekst-objecten'.
+    outputs:
+      titel:
+        context: $response.body
+        selector: $.besluitMetadata.citeerTitel
+        type: jsonpath
+      type: $response.body#/type/waarde
+      eindeInzage:
+        context: $response.body
+        selector: $.procedureverloop.procedurestappen[?@.soortStap.waarde == 'Einde inzagetermijn'].voltooidOp
+        type: jsonpath
+        x-dso-waarom: Leeg betekent dat er geen einde inzagetermijn is geregistreerd. Zulke ontwerpen blijven 'huidig' en
+          komen jaren later nog mee.
+  - stepId: artikel-wijzigingen
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1ontwerpregelingen~1{technischId}~1regeltekstannotaties~1renvooi~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: technischId
+      in: path
+      value: $inputs.technischId
+    - name: locatieSelectie
+      in: query
+      value: primair
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    onSuccess:
+    - name: klaar
+      type: end
+    outputs:
+      wijzigingen:
+        context: $response.body
+        selector: $['activiteiten','gebiedsaanwijzingen','omgevingsnormen','omgevingswaarden'][?@._delta].naam
+        type: jsonpath
+      bewerkingen:
+        context: $response.body
+        selector: $.regelteksten[?@._delta]._delta.bewerking
+        type: jsonpath
+  - stepId: tekst-wijzigingen
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1ontwerpregelingen~1{technischId}~1divisieannotaties~1renvooi~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: technischId
+      in: path
+      value: $inputs.technischId
+    - name: locatieSelectie
+      in: query
+      value: primair
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      bewerkingen:
+        context: $response.body
+        selector: $.tekstdelen[?@._delta]._delta.bewerking
+        type: jsonpath
+  outputs:
+    titel: $steps.detail.outputs.titel
+    type: $steps.detail.outputs.type
+    eindeInzage: $steps.detail.outputs.eindeInzage
+    artikelWijzigingen: $steps.artikel-wijzigingen.outputs.bewerkingen
+    tekstWijzigingen: $steps.tekst-wijzigingen.outputs.bewerkingen
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500

@@ -1,0 +1,69 @@
+---
+id: aggregate-features
+title: 'Objecten aggregeren'
+description: |
+  Telt objecten en berekent aggregaten van hun eigenschappen, in totaal en per groep, zonder de objecten zelf te leveren. Voor vragen als: hoeveel oppervlakte aan wegdelen, terreindelen, water en panden heeft een buurt, hoeveel groen of verharding ligt binnen 250 m van een punt, hoeveel bomen of banken staan er per buurt. De objecten worden geselecteerd zoals bij een verzoek van de objecten van een of meer collecties (`source.collection` met query-parameters in `source.parameters`, bijvoorbeeld buurtcode, relatieveHoogteligging of bgtFysiekVoorkomen) of van een opgeslagen zoekopdracht (`source.query` met haar parameters); bij meerdere collecties is het objecttype de eerste groepssleutel. Een object met meerdere waarden van een groepseigenschap telt in elke groep van zijn waarden mee, in het totaal één keer; een object zonder waarde valt in de groep null. De virtuele eigenschappen `$area` en `$length` zijn de oppervlakte (m²) en de lengte (m) van de geometrie, met `clip` alleen van het deel binnen het gebied; op maaiveldniveau (relatieveHoogteligging 0) tellen de afgesneden oppervlakten op tot de oppervlakte van het gebied. Per uitvoering worden hoogstens 100000 objecten gelezen; beperk de selectie anders.
+version: 1.0.0
+jobControlOptions: [SYNC_EXECUTE]
+readOnly: true
+inputs:
+  source:
+    title: 'Selectie van de objecten'
+    description: 'Ofwel {"collection": "<id van een collectie of een lijst van ids>", "parameters": {...}} met query-parameters van /collections/{collectionId}/items (bijvoorbeeld zoekbare eigenschappen, filter, bbox, datetime), ofwel {"query": "<id van een opgeslagen zoekopdracht>", "parameters": {...}} met de parameters van de zoekopdracht, ofwel {"href": "<URL van een /items- of /search-verzoek van deze API>"}. Een zoekbare eigenschap in source.parameters heeft één waarde, geen lijst; voor meerdere waarden dient een filter met IN, bijvoorbeeld "filter": "bgtFunctie IN (''fietspad'',''voetpad'')".'
+    schema:
+      type: object
+      properties:
+        collection:
+          description: 'Het id van een collectie of een lijst van ids.'
+        query:
+          type: string
+        parameters:
+          type: object
+        href:
+          type: string
+  groupBy:
+    title: 'Groepssleutels'
+    description: 'De eigenschappen waarnaar gegroepeerd wordt, elk de naam van een eigenschap of {"property": "...", "bucket": "year" | "month" | <klassebreedte>}, bijvoorbeeld {"property": "oorspronkelijkBouwjaar", "bucket": 10} voor decennia. Voor de namen van de gebieden: groepeer op wijkcode en wijknaam (of buurtcode en buurtnaam) samen, want wijk- en buurtnamen zijn alleen binnen een gemeente uniek. Een stadsdeel of een nieuwbouwwijk kan uit meerdere CBS-wijken bestaan, vaak met hetzelfde begin van de naam; tel die dan samen of selecteer ze met een filter op wijkcode met IN. Met {"property": "$geometry", "bucket": <breedte in meter>} worden de objecten gegroepeerd naar de cellen van een vierkant raster, bijvoorbeeld 250 voor een kaart van een gemeente; de sleutel is het midden van de cel als [lon, lat] in CRS84, een object hoort bij de cel van een punt op zijn geometrie.'
+    minOccurs: 0
+    schema:
+      type: array
+  aggregates:
+    title: 'Aggregaten'
+    description: 'De aggregaten, elk "count" of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}. Standaard is count.'
+    minOccurs: 0
+    schema:
+      type: array
+  clip:
+    title: 'Gebied'
+    description: 'Alleen de objecten die een gebied snijden: {"point": [lon, lat], "distance": <meter>} of {"geometry": <GeoJSON-polygoon in CRS84>}; $area en $length worden berekend voor het deel binnen het gebied.'
+    minOccurs: 0
+    schema:
+      type: object
+  limit:
+    title: 'Maximaal aantal groepen'
+    description: 'De groepen zijn gesorteerd op het eerste aggregaat, de grootste eerst.'
+    minOccurs: 0
+    schema:
+      type: integer
+      minimum: 1
+outputs:
+  groups:
+    title: 'Groepen'
+    schema:
+      type: array
+      items:
+        type: object
+  total:
+    title: 'Aggregaten van alle objecten'
+    schema:
+      type: object
+  featuresScanned:
+    title: 'Aantal objecten'
+    schema:
+      type: integer
+  groupsTruncated:
+    title: 'Of groepen door de limiet zijn weggelaten'
+    schema:
+      type: boolean
+job:
+  partials: ['feature-aggregate:execute']

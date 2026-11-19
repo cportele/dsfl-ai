@@ -1,0 +1,279 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+arazzo: 1.0.1
+info:
+  title: DSO • Wro-plan → planobjecten en regels op deze locatie
+  version: 0.1.0
+  summary: Per geldend Wro-plan uit stap 01 de planobjecten op het punt en de regels erbij (IHR, Ruimtelijke Plannen Opvragen
+    v4).
+  description: 'Niet-weggeponste bestemmingsplannen blijven rechtsgeldig tot uiterlijk 2032. Een
+
+    volledig locatiebeeld vraagt deze bron naast Presenteren. Ontsluiten heeft de
+
+    pons al toegepast: een plan dat hier is weggeponst, zit niet in de invoer. Reken
+
+    de pons dus niet zelf na.
+
+
+    IHR is een ander huis met andere gewoontes: eigen host, eigen sleutel in de
+
+    header `X-Api-Key`, `Content-Crs: epsg:28992` (niet de URI van Presenteren en
+
+    Ontsluiten), `_geo.intersects` in de body, en `pageSize` met maximaal 100.
+
+    '
+sourceDescriptions:
+- name: ihr
+  url: https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/openapi.json
+  type: openapi
+  x-dso-budget:
+    opmerking: Lagere paginagrootte (max 100). Voor bulk-geometrie is de PDOK-ATOM-download goedkoper dan deze API.
+workflows:
+- workflowId: wro-planobjecten-op-locatie
+  x-ldproxy-readOnly: true
+  summary: Bestemmingsvlakken, maatvoeringen en gebiedsaanduidingen die het punt raken.
+  inputs:
+    type: object
+    required:
+    - ihrApiKey
+    - userAgent
+    - planId
+    - rdX
+    - rdY
+    properties:
+      ihrApiKey:
+        type: string
+        format: password
+        description: IHR heeft een eigen sleutel, los van de DSO-sleutel.
+      userAgent:
+        type: string
+      planId:
+        type: string
+        description: documenten[].uriIdentificatie uit Ontsluiten v2 (bij Wro gelijk aan het IMRO-plan-id).
+        examples:
+        - NL.IMRO.0307.BP00071-0301
+      rdX:
+        type: number
+        examples:
+        - 155000
+      rdY:
+        type: number
+        examples:
+        - 463000
+  steps:
+  - stepId: bestemmingsvlakken
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1bestemmingsvlakken~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.ihrApiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsIhr
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: pageSize
+      in: query
+      value: 100
+    requestBody:
+      contentType: application/json
+      payload:
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      antwoord: $response.body
+    x-dso-leegIs: afhankelijk-van-plantype
+    x-dso-waarom: 'Bij een regulier bestemmingsplan dekken de enkelbestemmingen het plangebied,
+
+      dus leeg op een punt binnen het plan wijst op een fout in de vraag. Bij een
+
+      paraplu- of partiële herziening is leeg normaal: die plannen hebben vaak alleen
+
+      regels. ⚠️ Domeinafleiding, nog te verifiëren tegen IMRO/SVBP.
+
+      '
+  - stepId: maatvoeringen
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1maatvoeringen~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.ihrApiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsIhr
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: pageSize
+      in: query
+      value: 100
+    requestBody:
+      contentType: application/json
+      payload:
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      antwoord: $response.body
+    x-dso-leegIs: antwoord
+  - stepId: gebiedsaanduidingen
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1gebiedsaanduidingen~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.ihrApiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsIhr
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: pageSize
+      in: query
+      value: 100
+    requestBody:
+      contentType: application/json
+      payload:
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      antwoord: $response.body
+    x-dso-leegIs: antwoord
+  outputs:
+    bestemmingsvlakken: $steps.bestemmingsvlakken.outputs.antwoord
+    maatvoeringen: $steps.maatvoeringen.outputs.antwoord
+    gebiedsaanduidingen: $steps.gebiedsaanduidingen.outputs.antwoord
+  x-dso-vervolg:
+    per: bestemmingsvlakken._embedded.bestemmingsvlakken[] (en idem voor de andere planobjecten)
+    workflow: wro-regels-bij-planobject
+    invoer:
+      planId: $inputs.planId
+      planobjectId: '@.id'
+    waaromNietInArazzo: Geen iteratie in Arazzo 1.0.1.
+- workflowId: wro-regels-bij-planobject
+  x-ldproxy-readOnly: true
+  summary: Het artikel bij één planobject, inclusief de leden (expand=children).
+  description: 'Zonder `expand=children` krijg je alleen de artikelkop met `inhoud: null`. Met de
+
+    parameter komen de leden mee, in één call.
+
+    '
+  inputs:
+    type: object
+    required:
+    - ihrApiKey
+    - userAgent
+    - planId
+    - planobjectId
+    properties:
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      planId:
+        type: string
+        examples:
+        - NL.IMRO.0307.BP00071-0301
+      planobjectId:
+        type: string
+        examples:
+        - NL.IMRO.EB338298
+  steps:
+  - stepId: artikel-met-leden
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1teksten/get'
+    parameters:
+    - reference: $components.parameters.ihrApiKey
+    - reference: $components.parameters.userAgent
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: planobjectId
+      in: query
+      value: $inputs.planobjectId
+    - name: expand
+      in: query
+      value: children
+    - name: pageSize
+      in: query
+      value: 100
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      teksten: $response.body#/_embedded/teksten
+  outputs:
+    teksten: $steps.artikel-met-leden.outputs.teksten
+components:
+  parameters:
+    ihrApiKey:
+      name: X-Api-Key
+      in: header
+      value: $inputs.ihrApiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsIhr:
+      name: Content-Crs
+      in: header
+      value: epsg:28992
+      x-dso-waarom: Drie API's, drie spellingen van hetzelfde stelsel. Ontsluiten/Presenteren willen de URI, IHR 'epsg:28992',
+        de RTR 'EPSG:28992'.
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+      x-dso-backoff:
+      - 2
+      - 5
+      - 15
+      - 30
+    stopBijClientfout:
+      name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500

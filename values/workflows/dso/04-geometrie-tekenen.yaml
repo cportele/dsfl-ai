@@ -1,0 +1,107 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+arazzo: 1.0.1
+info:
+  title: DSO • Geometrie — alleen als je hem echt tekent
+  version: 0.1.0
+  summary: Bron-geometrie (GeoJSON) bij één geometrieIdentificatie uit Presenteren, na selectie en deduplicatie.
+  description: 'Voor de vraag *welke regels gelden hier* heb je geen geometrie nodig: het stelsel
+
+    heeft de punt-in-vlak-toets al gedaan (stap 02). Haal geometrie alleen op als je
+
+    hem gaat tekenen, en dan bij voorkeur als vectortiles (PDOK) als het alleen om
+
+    tonen gaat. Bron-geometrie is voor wie er zelf mee rekent.
+
+
+    De lastige stap zit vóór deze workflow: kiezen welke geometrie. Zie x-dso-selectie.
+
+    '
+sourceDescriptions:
+- name: geometrie
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/geometrieopvragen/v1/openapi.json
+  type: openapi
+workflows:
+- workflowId: geometrie-ophalen
+  x-ldproxy-readOnly: true
+  summary: GeoJSON bij één geometrieIdentificatie, in RD.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - geometrieIdentificatie
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      geometrieIdentificatie:
+        type: string
+        description: Een UUID uit locaties[].geometrieIdentificatie (Presenteren, locatieSelectie=primair).
+        examples:
+        - 21b9a498-2a56-4203-b32a-601627b91d56
+  steps:
+  - stepId: geojson
+    description: Pad zonder afsluitende slash. `/geometrieen/{id}/` geeft 404 (gemeten).
+    operationPath: '{$sourceDescriptions.geometrie.url}#/paths/~1geometrieen~1{geometrieIdentificatie}/get'
+    parameters:
+    - name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    - name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    - name: geometrieIdentificatie
+      in: path
+      value: $inputs.geometrieIdentificatie
+    - name: crs
+      in: query
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+      x-dso-waarom: Altijd expliciet. Ondersteunde waarden staan op /crss.
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+    - name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500
+    outputs:
+      geojson: $response.body
+  outputs:
+    geojson: $steps.geojson.outputs.geojson
+  x-dso-cache:
+    sleutel: geometrieIdentificatie
+    geldigheid: onbeperkt — dezelfde identificatie is dezelfde geometrie
+  x-dso-selectie:
+    waaromNietInArazzo: Een JSON-pointer wijst een positie aan, geen inhoud. `locaties/0` is willekeurig.
+    regel: '1. Neem van de annotatie die je tekent (bijv. een gebiedsaanwijzing) de locatieRefs.
+
+      2. Houd alleen de refs over die ook in geselecteerdeLocatieRefs staan: die raken het punt.
+
+      3. Zoek die op in locaties[] op identificatie en neem geometrieIdentificatie.
+
+      4. Dedupliceer: dezelfde geometrie hangt aan tientallen objecten. Eén call per unieke id.
+
+      '
+    gemeten: 'Eindhoven, omgevingsplan, punt (161299.196, 385714.637): locaties[0] is
+
+      "wederopbouwgebied van nationaal belang" en ligt ruim een kilometer van het punt.
+
+      Wie via [0] koppelt, tekent een vlak dat het punt niet raakt.
+
+      '
+  x-dso-alternatief:
+    alleenTonen: OGC API Vector Tiles (PDOK) — geen calls op het DSO per object.
+    jaNeeVraag: 0 calls — de punt-in-vlak-toets is al gedaan in stap 02.

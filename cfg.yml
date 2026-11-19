@@ -1,0 +1,21 @@
+---
+store:
+  mode: READ_ONLY
+
+modules:
+  minMaturity: PROPOSAL
+  minMaintenance: NONE
+
+logging:
+  level: OFF
+  sqlQueries: OFF
+  sqlResults: OFF
+  stackTraces: ON
+  appenders:
+    - type: console
+      timeZone: Europe/Berlin
+  loggers:
+    de.ii: INFO
+
+jobs:
+  maxConcurrent: 4

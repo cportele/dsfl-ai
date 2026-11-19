@@ -1,0 +1,283 @@
+---
+id: postcode6
+providerType: FEATURE
+providerSubType: SQL
+nativeCrs:
+  code: 28992
+  forceAxisOrder: NONE
+defaultLanguage: nl
+connectionInfo:
+  dialect: PGIS
+  host: ${db.host:-db}
+  database: ${db.database:-bag}
+  user: ${db.user:-bag}
+  password: ${db.password>base64:-YmFn}
+  schemas:
+  - cbs
+sourcePathDefaults:
+  primaryKey: postcode
+  sortKey: postcode
+datasetChanges:
+  mode: 'OFF'
+types:
+  postcode6:
+    sourcePath: /postcode6
+    type: OBJECT
+    objectType: Postcodegebied
+    label: Postcodegebied
+    description: Het gebied van een zescijferige postcode (PC6) met statistische gegevens van het CBS over de inwoners, de huishoudens en de woningen op 1 januari 2024.
+    properties:
+      postcode:
+        sourcePath: postcode
+        type: STRING
+        role: ID
+        label: postcode
+        description: De postcode, vier cijfers en twee hoofdletters zonder spatie (bijvoorbeeld 3811LM). De postcode is de id van het object (feature id) en staat daarom niet bij de eigenschappen.
+        constraints:
+          regex: ^[1-9][0-9]{3}[A-Z]{2}$
+          required: true
+      aantal_inwoners:
+        sourcePath: aantal_inwoners
+        type: INTEGER
+        label: inwoners
+        description: Het aantal inwoners.
+      aantal_mannen:
+        sourcePath: aantal_mannen
+        type: INTEGER
+        label: mannen
+        description: Het aantal mannen.
+      aantal_vrouwen:
+        sourcePath: aantal_vrouwen
+        type: INTEGER
+        label: vrouwen
+        description: Het aantal vrouwen.
+      aantal_inwoners_0_tot_15_jaar:
+        sourcePath: aantal_inwoners_0_tot_15_jaar
+        type: INTEGER
+        label: inwoners 0 tot 15 jaar
+        description: Het aantal inwoners jonger dan 15 jaar.
+      aantal_inwoners_15_tot_25_jaar:
+        sourcePath: aantal_inwoners_15_tot_25_jaar
+        type: INTEGER
+        label: inwoners 15 tot 25 jaar
+        description: Het aantal inwoners van 15 tot 25 jaar.
+      aantal_inwoners_25_tot_45_jaar:
+        sourcePath: aantal_inwoners_25_tot_45_jaar
+        type: INTEGER
+        label: inwoners 25 tot 45 jaar
+        description: Het aantal inwoners van 25 tot 45 jaar.
+      aantal_inwoners_45_tot_65_jaar:
+        sourcePath: aantal_inwoners_45_tot_65_jaar
+        type: INTEGER
+        label: inwoners 45 tot 65 jaar
+        description: Het aantal inwoners van 45 tot 65 jaar.
+      aantal_inwoners_65_jaar_en_ouder:
+        sourcePath: aantal_inwoners_65_jaar_en_ouder
+        type: INTEGER
+        label: inwoners 65 jaar en ouder
+        description: Het aantal inwoners van 65 jaar en ouder.
+      percentage_geb_nederland_herkomst_nederland:
+        sourcePath: percentage_geb_nederland_herkomst_nederland
+        type: INTEGER
+        label: '% geboren in Nederland, herkomst Nederland'
+        description: Het percentage inwoners dat in Nederland is geboren en van wie beide ouders in Nederland zijn geboren.
+        constraints:
+          min: 0
+          max: 100
+      percentage_geb_nederland_herkomst_overig_europa:
+        sourcePath: percentage_geb_nederland_herkomst_overig_europa
+        type: INTEGER
+        label: '% geboren in Nederland, herkomst Europa'
+        description: Het percentage inwoners dat in Nederland is geboren, met een herkomst in Europa buiten Nederland.
+        constraints:
+          min: 0
+          max: 100
+      percentage_geb_nederland_herkomst_buiten_europa:
+        sourcePath: percentage_geb_nederland_herkomst_buiten_europa
+        type: INTEGER
+        label: '% geboren in Nederland, herkomst buiten Europa'
+        description: Het percentage inwoners dat in Nederland is geboren, met een herkomst buiten Europa.
+        constraints:
+          min: 0
+          max: 100
+      percentage_geb_buiten_nederland_herkomst_europa:
+        sourcePath: percentage_geb_buiten_nederland_herkomst_europa
+        type: INTEGER
+        label: '% geboren in Europa buiten Nederland'
+        description: Het percentage inwoners dat in Europa buiten Nederland is geboren.
+        constraints:
+          min: 0
+          max: 100
+      percentage_geb_buiten_nederland_herkmst_buiten_europa:
+        sourcePath: percentage_geb_buiten_nederland_herkmst_buiten_europa
+        type: INTEGER
+        label: '% geboren buiten Europa'
+        description: Het percentage inwoners dat buiten Europa is geboren.
+        constraints:
+          min: 0
+          max: 100
+      aantal_part_huishoudens:
+        sourcePath: aantal_part_huishoudens
+        type: INTEGER
+        label: particuliere huishoudens
+        description: Het aantal particuliere huishoudens, zonder institutionele huishoudens (bijvoorbeeld in verzorgingshuizen).
+      aantal_eenpersoonshuishoudens:
+        sourcePath: aantal_eenpersoonshuishoudens
+        type: INTEGER
+        label: eenpersoonshuishoudens
+        description: Het aantal particuliere huishoudens van één persoon.
+      aantal_meerpersoonshuishoudens_zonder_kind:
+        sourcePath: aantal_meerpersoonshuishoudens_zonder_kind
+        type: INTEGER
+        label: meerpersoonshuishoudens zonder kinderen
+        description: Het aantal particuliere huishoudens van meer personen zonder thuiswonende kinderen (paren en overige huishoudens).
+      aantal_eenouderhuishoudens:
+        sourcePath: aantal_eenouderhuishoudens
+        type: INTEGER
+        label: eenouderhuishoudens
+        description: Het aantal particuliere huishoudens van één ouder met thuiswonende kinderen.
+      aantal_tweeouderhuishoudens:
+        sourcePath: aantal_tweeouderhuishoudens
+        type: INTEGER
+        label: tweeouderhuishoudens
+        description: Het aantal particuliere huishoudens van twee ouders met ten minste één thuiswonend kind.
+      gemiddelde_huishoudensgrootte:
+        sourcePath: gemiddelde_huishoudensgrootte
+        type: FLOAT
+        label: gemiddelde huishoudensgrootte
+        description: Het aantal inwoners in particuliere huishoudens gedeeld door het aantal particuliere huishoudens, op één decimaal afgerond.
+      aantal_woningen:
+        sourcePath: aantal_woningen
+        type: INTEGER
+        label: woningen
+        description: Het aantal woningen volgens de BAG, verblijfsobjecten met ten minste een woonfunctie.
+      aantal_woningen_bouwjaar_voor_1945:
+        sourcePath: aantal_woningen_bouwjaar_voor_1945
+        type: INTEGER
+        label: woningen bouwjaar voor 1945
+        description: Het aantal woningen met een oorspronkelijk bouwjaar voor 1945.
+      aantal_woningen_bouwjaar_45_tot_65:
+        sourcePath: aantal_woningen_bouwjaar_45_tot_65
+        type: INTEGER
+        label: woningen bouwjaar 1945 tot 1965
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 1945 tot 1965.
+      aantal_woningen_bouwjaar_65_tot_75:
+        sourcePath: aantal_woningen_bouwjaar_65_tot_75
+        type: INTEGER
+        label: woningen bouwjaar 1965 tot 1975
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 1965 tot 1975.
+      aantal_woningen_bouwjaar_75_tot_85:
+        sourcePath: aantal_woningen_bouwjaar_75_tot_85
+        type: INTEGER
+        label: woningen bouwjaar 1975 tot 1985
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 1975 tot 1985.
+      aantal_woningen_bouwjaar_85_tot_95:
+        sourcePath: aantal_woningen_bouwjaar_85_tot_95
+        type: INTEGER
+        label: woningen bouwjaar 1985 tot 1995
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 1985 tot 1995.
+      aantal_woningen_bouwjaar_95_tot_05:
+        sourcePath: aantal_woningen_bouwjaar_95_tot_05
+        type: INTEGER
+        label: woningen bouwjaar 1995 tot 2005
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 1995 tot 2005.
+      aantal_woningen_bouwjaar_05_tot_15:
+        sourcePath: aantal_woningen_bouwjaar_05_tot_15
+        type: INTEGER
+        label: woningen bouwjaar 2005 tot 2015
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 2005 tot 2015.
+      aantal_woningen_bouwjaar_15_en_later:
+        sourcePath: aantal_woningen_bouwjaar_15_en_later
+        type: INTEGER
+        label: woningen bouwjaar 2015 en later
+        description: Het aantal woningen met een oorspronkelijk bouwjaar van 2015 of later.
+      aantal_meergezins_woningen:
+        sourcePath: aantal_meergezins_woningen
+        type: INTEGER
+        label: meergezinswoningen
+        description: Het aantal woningen in een pand met andere woningen of bedrijfsruimten, zoals flats, appartementen en bovenwoningen.
+      percentage_koopwoningen:
+        sourcePath: percentage_koopwoningen
+        type: INTEGER
+        label: '% koopwoningen'
+        description: Het percentage woningen dat door de (toekomstige) eigenaar wordt bewoond of een tweede woning is.
+        constraints:
+          min: 0
+          max: 100
+      percentage_huurwoningen:
+        sourcePath: percentage_huurwoningen
+        type: INTEGER
+        label: '% huurwoningen'
+        description: Het percentage woningen dat niet door de eigenaar wordt bewoond; een woning zonder ingeschreven bewoners geldt als huurwoning.
+        constraints:
+          min: 0
+          max: 100
+      aantal_huurwoningen_in_bezit_woningcorporaties:
+        sourcePath: aantal_huurwoningen_in_bezit_woningcorporaties
+        type: INTEGER
+        label: huurwoningen van woningcorporaties
+        description: Het aantal huurwoningen in bezit van woningcorporaties (toegelaten instellingen volkshuisvesting); niet hetzelfde als sociale huurwoningen.
+      aantal_niet_bewoonde_woningen:
+        sourcePath: aantal_niet_bewoonde_woningen
+        type: INTEGER
+        label: niet bewoonde woningen
+        description: Het aantal woningen waar niemand in de Basisregistratie Personen (BRP) staat ingeschreven.
+      aantal_personen_met_uitkering_onder_aowlft:
+        sourcePath: aantal_personen_met_uitkering_onder_aowlft
+        type: INTEGER
+        label: personen met uitkering onder AOW-leeftijd
+        description: Het aantal inwoners jonger dan de AOW-leeftijd met een werkloosheids-, bijstands- of arbeidsongeschiktheidsuitkering of een daaraan verwante uitkering; wie meerdere uitkeringen heeft telt één keer.
+      gemeentecode:
+        type: FEATURE_REF
+        refType: gemeente
+        refUriTemplate: ${external.url:-https://bag.ldproxy.net}/wijkenbuurten/collections/gemeente/items/{{id}}
+        label: gemeente
+        description: "De gemeente waarin het postcodegebied ligt, een verwijzing naar de gemeente in de API Wijken en buurten (/wijkenbuurten/collections/gemeente) volgens de CBS Wijk- en Buurtkaart 2026: de link naar het object, de code (bijvoorbeeld 0307) is het laatste deel ervan en de id van het object. De titel van de verwijzing is de naam van de gemeente. Geen CBS-gegeven over de postcode, afgeleid uit een punt binnen het gebied. Als filter volstaat de code, bijvoorbeeld `?gemeentecode=0307`."
+        constraints:
+          regex: ^[0-9]{4}$
+        properties:
+          id:
+            sourcePath: gemeentecode
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=COALESCE((SELECT x_r.naam FROM cbs.gemeente x_r WHERE x_r.id = $T$.gemeentecode), $T$.gemeentecode)}'
+            type: STRING
+      wijkcode:
+        type: FEATURE_REF
+        refType: wijk
+        refUriTemplate: ${external.url:-https://bag.ldproxy.net}/wijkenbuurten/collections/wijk/items/{{id}}
+        label: wijk
+        description: "De wijk waarin het postcodegebied ligt, een verwijzing naar de wijk in de API Wijken en buurten (/wijkenbuurten/collections/wijk) volgens de CBS Wijk- en Buurtkaart 2026: de link naar het object, de code (bijvoorbeeld WK030701) is het laatste deel ervan en de id van het object. De titel van de verwijzing is de naam van de wijk. Geen CBS-gegeven over de postcode, afgeleid uit een punt binnen het gebied. Als filter volstaat de code, bijvoorbeeld `?wijkcode=WK030701`."
+        constraints:
+          regex: ^WK[0-9]{6}$
+        properties:
+          id:
+            sourcePath: wijkcode
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=COALESCE((SELECT x_r.naam FROM cbs.wijk x_r WHERE x_r.id = $T$.wijkcode), $T$.wijkcode)}'
+            type: STRING
+      buurtcode:
+        type: FEATURE_REF
+        refType: buurt
+        refUriTemplate: ${external.url:-https://bag.ldproxy.net}/wijkenbuurten/collections/buurt/items/{{id}}
+        label: buurt
+        description: "De buurt waarin het postcodegebied ligt, een verwijzing naar de buurt in de API Wijken en buurten (/wijkenbuurten/collections/buurt) volgens de CBS Wijk- en Buurtkaart 2026: de link naar het object, de code (bijvoorbeeld BU03070100) is het laatste deel ervan en de id van het object. De titel van de verwijzing is de naam van de buurt. Geen CBS-gegeven over de postcode, afgeleid uit een punt binnen het gebied. Als filter volstaat de code, bijvoorbeeld `?buurtcode=BU03070100`."
+        constraints:
+          regex: ^BU[0-9]{8}$
+        properties:
+          id:
+            sourcePath: buurtcode
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=COALESCE((SELECT x_r.naam FROM cbs.buurt x_r WHERE x_r.id = $T$.buurtcode), $T$.buurtcode)}'
+            type: STRING
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        geometryType: MULTI_POLYGON
+        label: geometrie
+        description: De begrenzing van het postcodegebied. De postcodegebieden dekken Nederland zonder gaten, ook land zonder adressen.
+        constraints:
+          required: true

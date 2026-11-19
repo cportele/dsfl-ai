@@ -1,0 +1,1225 @@
+{
+  "id": "inrichtingselementen-in-gebied",
+  "title": "Inrichtingselementen in een gebied",
+  "description": "De inrichtingselementen in een gemeente, wijk of buurt: bakken (afvalbakken, bloembakken), borden (verkeersborden, straatnaamborden), installaties, kasten, masten, palen (lichtmasten, hectometerpalen, afsluitpalen), putten, sensoren, straatmeubilair (banken, fietsenrekken, speeltoestellen, abri's), water- en weginrichtingselementen en vegetatieobjecten (bomen, hagen), met de parameter soort te beperken tot bepaalde soorten, bijvoorbeeld soort=bank of soort=boom. De soort staat in plusType. Dit is optionele IMGeo-informatie: alleen aanwezig waar de bronhouder (meestal de gemeente) het bijhoudt; een leeg resultaat betekent dus niet dat er geen zijn. Levert een buurt of wijk niets op voor een soort, vraag dan dezelfde soort voor de hele gemeente op (gebied=<gemeentecode>, soort, kleine limit): levert de gemeente niets of maar enkele objecten op, dan houdt de bronhouder die soort niet bij en zegt de BGT er daar niets over; levert de gemeente er veel op, dan is het resultaat voor de buurt of wijk zinvol. In het resultaat heeft elk object zijn objecttype (objecttype, de naam van de collectie) en de eigenschappen van zijn collectie; hun betekenis en de betekenis van alle waarden staan in het schema van de collectie (/bgt/collections/<collectie>/schema). Collecties: bak, bord, installatie, kast, mast, paal, put, sensor, straatmeubilair, waterinrichtingselement, weginrichtingselement, vegetatieobject. English: street furniture and fixtures in an area: benches, bins, playground equipment, lamp posts, bollards, traffic signs, manholes, cabinets, trees, hedges, crash barriers.",
+  "parameters": {
+    "gebied": {
+      "title": "gebied",
+      "description": "De code van het gebied: een gemeentecode (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), een wijkcode (bijvoorbeeld WK030701) of een buurtcode (bijvoorbeeld BU03070100) volgens de CBS Wijk- en Buurtkaart 2026. De code bij een naam staat in de API Wijken en buurten (/wijkenbuurten), bijvoorbeeld /wijkenbuurten/collections/gemeente/items?naam=Amersfoort.",
+      "type": "string",
+      "pattern": "^([0-9]{4}|WK[0-9]{6}|BU[0-9]{8})$"
+    },
+    "soort": {
+      "title": "soort",
+      "description": "De soorten (plusType), standaard alle. De betekenis van de soorten staat bij plusType in het schema van de collecties. 'waardeOnbekend': de bronhouder kent de soort niet.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "afval apart plaats",
+          "afvalbak",
+          "drinkbak",
+          "bloembak",
+          "zand- / zoutbak",
+          "container",
+          "waardeOnbekend",
+          "informatiebord",
+          "plaatsnaambord",
+          "straatnaambord",
+          "verkeersbord",
+          "scheepvaartbord",
+          "verklikker transportleiding",
+          "reclamebord",
+          "wegwijzer",
+          "waarschuwingshek",
+          "dynamische snelheidsindicator",
+          "pomp",
+          "zonnepaneel",
+          "CAI-kast",
+          "elektrakast",
+          "gaskast",
+          "telecom kast",
+          "rioolkast",
+          "openbare verlichtingkast",
+          "verkeersregelinstallatiekast",
+          "telkast",
+          "GMS kast",
+          "bovenleidingmast",
+          "laagspanningsmast",
+          "straalzender",
+          "zendmast",
+          "radarmast",
+          "lichtmast",
+          "telpaal",
+          "portaal",
+          "verkeersregelinstallatiepaal",
+          "verkeersbordpaal",
+          "poller",
+          "haltepaal",
+          "vlaggenmast",
+          "afsluitpaal",
+          "praatpaal",
+          "hectometerpaal",
+          "dijkpaal",
+          "drukknoppaal",
+          "grensmarkering",
+          "sirene",
+          "benzine- / olieput",
+          "brandkraan / -put",
+          "drainageput",
+          "gasput",
+          "inspectie- / rioolput",
+          "kolk",
+          "waterleidingput",
+          "camera",
+          "debietmeter",
+          "hoogtedetectieapparaat",
+          "detectielus",
+          "weerstation",
+          "flitser",
+          "waterstandmeter",
+          "windmeter",
+          "lichtcel",
+          "GMS sensor",
+          "radar detector",
+          "abri",
+          "bolder",
+          "brievenbus",
+          "fietsenrek",
+          "kunstobject",
+          "openbaar toilet",
+          "slagboom",
+          "speelvoorziening",
+          "telefooncel",
+          "bank",
+          "picknicktafel",
+          "fontein",
+          "lichtpunt",
+          "parkeerbeugel",
+          "betaalautomaat",
+          "reclamezuil",
+          "fietsenkluis",
+          "herdenkingsmonument",
+          "remmingswerk",
+          "betonning",
+          "geleidewerk",
+          "vuilvang",
+          "meerpaal",
+          "hoogtemerk",
+          "molgoot",
+          "lijnafwatering",
+          "wegmarkering",
+          "wildrooster",
+          "rooster",
+          "geleideconstructie",
+          "balustrade",
+          "boomspiegel",
+          "verblindingswering",
+          "boom",
+          "haag"
+        ]
+      },
+      "default": [
+        "afval apart plaats",
+        "afvalbak",
+        "drinkbak",
+        "bloembak",
+        "zand- / zoutbak",
+        "container",
+        "waardeOnbekend",
+        "informatiebord",
+        "plaatsnaambord",
+        "straatnaambord",
+        "verkeersbord",
+        "scheepvaartbord",
+        "verklikker transportleiding",
+        "reclamebord",
+        "wegwijzer",
+        "waarschuwingshek",
+        "dynamische snelheidsindicator",
+        "pomp",
+        "zonnepaneel",
+        "CAI-kast",
+        "elektrakast",
+        "gaskast",
+        "telecom kast",
+        "rioolkast",
+        "openbare verlichtingkast",
+        "verkeersregelinstallatiekast",
+        "telkast",
+        "GMS kast",
+        "bovenleidingmast",
+        "laagspanningsmast",
+        "straalzender",
+        "zendmast",
+        "radarmast",
+        "lichtmast",
+        "telpaal",
+        "portaal",
+        "verkeersregelinstallatiepaal",
+        "verkeersbordpaal",
+        "poller",
+        "haltepaal",
+        "vlaggenmast",
+        "afsluitpaal",
+        "praatpaal",
+        "hectometerpaal",
+        "dijkpaal",
+        "drukknoppaal",
+        "grensmarkering",
+        "sirene",
+        "benzine- / olieput",
+        "brandkraan / -put",
+        "drainageput",
+        "gasput",
+        "inspectie- / rioolput",
+        "kolk",
+        "waterleidingput",
+        "camera",
+        "debietmeter",
+        "hoogtedetectieapparaat",
+        "detectielus",
+        "weerstation",
+        "flitser",
+        "waterstandmeter",
+        "windmeter",
+        "lichtcel",
+        "GMS sensor",
+        "radar detector",
+        "abri",
+        "bolder",
+        "brievenbus",
+        "fietsenrek",
+        "kunstobject",
+        "openbaar toilet",
+        "slagboom",
+        "speelvoorziening",
+        "telefooncel",
+        "bank",
+        "picknicktafel",
+        "fontein",
+        "lichtpunt",
+        "parkeerbeugel",
+        "betaalautomaat",
+        "reclamezuil",
+        "fietsenkluis",
+        "herdenkingsmonument",
+        "remmingswerk",
+        "betonning",
+        "geleidewerk",
+        "vuilvang",
+        "meerpaal",
+        "hoogtemerk",
+        "molgoot",
+        "lijnafwatering",
+        "wegmarkering",
+        "wildrooster",
+        "rooster",
+        "geleideconstructie",
+        "balustrade",
+        "boomspiegel",
+        "verblindingswering",
+        "boom",
+        "haag"
+      ]
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de registratiegegevens (objectBeginTijd, objectEindTijd, tijdstipRegistratie, eindRegistratie, lvPublicatiedatum, inOnderzoek, bgtStatus, plusStatus), de gebiedscodes en -namen (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam), oppervlakte en lengte; een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Standaard wel geleverd: objecttype, plusType, geometrie (meestal een punt), bronhouder; ook die en elke andere eigenschap behalve identificatie zijn weg te laten. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "objectBeginTijd",
+          "objectEindTijd",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "lvPublicatiedatum",
+          "inOnderzoek",
+          "bgtStatus",
+          "plusStatus",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "oppervlakte",
+          "lengte",
+          "objecttype",
+          "bronhouder",
+          "relatieveHoogteligging",
+          "plusType",
+          "voorgaandeVersie",
+          "volgendeVersie",
+          "hectometeraanduiding"
+        ]
+      },
+      "default": [
+        "objectBeginTijd",
+        "objectEindTijd",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "lvPublicatiedatum",
+        "inOnderzoek",
+        "bgtStatus",
+        "plusStatus",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "oppervlakte",
+        "lengte"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "tijdstipRegistratie"
+          },
+          {
+            "property": "eindRegistratie"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "bak"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "bord"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "installatie"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kast"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "mast"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "paal"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "put"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "sensor"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "straatmeubilair"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterinrichtingselement"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "weginrichtingselement"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "vegetatieobject"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "plusType"
+              },
+              {
+                "$parameter": {
+                  "soort": {
+                    "$ref": "#/parameters/soort"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+arazzo: 1.0.1
+info:
+  title: DSO • Het hele document als ZIP — de asynchrone Downloaden-API
+  version: 0.1.0
+  summary: Aanvragen, pollen tot het pakket gebouwd is, tijdelijke URL ophalen. Eén keer, en daarna cachen.
+  description: 'Alleen als je het héle document nodig hebt, inclusief geometrie en OW-objecten.
+
+    Voor één fragment of één annotatie: Presenteren (02). Kies één pijplijn per doel;
+
+    beide draaien voor dezelfde data is dubbele belasting voor dezelfde bytes.
+
+
+    robots.txt zet deze API op Disallow. Dat geldt voor ongeauthenticeerd crawlen
+
+    (er valt niets te indexeren), niet voor een client met een sleutel. robots.txt kan
+
+    dat onderscheid niet uitdrukken; llms.txt wel.
+
+
+    Elke aanvraag zet serverside een ZIP-bouw in gang. Cache het resultaat op schijf,
+
+    gesleuteld op de expressie, en vertrouw die cache.
+
+    '
+sourceDescriptions:
+- name: downloaden
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/downloaden/v1/openapi.json
+  type: openapi
+workflows:
+- workflowId: regeling-als-zip
+  summary: POST /aanvraag → poll /status → GET /download → tijdelijke URL.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - regelingId
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      regelingId:
+        type: string
+        description: Work-id (ongecodeerd) of een expressie-id.
+        examples:
+        - /akn/nl/act/pv27/2023/vbbNH2022_2_gm0498
+  steps:
+  - stepId: aanvragen
+    operationPath: '{$sourceDescriptions.downloaden.url}#/paths/~1aanvraag/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    requestBody:
+      contentType: application/json
+      payload:
+        regelingId: ''
+      replacements:
+      - target: /regelingId
+        value: $inputs.regelingId
+    successCriteria:
+    - condition: $statusCode == 202
+    onFailure:
+    - name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+    - name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500
+    outputs:
+      verzoekIdentificatie: $response.body#/verzoekIdentificatie
+  - stepId: status-pollen
+    description: Interval circa 5 s, harde bovengrens 5 minuten. Nooit in een strakke lus.
+    operationPath: '{$sourceDescriptions.downloaden.url}#/paths/~1status~1{verzoekIdentificatie}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: verzoekIdentificatie
+      in: path
+      value: $steps.aanvragen.outputs.verzoekIdentificatie
+    successCriteria:
+    - condition: $statusCode == 200
+    - context: $response.body
+      condition: $[?(@.status == 'BESCHIKBAAR')]
+      type: jsonpath
+    onFailure:
+    - name: nog-in-behandeling
+      type: retry
+      retryAfter: 5
+      retryLimit: 60
+      criteria:
+      - context: $response.body
+        condition: $[?(@.status == 'IN_BEHANDELING')]
+        type: jsonpath
+      x-dso-waarom: 60 × 5 s = de harde bovengrens van 5 minuten. Hier past Arazzo's retry precies.
+    - name: mislukt
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $[?(@.status == 'MISLUKT')]
+        type: jsonpath
+    - name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+    outputs:
+      status: $response.body#/status
+  - stepId: download-url
+    operationPath: '{$sourceDescriptions.downloaden.url}#/paths/~1download~1{verzoekIdentificatie}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: verzoekIdentificatie
+      in: path
+      value: $steps.aanvragen.outputs.verzoekIdentificatie
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      url: $response.body#/url
+  outputs:
+    url: $steps.download-url.outputs.url
+  x-dso-vervolg:
+    stap: GET <url> — stream naar schijf, read-timeout 300 s
+    waaromNietInArazzo: De URL is een volledige link uit de respons, geen operationPath. Arazzo kan een dynamische URL niet
+      aanroepen.
+    cache: Gesleuteld op regeling-identificatie + expressionId. De expressie is onveranderlijk; vertrouw de cache.
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent

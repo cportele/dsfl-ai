@@ -1,0 +1,341 @@
+{
+  "id": "adres-op-straat",
+  "title": "Adres zoeken op straat, huisnummer en woonplaats",
+  "description": "Zoekt een adres op de naam van de straat (openbare ruimte), het huisnummer en de naam van de woonplaats (hoofdletterongevoelig) en levert dezelfde objecten als adres-op-postcode. Woonplaatsnamen zijn niet altijd uniek; dan bevat het resultaat meerdere adressen. Eigenschappen in het resultaat, voor zover niet weggelaten: woonplaats: naam, status; openbareruimte: naam, type (bijvoorbeeld Weg of Water), status, ligtIn (titel: de woonplaats); nummeraanduiding: huisnummer, huisletter, huisnummertoevoeging, postcode (titel: de postcode, verwijst naar het postcodegebied in /postcode6), typeAdresseerbaarObject, status, ligtAan (titel: de straatnaam), ligtIn (alleen als de woonplaats afwijkt van die van de straat); verblijfsobject: gebruiksdoel (alle gebruiksdoelen), oppervlakte (gebruiksoppervlakte in m²; 999999 is geen werkelijke oppervlakte), status, beginGeldigheid, heeftAlsHoofdadres en heeftAlsNevenadres (titel: het adres), maaktDeelUitVan (de panden), geometrie (een punt), bouwjaarPand (het oudste oorspronkelijk bouwjaar van die panden); ligplaats en standplaats: heeftAlsHoofdadres (titel: het adres), status, geometrie (een vlak); pand: oorspronkelijkBouwjaar (9999 betekent onbekend; bij oude panden vaak een geschat rond jaartal), status, beginGeldigheid (begin van de huidige versie), geometrie (het bovenaanzicht), op verzoek grondoppervlakte (m², berekend uit de geometrie). Elk object heeft zijn objecttype (objecttype). Een verwijzing heeft een titel en, in een MCP-resultaat, de identificatie (id) of, in de API, een link (href); de titel van een ingetrokken adres, straat of woonplaats eindigt op '(ingetrokken)'. English: address lookup, geocoding by street name, house number and town or city.",
+  "parameters": {
+    "straat": {
+      "title": "straat",
+      "description": "De volledige naam van de openbare ruimte, bijvoorbeeld Stadhuisplein.",
+      "type": "string",
+      "minLength": 1
+    },
+    "huisnummer": {
+      "title": "huisnummer",
+      "description": "Het huisnummer, zonder huisletter of toevoeging.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 99999
+    },
+    "woonplaats": {
+      "title": "woonplaats",
+      "description": "De naam van de woonplaats, bijvoorbeeld Amersfoort.",
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "title": "status",
+      "description": "Een of meer statussen van de nummeraanduiding. Standaard alleen uitgegeven adressen ('Naamgeving uitgegeven'); met 'Naamgeving ingetrokken' ook ingetrokken adressen, die soms dezelfde postcode, hetzelfde huisnummer en dezelfde straat hebben als een uitgegeven adres.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Naamgeving uitgegeven",
+          "Naamgeving ingetrokken"
+        ]
+      },
+      "default": [
+        "Naamgeving uitgegeven"
+      ]
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de registratiegegevens (geconstateerd, documentdatum, documentnummer, voorkomenidentificatie, tijdstipRegistratie, eindRegistratie, tijdstipRegistratieLV, tijdstipEindRegistratieLV) en de niet-BAG-gegevens (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam, grondoppervlakte, aantalVerblijfsobjecten, bouwjaarPand, statusPand); een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode. Standaard wel geleverd: objecttype. Ook elke andere eigenschap behalve identificatie is weg te laten (naam, status, gemeenteWoonplaatsRelatie, beginGeldigheid, eindGeldigheid, voorgaandeVersie, volgendeVersie, verkorteNaam, type, ligtIn, huisnummer, huisletter, huisnummertoevoeging, postcode, typeAdresseerbaarObject, ligtAan, gebruiksdoel, oppervlakte, heeftAlsHoofdadres, heeftAlsNevenadres, maaktDeelUitVan, oorspronkelijkBouwjaar).",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geconstateerd",
+          "documentdatum",
+          "documentnummer",
+          "voorkomenidentificatie",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "tijdstipRegistratieLV",
+          "tijdstipEindRegistratieLV",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "grondoppervlakte",
+          "aantalVerblijfsobjecten",
+          "bouwjaarPand",
+          "statusPand",
+          "objecttype",
+          "naam",
+          "status",
+          "gemeenteWoonplaatsRelatie",
+          "beginGeldigheid",
+          "eindGeldigheid",
+          "voorgaandeVersie",
+          "volgendeVersie",
+          "verkorteNaam",
+          "type",
+          "ligtIn",
+          "huisnummer",
+          "huisletter",
+          "huisnummertoevoeging",
+          "postcode",
+          "typeAdresseerbaarObject",
+          "ligtAan",
+          "gebruiksdoel",
+          "oppervlakte",
+          "heeftAlsHoofdadres",
+          "heeftAlsNevenadres",
+          "maaktDeelUitVan",
+          "oorspronkelijkBouwjaar"
+        ]
+      },
+      "default": [
+        "geconstateerd",
+        "documentdatum",
+        "documentnummer",
+        "voorkomenidentificatie",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "tijdstipRegistratieLV",
+        "tijdstipEindRegistratieLV",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "grondoppervlakte",
+        "aantalVerblijfsobjecten",
+        "bouwjaarPand",
+        "statusPand"
+      ]
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "beginGeldigheid"
+          },
+          {
+            "property": "eindGeldigheid"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": false,
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "woonplaats"
+      ],
+      "excludeProperties": [
+        "geometrie",
+        "geconstateerd",
+        "documentdatum",
+        "documentnummer",
+        "voorkomenidentificatie",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "tijdstipRegistratieLV",
+        "tijdstipEindRegistratieLV"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "casei": {
+              "property": "naam"
+            }
+          },
+          {
+            "casei": {
+              "$parameter": {
+                "woonplaats": {
+                  "$ref": "#/parameters/woonplaats"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "resultSets": {
+        "woonplaatsen": {
+          "values": "identificatie"
+        }
+      }
+    },
+    {
+      "collections": [
+        "openbareruimte"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "inResultSet",
+            "args": [
+              {
+                "property": "ligtIn"
+              },
+              "woonplaatsen"
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "casei": {
+                  "property": "naam"
+                }
+              },
+              {
+                "casei": {
+                  "$parameter": {
+                    "straat": {
+                      "$ref": "#/parameters/straat"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "resultSets": {
+        "straten": {
+          "values": "identificatie"
+        }
+      }
+    },
+    {
+      "collections": [
+        "nummeraanduiding"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "inResultSet",
+            "args": [
+              {
+                "property": "ligtAan"
+              },
+              "straten"
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "huisnummer"
+              },
+              {
+                "$parameter": {
+                  "huisnummer": {
+                    "$ref": "#/parameters/huisnummer"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "status"
+              },
+              {
+                "$parameter": {
+                  "status": {
+                    "$ref": "#/parameters/status"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "resultSets": {
+        "nummeraanduidingen": {
+          "values": "identificatie"
+        }
+      }
+    },
+    {
+      "collections": [
+        "verblijfsobject"
+      ],
+      "filter": {
+        "op": "inResultSet",
+        "args": [
+          {
+            "property": "heeftAlsHoofdadres"
+          },
+          "nummeraanduidingen"
+        ]
+      },
+      "resultSets": {
+        "panden": {
+          "values": "maaktDeelUitVan"
+        }
+      }
+    },
+    {
+      "collections": [
+        "ligplaats"
+      ],
+      "filter": {
+        "op": "inResultSet",
+        "args": [
+          {
+            "property": "heeftAlsHoofdadres"
+          },
+          "nummeraanduidingen"
+        ]
+      }
+    },
+    {
+      "collections": [
+        "standplaats"
+      ],
+      "filter": {
+        "op": "inResultSet",
+        "args": [
+          {
+            "property": "heeftAlsHoofdadres"
+          },
+          "nummeraanduidingen"
+        ]
+      }
+    },
+    {
+      "collections": [
+        "pand"
+      ],
+      "filter": {
+        "op": "inResultSet",
+        "args": [
+          {
+            "property": "identificatie"
+          },
+          "panden"
+        ]
+      }
+    }
+  ]
+}

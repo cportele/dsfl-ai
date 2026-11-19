@@ -1,0 +1,1109 @@
+{
+  "id": "topografie-in-gebied",
+  "title": "Topografie van een gebied",
+  "description": "De vlakken van de BGT die samen een gemeente, wijk of buurt bedekken, elk met zijn oppervlakte in m²: wegdelen, terreindelen (begroeid en onbegroeid), waterdelen, panden en de andere objecten op maaiveldniveau. Op maaiveldniveau (niveau 0) bedekken de vlakken het gebied zonder gaten en zonder overlap, zodat de som van de oppervlakten per soort (bijvoorbeeld per objecttype en bgtFysiekVoorkomen) de verdeling van het gebied geeft, bijvoorbeeld hoeveel groen, verharding, water of bebouwing een buurt heeft. Een object hoort bij het gebied waarin een punt op zijn geometrie ligt en telt dus in precies één buurt mee; de som van een gebied wijkt daardoor iets af van de oppervlakte van het gebied. De classificatie: wegdeel en ondersteunendwegdeel bgtFunctie en bgtFysiekVoorkomen; begroeidterreindeel en onbegroeidterreindeel bgtFysiekVoorkomen (bijvoorbeeld 'groenvoorziening', 'erf'); waterdeel, ondersteunendwaterdeel, overigbouwwerk, kunstwerkdeel en scheiding bgtType; pand identificatieBAGPND; de fijnere IMGeo-classificatie in plusFysiekVoorkomen of plusType, als de bronhouder die bijhoudt. Het onbegroeidterreindeel 'erf' is de grond bij een pand of ander bouwwerk (tuinen, binnenplaatsen, opritten); het wordt niet verder ingedeeld en is een mengvorm van begroeiing, verharding en water. Een aandeel groen of verharding bevat dus geen tuinen en particulier groen: het werkelijke groen is groter dan het aandeel van de begroeide terreindelen, vooral in woonbuurten. Een buurt heeft enkele duizenden objecten, een gemeente honderdduizenden; vraag de gegevens per buurt of wijk op. In het resultaat heeft elk object zijn objecttype (objecttype, de naam van de collectie) en de eigenschappen van zijn collectie; hun betekenis en de betekenis van alle waarden staan in het schema van de collectie (/bgt/collections/<collectie>/schema). Collecties: wegdeel, ondersteunendwegdeel, begroeidterreindeel, onbegroeidterreindeel, waterdeel, ondersteunendwaterdeel, pand, overigbouwwerk, kunstwerkdeel, overbruggingsdeel, scheiding. English: land cover and land use of a municipality, district or neighbourhood: share of green, paved, water and buildings, with the area of every part; e.g. how green is a neighbourhood, how much is paved.",
+  "parameters": {
+    "gebied": {
+      "title": "gebied",
+      "description": "De code van het gebied: een gemeentecode (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), een wijkcode (bijvoorbeeld WK030701) of een buurtcode (bijvoorbeeld BU03070100) volgens de CBS Wijk- en Buurtkaart 2026. De code bij een naam staat in de API Wijken en buurten (/wijkenbuurten), bijvoorbeeld /wijkenbuurten/collections/gemeente/items?naam=Amersfoort.",
+      "type": "string",
+      "pattern": "^([0-9]{4}|WK[0-9]{6}|BU[0-9]{8})$"
+    },
+    "niveau": {
+      "title": "niveau",
+      "description": "De relatieveHoogteligging van de objecten: 0 is maaiveld (standaard), 1 en hoger ligt erboven (bijvoorbeeld bruggen en overkappingen), -1 en lager eronder. Alleen op niveau 0 bedekken de vlakken het gebied volledig.",
+      "type": "integer",
+      "minimum": -5,
+      "maximum": 5,
+      "default": 0
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de geometrie, de registratiegegevens (objectBeginTijd, objectEindTijd, tijdstipRegistratie, eindRegistratie, lvPublicatiedatum, inOnderzoek, bgtStatus, plusStatus), de gebiedscodes en -namen (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam), de gegevens voor de kaart (nummeraanduidingreeks.*, kruinlijn) en lengte; een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Standaard wel geleverd: objecttype, oppervlakte, de classificatie, bronhouder; ook die en elke andere eigenschap behalve identificatie zijn weg te laten. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode. Met de geometrie (weglaten zonder 'geometrie') worden de antwoorden veel groter.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "objectBeginTijd",
+          "objectEindTijd",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "lvPublicatiedatum",
+          "inOnderzoek",
+          "bgtStatus",
+          "plusStatus",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "oppervlakte",
+          "lengte",
+          "nummeraanduidingreeks.tekst",
+          "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+          "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+          "nummeraanduidingreeks.plaatsingspunt",
+          "nummeraanduidingreeks.hoek",
+          "kruinlijn",
+          "objecttype",
+          "bronhouder",
+          "relatieveHoogteligging",
+          "bgtFysiekVoorkomen",
+          "plusFysiekVoorkomen",
+          "opTalud",
+          "voorgaandeVersie",
+          "volgendeVersie",
+          "bgtType",
+          "plusType",
+          "bgtFunctie",
+          "plusFunctie",
+          "typeOverbruggingsdeel",
+          "hoortBijTypeOverbrugging",
+          "overbruggingIsBeweegbaar",
+          "identificatieBAGPND.id",
+          "identificatieBAGPND.title"
+        ]
+      },
+      "default": [
+        "geometrie",
+        "objectBeginTijd",
+        "objectEindTijd",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "lvPublicatiedatum",
+        "inOnderzoek",
+        "bgtStatus",
+        "plusStatus",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "nummeraanduidingreeks.tekst",
+        "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+        "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+        "nummeraanduidingreeks.plaatsingspunt",
+        "nummeraanduidingreeks.hoek",
+        "kruinlijn",
+        "lengte"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "tijdstipRegistratie"
+          },
+          {
+            "property": "eindRegistratie"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "wegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwegdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "begroeidterreindeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "onbegroeidterreindeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwaterdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "pand"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overigbouwwerk"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kunstwerkdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overbruggingsdeel"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "collections": [
+        "scheiding"
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "=",
+            "args": [
+              {
+                "property": "relatieveHoogteligging"
+              },
+              {
+                "$parameter": {
+                  "niveau": {
+                    "$ref": "#/parameters/niveau"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "not",
+            "args": [
+              {
+                "op": "isNull",
+                "args": [
+                  {
+                    "property": "oppervlakte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

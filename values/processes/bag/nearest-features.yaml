@@ -1,0 +1,44 @@
+---
+id: nearest-features
+title: 'Dichtstbijzijnde objecten'
+description: |
+  Levert de objecten binnen een afstand van een punt, het dichtstbijzijnde eerst, elk met het extra lid `distance` (de afstand in meter). Voor vragen als: welke winkels of andere niet-woonfuncties liggen het dichtst bij een adres, welke panden staan binnen 100 m van een punt. De objecten worden geselecteerd zoals bij een verzoek van de objecten van een collectie (`source.collection` met query-parameters in `source.parameters`, bijvoorbeeld status of filter) of van een opgeslagen zoekopdracht (`source.query` met haar parameters).
+version: 1.0.0
+jobControlOptions: [SYNC_EXECUTE]
+readOnly: true
+inputs:
+  source:
+    title: 'Selectie van de objecten'
+    description: 'Ofwel {"collection": "<id van een collectie of een lijst van ids>", "parameters": {...}} met query-parameters van /collections/{collectionId}/items (bijvoorbeeld zoekbare eigenschappen, filter, bbox, datetime), ofwel {"query": "<id van een opgeslagen zoekopdracht>", "parameters": {...}} met de parameters van de zoekopdracht, ofwel {"href": "<URL van een /items- of /search-verzoek van deze API>"}. Een zoekbare eigenschap in source.parameters heeft één waarde, geen lijst; voor meerdere waarden dient een filter met IN, bijvoorbeeld "filter": "status IN (''Pand in gebruik'',''Bouw gestart'')". Bij een collectie bepalen properties en exclude-properties in source.parameters de eigenschappen van de geleverde objecten, bijvoorbeeld "properties": "heeftAlsHoofdadres,gebruiksdoel,oppervlakte" voor een kort antwoord.'
+    schema:
+      type: object
+  point:
+    title: 'Punt'
+    description: 'De positie [lon, lat] in CRS84.'
+    schema:
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        type: number
+  distance:
+    title: 'Maximale afstand'
+    description: 'In meter.'
+    schema:
+      type: number
+      exclusiveMinimum: 0
+  limit:
+    title: 'Maximaal aantal objecten'
+    minOccurs: 0
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 10
+outputs:
+  features:
+    title: 'De dichtstbijzijnde objecten als GeoJSON-FeatureCollection'
+    schema:
+      type: object
+job:
+  partials: ['feature-nearest:execute']

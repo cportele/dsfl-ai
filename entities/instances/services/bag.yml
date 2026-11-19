@@ -1,0 +1,317 @@
+---
+id: bag
+createdAt: 1675679744036
+lastModified: 1792411200000
+entityStorageVersion: 2
+label: Basisregistratie Adressen en Gebouwen (BAG)
+description: |
+  De Basisregistratie Adressen en Gebouwen (BAG) bevat gemeentelijke basisgegevens van alle adressen en gebouwen in Nederland, inclusief de historie. Bron: BAG 2.0 Extract van het Kadaster, stand 8 oktober 2026.
+
+  De BAG kent zeven objecttypen. Een adres bestaat uit de naam van een openbare ruimte (meestal een straat), een nummeraanduiding (postcode, huisnummer, huisletter, huisnummertoevoeging) en de naam van een woonplaats. Adressen worden toegekend aan adresseerbare objecten: verblijfsobjecten (bijvoorbeeld woningen, winkels, kantoren), standplaatsen en ligplaatsen. Verblijfsobjecten liggen in panden. Verwijzingen: verblijfsobject.heeftAlsHoofdadres → nummeraanduiding; nummeraanduiding.ligtAan → openbareruimte; openbareruimte.ligtIn → woonplaats (nummeraanduiding.ligtIn gaat voor indien aanwezig); verblijfsobject.maaktDeelUitVan → pand; nummeraanduiding.postcode → het postcodegebied met de statistische gegevens van het CBS in de API Postcodegebieden (`/postcode6`). In de omgekeerde richting zoekt men op de eigenschap van het verwijzende object, bijvoorbeeld het verblijfsobject van een adres met heeftAlsHoofdadres = 0307200000408911 (Stadhuisplein 1, Amersfoort) of de verblijfsobjecten van een pand met maaktDeelUitVan = 0307100000370278. Elke zoekbare eigenschap kan als eigen parameter worden opgegeven, bijvoorbeeld `postcode=3811LM&huisnummer=1`; ook bij eigenschappen met meerdere waarden (maaktDeelUitVan, heeftAlsNevenadres, gebruiksdoel) volstaat één waarde. Zo'n parameter heeft altijd één waarde, geen lijst; meerdere waarden vraagt men op met een CQL2-filter, bijvoorbeeld `filter=status IN ('Pand in gebruik','Bouw gestart')`. Als alternatief ondersteunt de API CQL2-filters (parameter `filter`); daar vragen eigenschappen met meerdere waarden om array-operatoren, bijvoorbeeld `filter=A_CONTAINS(gebruiksdoel,('winkelfunctie'))`.
+
+  Om in een gebied te zoeken kunnen panden, verblijfsobjecten, ligplaatsen en standplaatsen gefilterd worden op `gemeentecode` (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), `wijkcode` (bijvoorbeeld WK030701) en `buurtcode` (bijvoorbeeld BU03070100). Deze codes volgen de indeling van de CBS Wijk- en Buurtkaart 2026 en zijn geen BAG-gegevens; de codes bij een naam vindt men in de API Wijken en buurten (`/wijkenbuurten`), bijvoorbeeld met `/wijkenbuurten/collections/gemeente/items?naam=Amersfoort`. Standaard staan de codes niet in de uitvoer, net als de namen van de gebieden (`gemeentenaam`, `wijknaam`, `buurtnaam`), de uit de geometrie berekende `grondoppervlakte` van een pand, het aantal verblijfsobjecten in een pand (`aantalVerblijfsobjecten`), het bouwjaar en de status van het pand bij een verblijfsobject (`bouwjaarPand`, het oudste oorspronkelijk bouwjaar van de panden waarin het ligt, en `statusPand`) en het objecttype (`objecttype`, de naam van de collectie). Om resultaten per gebied te groeperen vraagt men ze op met `exclude-properties` zonder `buurtcode` (een lege waarde levert alle eigenschappen) of met `properties`; de buurtcode bevat ook de gemeentecode en de wijkcode (BU03070100: gemeente 0307, wijk WK030701). Wijk- en buurtnamen zijn alleen binnen een gemeente uniek. Voor veelvoorkomende vragen zijn er opgeslagen zoekopdrachten (stored queries) onder `/bag/search`.
+
+  Alle objecten hebben versies (voorkomens). Zonder parameter `datetime` levert de API de versie die vandaag geldig is; met `datetime=2015-01-01` de versie die op die datum geldig was. Ook beëindigde objecten (bijvoorbeeld met status 'Pand gesloopt' of 'Verblijfsobject ingetrokken') zijn opgenomen; gebruik de parameter `status` om alleen bestaande objecten te krijgen.
+
+  De volledige beschrijving van alle eigenschappen van een objecttype staat in het schema van zijn collectie, bijvoorbeeld ${external.url:-https://bag.ldproxy.net}/bag/collections/verblijfsobject/schema.
+serviceType: OGC_API
+metadata:
+  contactName: Clemens Portele, interactive instruments GmbH
+  contactEmail: portele@interactive-instruments.de
+  creatorName: Kadaster
+  creatorUrl: https://www.kadaster.nl/
+  publisherName: interactive instruments GmbH
+  publisherUrl: https://www.interactive-instruments.de
+  publisherLogoUrl: https://www.interactive-instruments.de/wp-content/uploads/2017/05/ii-icon.png
+  licenseName: CC0 1.0 Universeel (CC0 1.0) Publiek Domein Verklaring
+  licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/deed.nl
+  keywords:
+  - BAG
+  - adressen
+  - gebouwen
+  - panden
+  - verblijfsobjecten
+  - nummeraanduidingen
+  - openbare ruimten
+  - woonplaatsen
+  attribution: 'Bron: Kadaster, Basisregistratie Adressen en Gebouwen (BAG)'
+  # the version of this configuration (date of the last change, yymmdd)
+  version: '261119095916'
+accessControl:
+  groups:
+    public: [read, 'processes:write']
+api:
+- buildingBlock: COMMON
+  additionalLinks:
+  - title: Basisregistratie Adressen en Gebouwen
+    href: https://www.geobasisregistraties.nl/basisregistraties/adressen-en-gebouwen
+    type: text/html
+    rel: describedby
+  - title: Catalogus Basisregistratie Adressen en Gebouwen
+    href: https://geonovum.github.io/bag-IMBAG/
+    type: text/html
+    rel: describedby
+  - title: Praktijkhandleiding BAG
+    href: https://imbag.github.io/praktijkhandleiding/
+    type: text/html
+    rel: describedby
+- buildingBlock: HTML
+  collectionDescriptionsInOverview: true
+- buildingBlock: CRS
+  enabled: true
+  additionalCrs:
+  - code: 28992
+    forceAxisOrder: NONE
+  - code: 4258
+    forceAxisOrder: NONE
+  - code: 3857
+    forceAxisOrder: NONE
+- buildingBlock: SCHEMA
+  enabled: true
+- buildingBlock: QUERYABLES
+  enabled: true
+- buildingBlock: FILTER
+  enabled: true
+- buildingBlock: SORTING
+  enabled: true
+- buildingBlock: PROJECTIONS
+  enabled: true
+- buildingBlock: JSON_FG
+  enabled: true
+- buildingBlock: VERSIONED_FEATURES
+  enabled: true
+  timeAxis: VALIDITY_TIME
+- buildingBlock: SEARCH
+  enabled: true
+- buildingBlock: MCP
+  enabled: true
+  apiDescriptionInTools: false
+  # larger results fail with a hint and the link to the result in the HTTP API, instead of filling the
+  # context of the model (2,768 panden with geometry are about 1.1 million characters)
+  maxResultSize: 100000
+  # rarely used on their own, available in the argument filter; ids selects by identificatie
+  filterOnlyQueryables:
+  - identificatie
+  - beginGeldigheid
+  - eindGeldigheid
+  - gemeentenaam
+  - wijknaam
+  - buurtnaam
+  included:
+    # kenmerkinonderzoek (data quality) only via the OGC API, to keep the tool list small
+    collections:
+    - pand
+    - verblijfsobject
+    - nummeraanduiding
+    - openbareruimte
+    - woonplaats
+    - ligplaats
+    - standplaats
+    queries:
+    - '*'
+    processes:
+    - '*'
+- buildingBlock: PROCESSES_CORE
+  enabled: true
+- buildingBlock: PROCESSES_FEATURES
+  enabled: true
+- buildingBlock: PROCESSES_ARAZZO
+  enabled: true
+collections:
+  woonplaats:
+    id: woonplaats
+    label: Woonplaatsen
+    description: 'Een woonplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen en van een naam voorzien gedeelte van het grondgebied van de gemeente. English: town, city, village, place name (locality).'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/woonplaats/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{naam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - naam
+      - status
+      - geometrie
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      included:
+      - naam
+  openbareruimte:
+    id: openbareruimte
+    label: Openbare ruimten
+    description: 'Een openbare ruimte is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen en van een naam voorziene buitenruimte die binnen één woonplaats is gelegen, meestal een straat. English: street, square, public space; street name of an address.'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/openbare-ruimte/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{naam}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - naam
+      - verkorteNaam
+      - type
+      - status
+      - ligtIn
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      included:
+      - naam
+  nummeraanduiding:
+    id: nummeraanduiding
+    label: Nummeraanduidingen
+    description: 'Een nummeraanduiding is een door het bevoegde gemeentelijke orgaan als zodanig toegekende aanduiding van een verblijfsobject, een standplaats of een ligplaats, bestaande uit postcode, huisnummer, huisletter en huisnummertoevoeging. English: address: house number, house letter, suffix, postcode (zip code).'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/nummeraanduiding/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{postcode | unHtml}} {{huisnummer}}{{huisletter}}{{huisnummertoevoeging}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - huisnummer
+      - huisletter
+      - huisnummertoevoeging
+      - postcode
+      - typeAdresseerbaarObject
+      - status
+      - ligtAan
+      - ligtIn
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      included:
+      - postcode
+      - huisnummer
+  pand:
+    id: pand
+    label: Panden
+    description: 'Een pand is de kleinste, bij de totstandkoming functioneel en bouwkundig-constructief zelfstandige eenheid die direct en duurzaam met de aarde is verbonden en betreedbaar en afsluitbaar is. De geometrie is het bovenaanzicht van het pand (polygoon). Voor een punt per object zoekt men de verblijfsobjecten in het pand (collectie verblijfsobject met maaktDeelUitVan); hun geometrie is een punt. Het polygoon kan met exclude-properties=geometrie worden weggelaten. English: building, building footprint, construction year.'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/pand/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - oorspronkelijkBouwjaar
+      - status
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+      - grondoppervlakte
+      - aantalVerblijfsobjecten
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      included:
+      - oorspronkelijkBouwjaar
+  verblijfsobject:
+    id: verblijfsobject
+    label: Verblijfsobjecten
+    description: 'Een verblijfsobject is de kleinste binnen een of meer panden gelegen en voor woon-, bedrijfsmatige, of recreatieve doeleinden geschikte eenheid van gebruik, bijvoorbeeld een woning, winkel of kantoor. English: addressable unit: dwelling, apartment, shop, office, with floor area and use.'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - gebruiksdoel
+      - oppervlakte
+      - status
+      - heeftAlsHoofdadres
+      - heeftAlsNevenadres
+      - maaktDeelUitVan
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+      - statusPand
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      included:
+      - oppervlakte
+  ligplaats:
+    id: ligplaats
+    label: Ligplaatsen
+    description: 'Een ligplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen plaats in het water voor het permanent afmeren van een voor woon-, bedrijfsmatige of recreatieve doeleinden geschikt drijvend object. English: houseboat berth, mooring.'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/ligplaats/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - status
+      - heeftAlsHoofdadres
+      - heeftAlsNevenadres
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      enabled: false
+  standplaats:
+    id: standplaats
+    label: Standplaatsen
+    description: 'Een standplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen terrein voor het permanent plaatsen van een niet direct en niet duurzaam met de aarde verbonden en voor woon-, bedrijfsmatige, of recreatieve doeleinden geschikte ruimte. English: pitch for a mobile home or caravan.'
+    enabled: true
+    persistentUriTemplate: 'https://bag.basisregistraties.overheid.nl/bag/id/standplaats/{{value}}'
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{identificatie}}'
+    - buildingBlock: QUERYABLES
+      included:
+      - identificatie
+      - geometrie
+      - status
+      - heeftAlsHoofdadres
+      - heeftAlsNevenadres
+      - gemeentecode
+      - wijkcode
+      - buurtcode
+      - gemeentenaam
+      - wijknaam
+      - buurtnaam
+      - beginGeldigheid
+      - eindGeldigheid
+    - buildingBlock: SORTING
+      enabled: false
+  kenmerkinonderzoek:
+    id: kenmerkinonderzoek
+    label: Kenmerken in onderzoek
+    description: 'Kenmerken (attributen en relaties) van BAG-objecten waarvan wordt of werd onderzocht of het gegeven juist is, met de periode waarin het kenmerk wel of niet in onderzoek is. Gebruik `datetime=now` voor de huidige toestand. English: attributes under investigation (data quality).'
+    enabled: true
+    api:
+    - buildingBlock: FEATURES_HTML
+      featureTitleTemplate: '{{objecttype}} {{kenmerk}}'
+    - buildingBlock: VERSIONED_FEATURES
+      enabled: false
+    - buildingBlock: QUERYABLES
+      included:
+      - objecttype
+      - object
+      - kenmerk
+      - inOnderzoek
+    - buildingBlock: SORTING
+      enabled: false

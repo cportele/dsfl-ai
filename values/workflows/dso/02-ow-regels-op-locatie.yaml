@@ -1,0 +1,304 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+# examples changed to Stadhuisplein 1, Amersfoort
+# ow-tekst-ophalen: optional input peildatum (geldigOp and inWerkingOp), for the wIds of regels-op-peildatum
+arazzo: 1.0.1
+info:
+  title: DSO • Omgevingswet-document → regels en tekst op deze locatie
+  version: 0.1.0
+  summary: Per Omgevingswet-document uit stap 01 de annotaties op het punt (Presenteren v8), daarna alleen de tekst die je
+    nodig hebt.
+  description: "Ontsluiten vertelt wélke documenten gelden. Voor wat er in staat over déze locatie\nga je naar Presenteren\
+    \ v8, met de geometrie opnieuw in de body zodat het stelsel\nfiltert en niet jij.\n\nDrie keuzes maken het verschil:\n\
+    1. Het juiste endpoint per documenttype: artikelstructuur → regeltekstannotaties,\n   vrijetekststructuur → divisieannotaties.\
+    \ Het verkeerde endpoint geeft geen\n   bruikbaar antwoord en dus een tweede call.\n2. `locatieSelectie=primair`: gebiedengroepen\
+    \ mét eigen geometrie-identificatie in\n   plaats van alle losse gebieden. Regels, activiteiten en gebiedsaanwijzingen\n\
+    \   blijven identiek; bij grote verordeningen scheelt dit meer dan 99% van de\n   locaties in de respons.\n3. `uriIdentificatie`\
+    \ komt kant-en-klaar gecodeerd uit Ontsluiten v2. Neem hem over;\n   codeer niet zelf (zie 06 voor de route waar je dat\
+    \ wél moet doen).\n"
+sourceDescriptions:
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+  x-dso-budget:
+    opmerking: Zwaarst uitgeruste API van het stelsel.
+    maxRequestsPerSeconde: 50
+    maxGelijktijdig: 50
+    limiter: één gedeelde voor je hele client, niet één per module
+workflows:
+- workflowId: ow-regels-artikelstructuur
+  x-ldproxy-readOnly: true
+  summary: Regels, activiteiten, gebiedsaanwijzingen en normen op een punt — documenten met artikelen.
+  description: Omgevingsplan, omgevingsverordening, waterschapsverordening, projectbesluit, AMvB, ministeriële regeling.
+  inputs:
+    $ref: '#/components/inputs/documentOpPunt'
+  steps:
+  - stepId: annotaties-op-punt
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1regeltekstannotaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - reference: $components.parameters.locatieSelectiePrimair
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      annotaties: $response.body
+    x-dso-outputs:
+      waarom: 'Eén output voor de hele body, geen pointer per lijst. De API laat lege lijsten
+
+        weg: op dit punt in Eindhoven ontbreken `instructieregels`,
+
+        `omgevingswaarderegels` en `omgevingswaarden` helemaal. Een pointer naar een
+
+        ontbrekend veld laat de workflow falen (gemeten met Redocly Respect).
+
+        '
+      lijsten:
+      - regelsVoorIedereen
+      - instructieregels
+      - omgevingswaarderegels
+      - regelteksten
+      - activiteiten
+      - gebiedsaanwijzingen
+      - omgevingsnormen
+      - omgevingswaarden
+      - locaties
+      - geselecteerdeLocatieRefs
+    x-dso-leegIs: antwoord
+    x-dso-waarom: 'Bronhouders bepalen zelf hoe diep ze annoteren, en door de bruidsschat kan een
+
+      gemeente weinig eigen genormeerde inhoud hebben terwijl er wél regels gelden.
+
+      Lege of dunne annotaties zijn dus geen incomplete levering: val terug op de
+
+      tekst, en probeer niet dezelfde regeling langs andere endpoints.
+
+      '
+  outputs:
+    annotaties: $steps.annotaties-op-punt.outputs.annotaties
+  x-dso-selectie:
+    waaromNietInArazzo: Arazzo-outputs zijn JSON-pointers. Een pointer kan een element op positie aanwijzen, niet op inhoud
+      zoeken. Koppelen via [0] levert stil het verkeerde object op.
+    koppelingen:
+    - van: regelsVoorIedereen[].regeltekstRef
+      naar: regelteksten[].identificatie
+      levert: regelteksten[].wId — de sleutel voor de tekst (ow-tekst-ophalen)
+    - van: regelsVoorIedereen[].activiteitLocatieaanduidingen[].activiteitRef
+      naar: activiteiten[].identificatie
+      levert: welke regel over welke activiteit gaat
+    - van: <annotatie>.locatieRefs[] ∩ geselecteerdeLocatieRefs
+      naar: locaties[].identificatie
+      levert: de locatie die het punt écht raakt, en haar geometrieIdentificatie (04)
+    eerstFilteren: 'Op een punt komen honderden tot ruim duizend regels terug (Eindhoven-Woensel:
+
+      1.356), het grootste deel via het ambtsgebied. Kies eerst de activiteiten of
+
+      gebiedsaanwijzingen die bij de vraag horen en haal alleen die teksten op.
+
+      '
+- workflowId: ow-regels-vrijetekststructuur
+  x-ldproxy-readOnly: true
+  summary: Tekstdelen en hun annotaties op een punt — documenten zonder artikelen.
+  description: Omgevingsvisie, programma, instructie.
+  inputs:
+    $ref: '#/components/inputs/documentOpPunt'
+  steps:
+  - stepId: divisieannotaties-op-punt
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1divisieannotaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - reference: $components.parameters.locatieSelectiePrimair
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      antwoord: $response.body
+    x-dso-leegIs: antwoord
+  outputs:
+    antwoord: $steps.divisieannotaties-op-punt.outputs.antwoord
+- workflowId: ow-tekst-ophalen
+  x-ldproxy-readOnly: true
+  summary: De tekst van één artikel (of lid) — een subtree, niet de hele documentstructuur.
+  description: 'Haal niet de hele documentstructuur op. Bij meerdere treffers in hetzelfde
+
+    document: haal de dichtstbijzijnde gemeenschappelijke subtree één keer op in
+
+    plaats van elk artikel apart. Een expressie is onveranderlijk: cache op
+
+    (expressionId, wId) en haal nooit opnieuw op.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - uriIdentificatie
+    - wId
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      uriIdentificatie:
+        type: string
+        examples:
+        - _akn_nl_act_gm0307_2020_omgevingsplan
+      wId:
+        type: string
+        description: 'Precies zoals hij in regelteksten[].wId staat. Leid er geen artikel-wId uit af
+
+          door `__para_N` eraf te knippen: dat geeft een 404 "workId kan niet gevonden
+
+          worden" (gemeten op het omgevingsplan van Eindhoven).
+
+          '
+        examples:
+        - chp_22__subchp_22.2__subsec_22.2.6__subsec_22.2.6.2__art_22.32__para_1
+      peildatum:
+        type: string
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+        description: De datum (jjjj-MM-dd) waarop de tekst gold en in werking was, zoals bij regels-op-peildatum. Zonder datum
+          de tekst die vandaag geldt; een wId van een oudere versie bestaat dan niet.
+  steps:
+  - stepId: subtree
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1documentstructuur~1{documentComponentWorkId}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.uriIdentificatie
+    - name: documentComponentWorkId
+      in: path
+      value: $inputs.wId
+    - name: geldigOp
+      in: query
+      value: $inputs.peildatum
+    - name: inWerkingOp
+      in: query
+      value: $inputs.peildatum
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      componenten: $response.body#/_embedded/documentComponenten
+  outputs:
+    componenten: $steps.subtree.outputs.componenten
+  x-dso-cache:
+    sleutel:
+    - expressionId
+    - wId
+    geldigheid: onbeperkt — een FRBR-expressie is onveranderlijk
+components:
+  inputs:
+    documentOpPunt:
+      type: object
+      required:
+      - apiKey
+      - userAgent
+      - uriIdentificatie
+      - rdX
+      - rdY
+      properties:
+        apiKey:
+          type: string
+          format: password
+        userAgent:
+          type: string
+        uriIdentificatie:
+          type: string
+          description: Overnemen uit Ontsluiten v2 (documenten[].uriIdentificatie). Al gecodeerd.
+          examples:
+          - _akn_nl_act_gm0307_2020_omgevingsplan
+        rdX:
+          type: number
+          examples:
+          - 154792.05
+        rdY:
+          type: number
+          examples:
+          - 463172.16
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+    locatieSelectiePrimair:
+      name: locatieSelectie
+      in: query
+      value: primair
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+      x-dso-backoff:
+      - 2
+      - 5
+      - 15
+      - 30
+    stopBijClientfout:
+      name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500
+      x-dso-waarom: Een 4xx is een fout in je eigen vraag. Een 404 die je herhaalt, is verspilling in zuivere vorm.

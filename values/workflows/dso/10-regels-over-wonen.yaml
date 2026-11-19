@@ -1,0 +1,474 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store;
+# the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.1.0
+info:
+  title: 'DSO • Functionele vraag: welke regels gaan hier over wonen?'
+  version: 0.1.0
+  summary: Van postcode en huisnummer naar de woonregels op dat adres, uit beide regimes, met de tekst erbij.
+  description: "Eén vraag van een bewoner, vijf API's, en elke stap hangt af van wat de vorige\nteruggaf:\n\n1. BAG (PDOK):\
+    \ adres → RD-punt en gemeentecode, als getallen.\n2. Ontsluiten v2: welke documenten gelden hier? Kies het geldende omgevingsplan\n\
+    \   (precies één) en de geldende Wro-plannen.\n3. IHR: per Wro-plan het bestemmingsvlak met hoofdgroep wonen op het punt\n\
+    \   (server-side gefilterd), met het artikel erbij.\n4. Presenteren v8: de annotaties van het omgevingsplan op het punt.\
+    \ Kies de\n   woon-objecten: functie-gebiedsaanwijzingen van groep 'wonen' en activiteiten\n   over wonen of woningen.\n\
+    5. Presenteren v8: per woon-object de regels, per regel de tekst.\n\nDe domeinkennis zit in de selectors:\n- 'Wonen' is\
+    \ geen waarde in de IMOW-waardelijst thema. In het omgevingsplan vind je\n  het via gebiedsaanwijzingen met groep 'wonen'\
+    \ en via activiteiten.\n- In de Wro heet het bestemmingshoofdgroep 'wonen'. In binnensteden valt wonen\n  vaak onder 'centrum'\
+    \ of 'gemengd' (gemeten: Lieve Vrouwekerkhof 13,\n  Amersfoort, heeft 'Centrum - 4'); die hoofdgroepen vraagt deze workflow\
+    \ niet op.\n- Ontsluiten levert de Wro-plannen al pons-gecorrigeerd: geen eigen pons-toets.\n\nArazzo 1.1.0 doet de selectie\
+    \ op inhoud (Selector Object, JSONPath RFC 9535).\nDe lussen per Wro-plan, per woon-object en per regel staan in `x-dso-forEach`:\n\
+    de enige niet-standaard constructie, omdat Arazzo nog geen lussen kent.\n"
+sourceDescriptions:
+- name: bag
+  url: https://api.pdok.nl/kadaster/bag/ogc/v2/api?f=json
+  type: openapi
+- name: ontsluiten
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsinformatie/api/ontsluiten/v2/openapi.json
+  type: openapi
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+- name: ihr
+  url: https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/openapi.json
+  type: openapi
+- name: bagAdres
+  url: ./bag-adres.yaml
+  type: arazzo
+workflows:
+- workflowId: regels-over-wonen
+  x-ldproxy-readOnly: true
+  summary: Postcode + huisnummer → woonregels uit het omgevingsplan en de geldende Wro-plannen.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - ihrApiKey
+    - userAgent
+    - postcode
+    - huisnummer
+    properties:
+      apiKey:
+        type: string
+        format: password
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      postcode:
+        type: string
+        examples:
+        - 3811LM
+      huisnummer:
+        type: string
+        examples:
+        - '1'
+  steps:
+  - stepId: adres
+    description: Het adres uit de BAG van deze server, in plaats van de collectie adres van PDOK.
+    workflowId: $sourceDescriptions.bagAdres.adres-rd
+    parameters:
+    - name: postcode
+      value: $inputs.postcode
+    - name: huisnummer
+      value: $inputs.huisnummer
+    outputs:
+      rdX: $outputs.rdX
+      rdY: $outputs.rdY
+      gemeentecode: $outputs.gemeentecode
+      straat: $outputs.straat
+  - stepId: documenten
+    operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: size
+      in: query
+      value: 200
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - context: $response.body
+      condition: $[?count(@._embedded.documenten[?@.type == 'Omgevingsplan' && @.omgevingsdocumentMetadata.isOntwerp == false])
+        == 1]
+      type: jsonpath
+      x-dso-waarom: Elke gemeente heeft precies één omgevingsplan. Nul of twee is een fout in de vraag.
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      omgevingsplan:
+        context: $response.body
+        selector: $._embedded.documenten[?@.type == 'Omgevingsplan' && @.omgevingsdocumentMetadata.isOntwerp == false].uriIdentificatie
+        type: jsonpath
+      wroPlannen:
+        context: $response.body
+        selector: $._embedded.documenten[?@.imroDocumentMetadata.regelStatus == 'geldend' && (@.type == 'bestemmingsplan'
+          || @.type == 'wijzigingsplan' || @.type == 'uitwerkingsplan' || @.type == 'inpassingsplan' || @.type == 'beheersverordening')].uriIdentificatie
+        type: jsonpath
+  - stepId: wro-wonen
+    description: Per geldend Wro-plan het woon-bestemmingsvlak op het punt. Geen Wro-plan hier → nul rondes.
+    workflowId: wro-wonen-in-plan
+    x-dso-forEach:
+      items: $steps.documenten.outputs.wroPlannen
+      als: planId
+    parameters:
+    - name: ihrApiKey
+      value: $inputs.ihrApiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: rdX
+      value: $steps.adres.outputs.rdX
+    - name: rdY
+      value: $steps.adres.outputs.rdY
+    outputs:
+      bestemmingen: $outputs.bestemmingen
+      artikelen: $outputs.artikelen
+  - stepId: ow-annotaties
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1regeltekstannotaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: uriIdentificatie
+      in: path
+      value: $steps.documenten.outputs.omgevingsplan
+    - name: locatieSelectie
+      in: query
+      value: primair
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onSuccess:
+    - name: geen-woonobjecten-hier
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $[?count(@['gebiedsaanwijzingen','activiteiten'][?@.groep.waarde == 'wonen' || search(@.naam, '[Ww]on(en|ing)')])
+          == 0]
+        type: jsonpath
+    outputs:
+      annotaties: $response.body
+      woonObjecten:
+        context: $response.body
+        selector: $['gebiedsaanwijzingen','activiteiten'][?@.groep.waarde == 'wonen' || search(@.naam, '[Ww]on(en|ing)')].identificatie
+        type: jsonpath
+      woonObjectNamen:
+        context: $response.body
+        selector: $['gebiedsaanwijzingen','activiteiten'][?@.groep.waarde == 'wonen' || search(@.naam, '[Ww]on(en|ing)')].naam
+        type: jsonpath
+  - stepId: woonregels
+    description: Per woon-object de regels die ernaar verwijzen, per regel de tekst.
+    workflowId: regels-bij-object
+    x-dso-forEach:
+      items: $steps.ow-annotaties.outputs.woonObjecten
+      als: objectId
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: omgevingsplan
+      value: $steps.documenten.outputs.omgevingsplan
+    - name: annotaties
+      value: $steps.ow-annotaties.outputs.annotaties
+    outputs:
+      artikelen: $outputs.labels
+      teksten: $outputs.teksten
+  outputs:
+    adres: $steps.adres.outputs.straat
+    omgevingsplan: $steps.documenten.outputs.omgevingsplan
+    wroPlannen: $steps.documenten.outputs.wroPlannen
+    wroBestemmingen: $steps.wro-wonen.outputs.bestemmingen
+    wroArtikelen: $steps.wro-wonen.outputs.artikelen
+    woonObjecten: $steps.ow-annotaties.outputs.woonObjectNamen
+    owArtikelen: $steps.woonregels.outputs.artikelen
+    owTeksten: $steps.woonregels.outputs.teksten
+- workflowId: regels-bij-object
+  x-ldproxy-readOnly: true
+  summary: Alle regels in de annotaties die naar één object verwijzen, met hun tekst.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - omgevingsplan
+    - annotaties
+    - objectId
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      omgevingsplan:
+        type: string
+      annotaties:
+        type: object
+      objectId:
+        type: string
+  steps:
+  - stepId: teksten
+    workflowId: tekst-van-regel
+    x-dso-forEach:
+      items:
+        context: $inputs.annotaties
+        selector: $.regelsVoorIedereen[?@.gebiedsaanwijzingRefs[?@ == '{$inputs.objectId}'] || @.activiteitLocatieaanduidingen[?@.activiteitRef
+          == '{$inputs.objectId}']].regeltekstRef
+        type: jsonpath
+        x-dso-interpretatie: De waarde van objectId wordt in de selector ingebed. Arazzo staat ingebedde expressies toe in
+          strings; of dat ook voor een selector geldt, zegt de spec niet.
+      als: regeltekstRef
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: omgevingsplan
+      value: $inputs.omgevingsplan
+    - name: annotaties
+      value: $inputs.annotaties
+    outputs:
+      labels: $outputs.label
+      teksten: $outputs.tekst
+  outputs:
+    labels: $steps.teksten.outputs.labels
+    teksten: $steps.teksten.outputs.teksten
+- workflowId: tekst-van-regel
+  x-ldproxy-readOnly: true
+  summary: Eén regeltekst ophalen — de subtree, niet de hele documentstructuur.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - omgevingsplan
+    - annotaties
+    - regeltekstRef
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      omgevingsplan:
+        type: string
+      annotaties:
+        type: object
+      regeltekstRef:
+        type: string
+  steps:
+  - stepId: subtree
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1documentstructuur~1{documentComponentWorkId}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: uriIdentificatie
+      in: path
+      value: $inputs.omgevingsplan
+    - name: documentComponentWorkId
+      in: path
+      value:
+        context: $inputs.annotaties
+        selector: $.regelteksten[?@.identificatie == '{$inputs.regeltekstRef}'].wId
+        type: jsonpath
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      label: $response.body#/_embedded/documentComponenten/0/expressie
+      tekst:
+        context: $response.body
+        selector: $..inhoud
+        type: jsonpath
+        x-dso-waarom: Een lid heeft zijn tekst in 'inhoud'; een artikel met leden heeft die in de onderliggende componenten.
+          $..inhoud vangt beide.
+  outputs:
+    label: $steps.subtree.outputs.label
+    tekst: $steps.subtree.outputs.tekst
+- workflowId: wro-wonen-in-plan
+  x-ldproxy-readOnly: true
+  summary: Het bestemmingsvlak met hoofdgroep wonen op het punt, en het artikel erbij.
+  inputs:
+    type: object
+    required:
+    - ihrApiKey
+    - userAgent
+    - planId
+    - rdX
+    - rdY
+    properties:
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      planId:
+        type: string
+      rdX:
+        type: number
+      rdY:
+        type: number
+  steps:
+  - stepId: woonvlakken
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1bestemmingsvlakken~1_zoek/post'
+    parameters:
+    - name: X-Api-Key
+      in: header
+      value: $inputs.ihrApiKey
+    - name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    - name: Content-Crs
+      in: header
+      value: epsg:28992
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: bestemmingshoofdgroep
+      in: query
+      value: wonen
+    - name: pageSize
+      in: query
+      value: 100
+    requestBody:
+      contentType: application/json
+      payload:
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      vlakIds:
+        context: $response.body
+        selector: $._embedded.bestemmingsvlakken[*].id
+        type: jsonpath
+      bestemmingen:
+        context: $response.body
+        selector: $._embedded.bestemmingsvlakken[*].naam
+        type: jsonpath
+  - stepId: artikelen
+    workflowId: wro-artikel
+    x-dso-forEach:
+      items: $steps.woonvlakken.outputs.vlakIds
+      als: planobjectId
+    parameters:
+    - name: ihrApiKey
+      value: $inputs.ihrApiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: planId
+      value: $inputs.planId
+    outputs:
+      titels: $outputs.titels
+  outputs:
+    bestemmingen: $steps.woonvlakken.outputs.bestemmingen
+    artikelen: $steps.artikelen.outputs.titels
+- workflowId: wro-artikel
+  x-ldproxy-readOnly: true
+  summary: Het artikel bij één planobject, met leden.
+  inputs:
+    type: object
+    required:
+    - ihrApiKey
+    - userAgent
+    - planId
+    - planobjectId
+    properties:
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      planId:
+        type: string
+      planobjectId:
+        type: string
+  steps:
+  - stepId: artikeltekst
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1teksten/get'
+    parameters:
+    - name: X-Api-Key
+      in: header
+      value: $inputs.ihrApiKey
+    - name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: planobjectId
+      in: query
+      value: $inputs.planobjectId
+    - name: expand
+      in: query
+      value: children
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      titels:
+        context: $response.body
+        selector: $._embedded.teksten[*].titel
+        type: jsonpath
+  outputs:
+    titels: $steps.artikeltekst.outputs.titels
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500

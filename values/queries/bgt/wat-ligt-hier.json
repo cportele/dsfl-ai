@@ -1,0 +1,1191 @@
+{
+  "id": "wat-ligt-hier",
+  "title": "Wat ligt er op of bij een punt",
+  "description": "Alle objecten van de BGT op of binnen een kleine afstand van een punt: het wegdeel, terreindeel, waterdeel of pand waarin het punt ligt en wat er verder in de buurt is, zoals inrichtingselementen, scheidingen of een brug erboven (relatieveHoogteligging). Het punt kan de ligging van een adres zijn (de geometrie van een verblijfsobject in de API /bag, bijvoorbeeld met de zoekopdracht adres-op-postcode), dan ligt het meestal in een pand; met een grotere afstand komen ook de straat en de tuin mee. In het resultaat heeft elk object zijn objecttype (objecttype, de naam van de collectie) en de eigenschappen van zijn collectie; hun betekenis en de betekenis van alle waarden staan in het schema van de collectie (/bgt/collections/<collectie>/schema). Collecties: alle collecties. English: what is at or near a point or address: road, footpath, cycle path, garden, green, water, building, bridge, street furniture; reverse lookup of the topography.",
+  "parameters": {
+    "punt": {
+      "title": "punt",
+      "description": "Het punt als WKT of GeoJSON in WGS84-lengte/breedtegraad, bijvoorbeeld POINT(5.3842 52.1567).",
+      "format": "geometry-point"
+    },
+    "afstand": {
+      "title": "afstand",
+      "description": "De maximale afstand in meter tussen het punt en de geometrie van een object; 0 levert alleen de objecten waarin het punt ligt. Standaard 1.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 1
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de geometrie, de registratiegegevens (objectBeginTijd, objectEindTijd, tijdstipRegistratie, eindRegistratie, lvPublicatiedatum, inOnderzoek, bgtStatus, plusStatus) en de gegevens voor de kaart (nummeraanduidingreeks.*, hoek, kruinlijn); een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Standaard wel geleverd: objecttype, de classificatie, oppervlakte en lengte, bronhouder, relatieveHoogteligging, de gebiedscodes en -namen; ook die en elke andere eigenschap behalve identificatie zijn weg te laten. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode. Met de geometrie (weglaten zonder 'geometrie') is de afstand tot elk object te berekenen.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "objectBeginTijd",
+          "objectEindTijd",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "lvPublicatiedatum",
+          "inOnderzoek",
+          "bgtStatus",
+          "plusStatus",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "oppervlakte",
+          "lengte",
+          "nummeraanduidingreeks.tekst",
+          "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+          "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+          "nummeraanduidingreeks.plaatsingspunt",
+          "nummeraanduidingreeks.hoek",
+          "hoek",
+          "kruinlijn",
+          "objecttype",
+          "bronhouder",
+          "relatieveHoogteligging",
+          "plusType",
+          "voorgaandeVersie",
+          "volgendeVersie",
+          "bgtFysiekVoorkomen",
+          "plusFysiekVoorkomen",
+          "opTalud",
+          "bgtType",
+          "naam",
+          "bgtFunctie",
+          "plusFunctie",
+          "identificatieBAGOPR.id",
+          "identificatieBAGOPR.title",
+          "openbareRuimteNaam",
+          "openbareRuimteType",
+          "typeOverbruggingsdeel",
+          "hoortBijTypeOverbrugging",
+          "overbruggingIsBeweegbaar",
+          "hectometeraanduiding",
+          "identificatieBAGPND.id",
+          "identificatieBAGPND.title"
+        ]
+      },
+      "default": [
+        "geometrie",
+        "objectBeginTijd",
+        "objectEindTijd",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "lvPublicatiedatum",
+        "inOnderzoek",
+        "bgtStatus",
+        "plusStatus",
+        "nummeraanduidingreeks.tekst",
+        "nummeraanduidingreeks.identificatieBAGVBOLaagsteHuisnummer",
+        "nummeraanduidingreeks.identificatieBAGVBOHoogsteHuisnummer",
+        "nummeraanduidingreeks.plaatsingspunt",
+        "nummeraanduidingreeks.hoek",
+        "hoek",
+        "kruinlijn"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "tijdstipRegistratie"
+          },
+          {
+            "property": "eindRegistratie"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "wegdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwegdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "spoor"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "begroeidterreindeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "onbegroeidterreindeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ondersteunendwaterdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "pand"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overigbouwwerk"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kunstwerkdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "scheiding"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overigescheiding"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "overbruggingsdeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "tunneldeel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "gebouwinstallatie"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "functioneelgebied"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "openbareruimtelabel"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "ongeclassificeerdobject"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "bak"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "bord"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "installatie"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "kast"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "mast"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "paal"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "put"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "sensor"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "straatmeubilair"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "waterinrichtingselement"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "weginrichtingselement"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    },
+    {
+      "collections": [
+        "vegetatieobject"
+      ],
+      "filter": {
+        "op": "=",
+        "args": [
+          {
+            "function": {
+              "name": "S_DWITHIN",
+              "args": [
+                {
+                  "property": "geometrie"
+                },
+                {
+                  "$parameter": {
+                    "punt": {
+                      "$ref": "#/parameters/punt"
+                    }
+                  }
+                },
+                {
+                  "$parameter": {
+                    "afstand": {
+                      "$ref": "#/parameters/afstand"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          true
+        ]
+      }
+    }
+  ]
+}

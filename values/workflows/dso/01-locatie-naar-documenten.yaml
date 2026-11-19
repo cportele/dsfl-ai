@@ -1,0 +1,235 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.0.1
+info:
+  title: DSO • Locatie → geldende documenten (beide regimes)
+  version: 0.1.0
+  summary: Van adres naar RD-coördinaat (PDOK) en van coördinaat naar alle documenten die daar gelden (Ontsluiten v2).
+  description: 'De locatie-ingang. Ontsluiten v2 zet één coördinaat om in de documenten die daar
+
+    gelden, uit beide regimes: Omgevingswet-documenten én de nog geldende Wro-plannen,
+
+    die laatste al pons-gecorrigeerd. Ga hier altijd beginnen voor een locatievraag
+
+    (llms.txt § Welke vraag hoort bij welke API).
+
+
+    Extensies `x-dso-*` leggen vast wat Arazzo 1.0.1 niet kan uitdrukken: rekenstappen
+
+    tussen calls, iteratie, selectie op inhoud en de betekenis van een leeg antwoord.
+
+    Zie README.md.
+
+    '
+sourceDescriptions:
+- name: pdokLocatieserver
+  url: https://api.pdok.nl/bzk/locatieserver/search/v3_1/openapi.json
+  type: openapi
+- name: ontsluiten
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsinformatie/api/ontsluiten/v2/openapi.json
+  type: openapi
+  x-dso-budget:
+    opmerking: Zwakst geschaalde API van het stelsel. Eén call per locatievraag; nooit als bulk-ingang.
+    pauzeTussenCallsSeconden: 0.4
+    bulkAlternatief: 06-voorraad-sweep.arazzo.yaml
+workflows:
+- workflowId: adres-naar-coordinaat
+  x-ldproxy-readOnly: true
+  summary: Adres → RD-coördinaat via de PDOK Locatieserver (niet het DSO).
+  description: 'De geocode bepaalt *waar* je kijkt, maar is zelf nooit een antwoord. Toon de
+
+    geocode-positie niet als een positie uit het stelsel. Cache het antwoord op de
+
+    genormaliseerde adresvraag: adressen verplaatsen niet.
+
+    '
+  inputs:
+    type: object
+    required:
+    - adres
+    properties:
+      adres:
+        type: string
+        examples:
+        - Stadhuisplein 1, Amersfoort
+  steps:
+  - stepId: geocodeer
+    description: Vrij zoeken op adres, één resultaat, alleen het adrestype.
+    operationPath: '{$sourceDescriptions.pdokLocatieserver.url}#/paths/~1free/get'
+    parameters:
+    - name: q
+      in: query
+      value: $inputs.adres
+    - name: fq
+      in: query
+      value: type:adres
+    - name: rows
+      in: query
+      value: 1
+    - name: fl
+      in: query
+      value: weergavenaam,centroide_rd,type
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/response/numFound > 0
+    outputs:
+      weergavenaam: $response.body#/response/docs/0/weergavenaam
+      centroideRd: $response.body#/response/docs/0/centroide_rd
+  outputs:
+    weergavenaam: $steps.geocodeer.outputs.weergavenaam
+    centroideRd: $steps.geocodeer.outputs.centroideRd
+  x-dso-transform:
+  - naar:
+    - rdX
+    - rdY
+    van: $steps.geocodeer.outputs.centroideRd
+    regel: WKT 'POINT(x y)' ontleden en beide getallen afronden op 3 decimalen. Meer decimalen geeft bij Ontsluiten een 422
+      'Geometrie heeft meer dan 3 decimalen'.
+    waaromNietInArazzo: Arazzo 1.0.1 kent geen stringbewerking of rekenkunde in runtime-expressies.
+- workflowId: coordinaat-naar-documenten
+  x-ldproxy-readOnly: true
+  summary: RD-coördinaat → alle documenten die daar gelden, Ow én Wro, in één call.
+  description: 'Vijf dingen die hier goed moeten (dso-voorbeeld-regels-op-adres.md, stap 2):
+
+    `size` expliciet op 200 (default 20 mist op een gemiddeld punt de helft, zonder
+
+    foutmelding); `Content-Crs` met de RD-URI (de enige toegestane waarde);
+
+    coördinaten op 3 decimalen; zelf filteren op wat je zoekt; en zuinig zijn met
+
+    deze API.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - rdX
+    - rdY
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+        description: <naam>/<versie> (+https://<project-url>; <contactadres>)
+      rdX:
+        type: number
+        examples:
+        - 154792.05
+      rdY:
+        type: number
+        examples:
+        - 463172.16
+      geldigOp:
+        type: string
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+        description: Weglaten = vandaag. Zie 08-tijdreis voor de tijdsassen.
+  steps:
+  - stepId: documenten-op-locatie
+    operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: size
+      in: query
+      value: 200
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+      x-dso-leegIs: alarm
+      x-dso-waarom: Op elk punt in Nederland geldt ten minste rijksregelgeving. Nul documenten betekent een fout in de vraag
+        (coördinaat, CRS), niet een leeg gebied.
+    - condition: $response.body#/page/totalPages == 1
+      x-dso-waarom: Met size=200 past een locatie altijd op één pagina (gemeten 40–50 documenten). Meer pagina's betekent
+        dat je stil onvolledig bent.
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      documenten: $response.body#/_embedded/documenten
+      aantal: $response.body#/page/totalElements
+  outputs:
+    documenten: $steps.documenten-op-locatie.outputs.documenten
+    aantal: $steps.documenten-op-locatie.outputs.aantal
+  x-dso-vervolg:
+    per: $steps.documenten-op-locatie.outputs.documenten
+    waaromNietInArazzo: Arazzo 1.0.1 kent geen iteratie over een lijst. De client loopt; elke route hieronder is een zelfstandig
+      uitvoerbare workflow.
+    routes:
+    - als: 'Omgevingswet-document, geldend: omgevingsdocumentMetadata aanwezig, isOntwerp == false, isBesluit == false, type
+        ∈ {Omgevingsplan, Omgevingsverordening, Waterschapsverordening, Projectbesluit, AMvB, Ministeriële Regeling}'
+      workflow: 02-ow-regels-op-locatie.arazzo.yaml#ow-regels-artikelstructuur
+      invoer:
+        uriIdentificatie: '@.uriIdentificatie'
+    - als: Omgevingswet-document, geldend, type ∈ {Omgevingsvisie, Programma, Instructie}
+      workflow: 02-ow-regels-op-locatie.arazzo.yaml#ow-regels-vrijetekststructuur
+      invoer:
+        uriIdentificatie: '@.uriIdentificatie'
+    - als: 'Wro-plan: imroDocumentMetadata aanwezig en imroDocumentMetadata.regelStatus == ''geldend'', type ≠ structuurvisie'
+      workflow: 03-wro-regels-op-locatie.arazzo.yaml#wro-planobjecten-op-locatie
+      invoer:
+        planId: '@.uriIdentificatie'
+    - als: Ontwerp (isOntwerp == true) of Wro-plan 'in ontwikkeling'
+      workflow: geen
+      toelichting: Geen geldend recht. Alleen tonen als de vraag over komende wijzigingen gaat.
+    - als: structuurvisie
+      workflow: geen
+      toelichting: Beleid zonder regels; de titel volstaat meestal.
+    eerstFilteren: Je krijgt de volledige stapel terug (40–50 documenten). Kies de documenten die bij de vraag horen vóór
+      je per document doorvraagt; anders wordt één vraag vijftig calls.
+    niet: Geen eigen pons-correctie op de Wro-plannen. Ontsluiten heeft die al toegepast; een tweede correctie corrigeert
+      iets wat al gecorrigeerd is.
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+      x-dso-backoff:
+      - 2
+      - 5
+      - 15
+      - 30
+    stopBijClientfout:
+      name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500
+      x-dso-waarom: Een 4xx is een fout in je eigen vraag. Herhalen helpt niet.

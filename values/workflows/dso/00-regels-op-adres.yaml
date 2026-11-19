@@ -1,0 +1,205 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.0.1
+info:
+  title: DSO • Regels op een adres — de hoofdroute
+  version: 0.1.0
+  summary: Orchestratie van 01–05. Van adres naar de geldende regels in vijf à tien calls, of naar de toepasbare regels voor
+    een vergunningvraag.
+  description: 'Dit is de meest gestelde vraag aan het stelsel, en de vraag waarop clients het
+
+    vaakst improviseren: alle regelingen van de gemeente ophalen, alle annotaties
+
+    zonder locatiefilter, elke geometrie apart. Dat zijn al snel duizenden requests per
+
+    adres. Deze route doet hetzelfde in ongeveer vijf tot tien.
+
+
+    | Stap | Workflow | Calls |
+
+    |---|---|---|
+
+    | Adres → coördinaat | 01 adres-naar-coordinaat | 1, permanent cachebaar |
+
+    | Coördinaat → documenten | 01 coordinaat-naar-documenten | 1 |
+
+    | Regels per document | 02 / 03 | 1 per relevant document |
+
+    | Tekst | 02 ow-tekst-ophalen / 03 wro-regels-bij-planobject | 1 per geraakt artikel |
+
+    | Pons | — | 0, al toegepast |
+
+    | Geometrie | 04 | 0, tenzij je tekent |
+
+
+    Het vraagtype bepaalt de route: een vraag over regels gaat via Ontsluiten en
+
+    Presenteren (regels-op-adres), een vraag als "mag ik hier een dakkapel bouwen"
+
+    via de RTR (vergunningvraag-op-adres).
+
+    '
+sourceDescriptions:
+- name: locatie
+  url: ./01-locatie-naar-documenten.arazzo.yaml
+  type: arazzo
+- name: owRegels
+  url: ./02-ow-regels-op-locatie.arazzo.yaml
+  type: arazzo
+- name: wroRegels
+  url: ./03-wro-regels-op-locatie.arazzo.yaml
+  type: arazzo
+- name: geometrie
+  url: ./04-geometrie-tekenen.arazzo.yaml
+  type: arazzo
+- name: vergunning
+  url: ./05-vergunningcheck.arazzo.yaml
+  type: arazzo
+workflows:
+- workflowId: regels-op-adres
+  x-ldproxy-readOnly: true
+  summary: Adres → coördinaat → alle documenten die daar gelden. Daarna per document route 02 of 03.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - adres
+    - rdX
+    - rdY
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      adres:
+        type: string
+        examples:
+        - Stadhuisplein 1, Amersfoort
+      rdX:
+        type: number
+        description: Uit de geocode, na ontleden en afronden (zie x-dso-transform in 01). Arazzo kan dat niet zelf.
+        examples:
+        - 154792.05
+      rdY:
+        type: number
+        examples:
+        - 463172.16
+  steps:
+  - stepId: geocodeer
+    workflowId: $sourceDescriptions.locatie.adres-naar-coordinaat
+    parameters:
+    - name: adres
+      value: $inputs.adres
+    outputs:
+      centroideRd: $outputs.centroideRd
+    x-dso-transform:
+      naar:
+      - rdX
+      - rdY
+      regel: WKT 'POINT(x y)' ontleden, afronden op 3 decimalen. De client doet dit; deze workflow neemt rdX/rdY daarom als
+        invoer.
+  - stepId: documenten-op-locatie
+    workflowId: $sourceDescriptions.locatie.coordinaat-naar-documenten
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: rdX
+      value: $inputs.rdX
+    - name: rdY
+      value: $inputs.rdY
+    outputs:
+      documenten: $outputs.documenten
+      aantal: $outputs.aantal
+    x-dso-vervolg:
+      zie: 01-locatie-naar-documenten.arazzo.yaml → x-dso-vervolg (routeringstabel per document)
+      waaromNietInArazzo: Per document een andere workflow kiezen vraagt iteratie plus selectie op inhoud. Beide ontbreken
+        in Arazzo 1.0.1; de client loopt.
+  outputs:
+    centroideRd: $steps.geocodeer.outputs.centroideRd
+    documenten: $steps.documenten-op-locatie.outputs.documenten
+    aantal: $steps.documenten-op-locatie.outputs.aantal
+- workflowId: vergunningvraag-op-adres
+  x-ldproxy-readOnly: true
+  summary: '''Mag ik hier een dakkapel bouwen?'' — adres → coördinaat → activiteiten op het punt (RTR). Niet via Ontsluiten
+    of Presenteren.'
+  description: 'Een aparte workflow en geen tak binnen regels-op-adres: Arazzo-workflowoutputs
+
+    kunnen niet conditioneel zijn. In één workflow met twee takken faalt altijd de
+
+    output van de tak die niet gelopen is (gemeten met Redocly Respect).
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - adres
+    - rdX
+    - rdY
+    - activiteit
+    - datum
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      adres:
+        type: string
+        examples:
+        - Stadhuisplein 1, Amersfoort
+      rdX:
+        type: number
+        examples:
+        - 154792.05
+      rdY:
+        type: number
+        examples:
+        - 463172.16
+      activiteit:
+        type: string
+        examples:
+        - dakkapel
+      datum:
+        type: string
+        description: Vandaag als dd-MM-jjjj.
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+  steps:
+  - stepId: geocodeer
+    workflowId: $sourceDescriptions.locatie.adres-naar-coordinaat
+    parameters:
+    - name: adres
+      value: $inputs.adres
+    outputs:
+      centroideRd: $outputs.centroideRd
+  - stepId: activiteiten-op-locatie
+    workflowId: $sourceDescriptions.vergunning.activiteiten-op-locatie
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: datum
+      value: $inputs.datum
+    - name: omschrijving
+      value: $inputs.activiteit
+    - name: rdX
+      value: $inputs.rdX
+    - name: rdY
+      value: $inputs.rdY
+    outputs:
+      activiteiten: $outputs.antwoord
+    x-dso-vervolg:
+      per: activiteiten._embedded.activiteiten[] → regelBeheerObjecten[typering == 'Conclusie'].functioneleStructuurRef
+      workflow: 05-vergunningcheck.arazzo.yaml#toepasbare-regels-ophalen
+  outputs:
+    activiteiten: $steps.activiteiten-op-locatie.outputs.activiteiten

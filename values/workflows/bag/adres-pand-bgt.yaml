@@ -1,0 +1,81 @@
+---
+arazzo: 1.1.0
+info:
+  title: 'Van adres naar pand en topografie'
+  summary: 'Workflows die de BAG en de BGT van deze server combineren.'
+  version: 1.0.0
+sourceDescriptions:
+- name: bag
+  url: /bag/api
+  type: openapi
+- name: bgt
+  url: /bgt/api
+  type: openapi
+workflows:
+- workflowId: pand-bij-adres
+  summary: 'Pand en topografie bij een adres'
+  x-ldproxy-readOnly: true
+  description: |
+    Zoekt bij een adres (postcode en huisnummer) de nummeraanduiding, het verblijfsobject met dit adres als hoofdadres, het pand waarin het verblijfsobject ligt en de BGT-objecten op de plek van het verblijfsobject. Levert de identificaties van nummeraanduiding, verblijfsobject en pand, het gebruiksdoel van het verblijfsobject, het oorspronkelijk bouwjaar en de status van het pand en het aantal en het objecttype van de BGT-objecten op die plek. Bij een adres met een huisletter of huisnummertoevoeging geldt het eerste adres met deze postcode en dit huisnummer. Een adres zonder verblijfsobject (bijvoorbeeld van een standplaats of ligplaats) levert een fout.
+  inputs:
+    type: object
+    required: [postcode, huisnummer]
+    properties:
+      postcode:
+        type: string
+        title: 'Postcode'
+        description: 'De postcode zonder spatie, bijvoorbeeld 3811LM.'
+        pattern: '^[0-9]{4}[A-Z]{2}$'
+      huisnummer:
+        type: integer
+        title: 'Huisnummer'
+        description: 'Het huisnummer, zonder huisletter of toevoeging.'
+  steps:
+  - stepId: adres
+    operationId: $sourceDescriptions.bag.nummeraanduiding.getItems
+    parameters:
+    - {name: postcode, in: query, value: $inputs.postcode}
+    - {name: huisnummer, in: query, value: $inputs.huisnummer}
+    - {name: limit, in: query, value: 1}
+    successCriteria:
+    - condition: $statusCode == 200 && $response.body#/numberReturned > 0
+    outputs:
+      id: $response.body#/features/0/id
+  - stepId: verblijfsobject
+    operationId: $sourceDescriptions.bag.verblijfsobject.getItems
+    parameters:
+    - {name: heeftAlsHoofdadres, in: query, value: $steps.adres.outputs.id}
+    - {name: limit, in: query, value: 1}
+    - {name: profile, in: query, value: rel-as-key}
+    successCriteria:
+    - condition: $response.body#/numberReturned == 1
+    outputs:
+      id: $response.body#/features/0/id
+      gebruiksdoel: $response.body#/features/0/properties/gebruiksdoel
+      pand: $response.body#/features/0/properties/maaktDeelUitVan/0
+      lon: $response.body#/features/0/geometry/coordinates/0
+      lat: $response.body#/features/0/geometry/coordinates/1
+  - stepId: pand
+    operationId: $sourceDescriptions.bag.pand.getItem
+    parameters:
+    - {name: featureId, in: path, value: $steps.verblijfsobject.outputs.pand}
+    outputs:
+      bouwjaar: $response.body#/properties/oorspronkelijkBouwjaar
+      status: $response.body#/properties/status
+  - stepId: topografie
+    operationId: $sourceDescriptions.bgt.wat-ligt-hier.executeStoredQuery
+    parameters:
+    - {name: punt, in: query, value: 'POINT({$steps.verblijfsobject.outputs.lon} {$steps.verblijfsobject.outputs.lat})'}
+    - {name: afstand, in: query, value: 0}
+    outputs:
+      aantal: $response.body#/numberReturned
+      objecttype: $response.body#/features/0/properties/objecttype
+  outputs:
+    nummeraanduiding: $steps.adres.outputs.id
+    verblijfsobject: $steps.verblijfsobject.outputs.id
+    gebruiksdoel: $steps.verblijfsobject.outputs.gebruiksdoel
+    pand: $steps.verblijfsobject.outputs.pand
+    bouwjaar: $steps.pand.outputs.bouwjaar
+    status: $steps.pand.outputs.status
+    bgtObjecten: $steps.topografie.outputs.aantal
+    bgtObjecttype: $steps.topografie.outputs.objecttype

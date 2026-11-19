@@ -1,0 +1,2054 @@
+# generated - do not edit
+---
+id: bag
+providerType: FEATURE
+providerSubType: SQL
+nativeCrs:
+  code: 28992
+  forceAxisOrder: NONE
+nativeTimeZone: Europe/Amsterdam
+defaultLanguage: nl
+globallyUniqueFeatureIds: true
+connectionInfo:
+  dialect: PGIS
+  host: ${db.host:-db}
+  database: ${db.database:-bag}
+  user: ${db.user:-bag}
+  password: ${db.password>base64:-YmFn}
+  schemas:
+  - bag
+sourcePathDefaults:
+  primaryKey: id
+  sortKey: id
+datasetChanges:
+  mode: 'OFF'
+queryGeneration:
+  computeNumberMatched: false
+queryProcessing:
+  skipUnusedPipelineSteps: true
+cql2Functions:
+- name: S_DWITHIN
+  description: Waar als de afstand tussen twee geometrieën ten hoogste de opgegeven afstand in meter is (gemeten in het Rijksdriehoeksstelsel).
+  arguments:
+  - name: geometrie
+    type: GEOMETRY
+  - name: punt
+    type: GEOMETRY
+  - name: afstand
+    description: afstand in meter
+    type:
+    - FLOAT
+    - INTEGER
+  returns:
+  - BOOLEAN
+  expression: ST_DWithin($geometrie, $punt, $afstand)
+types:
+  woonplaats:
+    sourcePath: /woonplaats
+    type: OBJECT
+    objectType: Woonplaats
+    label: Woonplaats
+    description: Een woonplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen en van een naam voorzien
+      gedeelte van het grondgebied van de gemeente. Elke openbare ruimte ligt in een woonplaats; de woonplaats is onderdeel
+      van het adres.
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een woonplaats, zoals opgenomen in de landelijke woonplaatsentabel: een viercijferige
+          code (0001-9999) die door het Kadaster wordt toegekend. De identificatie verandert niet zolang het object bestaat;
+          alle voorkomens (versies) van een object hebben dezelfde identificatie.'
+        constraints:
+          regex: ^[0-9]{4}$
+          required: true
+      objecttype:
+        constantValue: woonplaats
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (woonplaats); om de objecten in een resultaat met meerdere objecttypen
+          te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      naam:
+        sourcePath: naam
+        type: STRING
+        label: naam
+        description: De benaming van een door het gemeentebestuur aangewezen woonplaats. Maximaal 80 tekens.
+        constraints:
+          regex: ^\S.{0,79}$
+          required: true
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        label: geometrie
+        description: De tweedimensionale geometrische representatie van het vlak dat wordt gevormd door de omtrekken van een
+          woonplaats. Een vlak (Polygon) of een multivlak (MultiPolygon), zoals in de BAG geregistreerd. Het grondgebied van
+          een gemeente is volledig en zonder overlap ingedeeld in woonplaatsen. Coördinaten in het Rijksdriehoeksstelsel (RD,
+          EPSG:28992), in meter met maximaal drie decimalen; tweedimensionaal opgeslagen.
+        constraints:
+          required: true
+        geometryTypes:
+        - POLYGON
+        - MULTI_POLYGON
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een woonplaats waarin de betreffende woonplaats zich bevindt. De BAG
+          bevat gegevens over zowel bestaande als opgeheven woonplaatsen. Toegestane waarden: ''Woonplaats aangewezen'': Woonplaats
+          is aangewezen door het bevoegd gezag of geconstateerd. ''Woonplaats ingetrokken'': Woonplaats is ingetrokken door
+          het bevoegd gezag. Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Woonplaats ingetrokken''.'
+        constraints:
+          enum:
+          - Woonplaats aangewezen
+          - Woonplaats ingetrokken
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een woonplaats in de registratie is opgenomen als gevolg
+          van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om door burgers aangebrachte woonplaatsbenamingen die binnen andere processen
+          aan het licht zijn gekomen. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven, niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een woonplaats heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een woonplaats heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      gemeenteWoonplaatsRelatie:
+        sourcePath: '[identificatie=woonplaats]gemeente_woonplaats{sortKey=begingeldigheid}'
+        type: OBJECT_ARRAY
+        objectType: GemeenteWoonplaatsRelatie
+        label: gemeente-woonplaatsrelatie
+        description: De gemeenten waartoe de woonplaats behoort of heeft behoord, met de periode van de relatie. Afgeleid
+          door het Kadaster uit de gemeentetabel (Tabel 33) van het ministerie van BZK en meegeleverd met het BAG-extract;
+          geen authentiek BAG-gegeven en geen onderdeel van de BAG. Het betreft alle perioden, onafhankelijk van de versie
+          van de woonplaats.
+        properties:
+          gemeentecode:
+            sourcePath: gemeente
+            type: STRING
+            label: gemeentecode
+            description: De viercijferige code van de gemeente volgens Tabel 33 Gemeententabel.
+            constraints:
+              regex: ^[0-9]{4}$
+              required: true
+          beginGeldigheid:
+            sourcePath: begingeldigheid
+            type: DATE
+            label: begin geldigheid
+            description: De datum waarop de relatie tussen gemeente en woonplaats ingaat.
+            constraints:
+              required: true
+          eindGeldigheid:
+            sourcePath: eindgeldigheid
+            type: DATE
+            label: eind geldigheid
+            description: De datum waarop de relatie eindigt (niet tot en met); leeg als de relatie nog geldt.
+          status:
+            sourcePath: status
+            type: STRING
+            label: status
+            description: De status van de relatie; in het BAG 2.0 Extract (stand 2026-10-08) altijd 'definitief'.
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van de woonplaats. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van de woonplaats geldig is in de werkelijkheid conform de ingangsdatum
+          in het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van de woonplaats eindigt, bijvoorbeeld als
+          gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de versie
+          nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van de woonplaats is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van de woonplaats is beëindigd in de registratie van de bronhouder. Een
+          versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van de woonplaats is opgenomen in de registratie van de landelijke voorziening
+          (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van de woonplaats is opgenomen in de landelijke voorziening
+          (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van de woonplaats; leeg bij de eerste versie. Wordt als link
+          met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van de woonplaats; leeg bij de laatste versie. Wordt als link
+          met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  openbareruimte:
+    sourcePath: /openbareruimte
+    type: OBJECT
+    objectType: OpenbareRuimte
+    label: Openbare ruimte
+    description: Een openbare ruimte is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen en van een naam
+      voorziene buitenruimte die binnen één woonplaats is gelegen. Meestal een straat; ook water, spoorbanen, terreinen, kunstwerken,
+      landschappelijke en administratieve gebieden. De BAG bevat geen geometrie van openbare ruimten.
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een openbare ruimte. De identificatie bestaat uit 16 cijfers: de viercijferige
+          gemeentecode van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig
+          objectvolgnummer. De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De
+          identificatie verandert niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde
+          identificatie.'
+        constraints:
+          regex: ^[0-9]{4}30[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: openbareruimte
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (openbareruimte); om de objecten in een resultaat met meerdere
+          objecttypen te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      naam:
+        sourcePath: naam
+        type: STRING
+        label: naam
+        description: De naam die aan een openbare ruimte is toegekend in een daartoe strekkend formeel gemeentelijk besluit,
+          meestal een straatnaam. Maximaal 80 tekens. Dezelfde naam kan in meerdere woonplaatsen voorkomen; een openbare ruimte
+          die door twee woonplaatsen loopt is als twee openbare ruimten geregistreerd.
+        constraints:
+          regex: ^\S.{0,79}$
+          required: true
+      verkorteNaam:
+        sourcePath: verkortenaam
+        type: STRING
+        label: verkorte naam
+        description: Een verkorte naam van de openbare ruimte als de naam langer is dan 24 tekens, afgekort door het Kadaster
+          volgens NEN 5825. Geen onderdeel van de BAG en geen authentiek gegeven; alleen de volledige naam is officieel. Maximaal
+          24 tekens.
+        constraints:
+          regex: ^\S.{0,23}$
+      type:
+        sourcePath: type
+        type: STRING
+        label: type
+        description: 'De aard van de als zodanig benoemde openbare ruimte. Toegestane waarden: ''Weg'': Gebaand gedeelte voor
+          het wegverkeer en vliegverkeer te land, bijvoorbeeld een straat. ''Water'': Grondoppervlak in principe bedekt met
+          water, bijvoorbeeld een rivier. ''Spoorbaan'': Gebaand gedeelte voor het verkeer over rails. ''Terrein'': Door een
+          fysiek voorkomen gekarakteriseerd zichtbaar begrensd stuk grond, bijvoorbeeld een parkeerterrein. ''Kunstwerk'':
+          Civiel-technisch werk voor de infrastructuur van wegen, water, spoorbanen, waterkeringen en/of leidingen, bijvoorbeeld
+          een brug. ''Landschappelijk gebied'': Geografisch benoemd gebied (bijvoorbeeld Veluwe) of functioneel gebied (bijvoorbeeld
+          bedrijventerrein, bungalowpark, jachthaven). ''Administratief gebied'': Op basis van wet- en regelgeving afgebakend
+          gebied, bijvoorbeeld een stadsdeel.'
+        constraints:
+          enum:
+          - Weg
+          - Water
+          - Spoorbaan
+          - Terrein
+          - Kunstwerk
+          - Landschappelijk gebied
+          - Administratief gebied
+          required: true
+      ligtIn:
+        type: FEATURE_REF
+        refType: woonplaats
+        label: ligt in
+        description: 'De unieke aanduiding van de woonplaats waarbinnen de openbare ruimte is gelegen. Een openbare ruimte
+          ligt in precies één woonplaats. Als een nummeraanduiding zelf een woonplaats heeft (nummeraanduiding.ligtIn), dan
+          gaat die voor. De titel van de verwijzing is de naam van de woonplaats die geldig was op de laatste dag van deze
+          versie (bij de actuele versie: vandaag); is die op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}$
+          required: true
+        properties:
+          id:
+            sourcePath: ligtin
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam || CASE WHEN x_r.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)''
+              ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid - 1, current_date) AS d) x_d JOIN bag.woonplaats x_r
+              ON x_r.identificatie = $T$.ligtin ORDER BY (x_r.begingeldigheid <= x_d.d AND coalesce(x_r.eindgeldigheid > x_d.d,
+              true)) DESC, x_r.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een openbare ruimte waarin de betreffende openbare ruimte zich bevindt.
+          De BAG bevat gegevens over zowel bestaande als ingetrokken openbare ruimten. Toegestane waarden: ''Naamgeving uitgegeven'':
+          Naam is uitgegeven door het bevoegd gezag of geconstateerd. ''Naamgeving ingetrokken'': Naam is ingetrokken door
+          het bevoegd gezag. Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Naamgeving ingetrokken''.'
+        constraints:
+          enum:
+          - Naamgeving uitgegeven
+          - Naamgeving ingetrokken
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een openbare ruimte in de registratie is opgenomen als
+          gevolg van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om door burgers aangebrachte benamingen die binnen andere processen aan
+          het licht zijn gekomen. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven, niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een openbare ruimte heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een openbare ruimte heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van de openbare ruimte. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van de openbare ruimte geldig is in de werkelijkheid conform de ingangsdatum
+          in het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van de openbare ruimte eindigt, bijvoorbeeld
+          als gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de
+          versie nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder
+          eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van de openbare ruimte is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van de openbare ruimte is beëindigd in de registratie van de bronhouder.
+          Een versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van de openbare ruimte is opgenomen in de registratie van de landelijke
+          voorziening (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van de openbare ruimte is opgenomen in de landelijke
+          voorziening (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van de openbare ruimte; leeg bij de eerste versie. Wordt
+          als link met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van de openbare ruimte; leeg bij de laatste versie. Wordt als
+          link met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  nummeraanduiding:
+    sourcePath: /nummeraanduiding
+    type: OBJECT
+    objectType: Nummeraanduiding
+    label: Nummeraanduiding
+    description: 'Een nummeraanduiding is een door het bevoegde gemeentelijke orgaan als zodanig toegekende aanduiding van
+      een verblijfsobject, een standplaats of een ligplaats: het samenstel van postcode, huisnummer, huisletter en huisnummertoevoeging.
+      Samen met de naam van de openbare ruimte en de naam van de woonplaats vormt de nummeraanduiding het officiële adres.
+      Een nummeraanduiding heeft geen geometrie; de locatie is die van het adresseerbare object dat naar de nummeraanduiding
+      verwijst.'
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een nummeraanduiding. De identificatie bestaat uit 16 cijfers: de viercijferige
+          gemeentecode van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig
+          objectvolgnummer. De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De
+          identificatie verandert niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde
+          identificatie.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: nummeraanduiding
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (nummeraanduiding); om de objecten in een resultaat met meerdere
+          objecttypen te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      huisnummer:
+        sourcePath: huisnummer
+        type: INTEGER
+        label: huisnummer
+        description: Een door of namens het gemeentebestuur ten aanzien van een adresseerbaar object toegekende nummering.
+          Een natuurlijk getal tussen 1 en 99999.
+        constraints:
+          min: 1
+          max: 99999
+          required: true
+      huisletter:
+        sourcePath: huisletter
+        type: STRING
+        label: huisletter
+        description: 'Een door of namens het gemeentebestuur ten aanzien van een adresseerbaar object toegekende toevoeging
+          aan een huisnummer in de vorm van een alfanumeriek teken: een hoofdletter (A-Z) of kleine letter (a-z). Hoofdlettergevoelig.'
+        constraints:
+          regex: ^[a-zA-Z]$
+      huisnummertoevoeging:
+        sourcePath: huisnummertoevoeging
+        type: STRING
+        label: huisnummertoevoeging
+        description: 'Een door of namens het gemeentebestuur ten aanzien van een adresseerbaar object toegekende nadere toevoeging
+          aan een huisnummer of een combinatie van huisnummer en huisletter. Maximaal vier tekens: hoofdletters, kleine letters
+          en/of cijfers; de tekens ''/'' en ''-'' maken geen deel uit van de toevoeging.'
+        constraints:
+          regex: ^[0-9a-zA-Z]{1,4}$
+      postcode:
+        type: FEATURE_REF
+        refType: postcode6
+        refUriTemplate: ${external.url:-https://bag.ldproxy.net}/postcode6/collections/postcode6/items/{{id}}
+        label: postcode
+        description: 'De door PostNL vastgestelde code behorende bij een bepaalde combinatie van een straatnaam en een huisnummer:
+          vier cijfers, waarvan het eerste niet 0 is, en twee hoofdletters, zonder spatie (bijvoorbeeld 3811LM). Basisgegeven,
+          niet authentiek. Kan ontbreken als PostNL geen postcode heeft vastgesteld, bijvoorbeeld bij objecten met uitsluitend
+          de gebruiksfunctie ''overige gebruiksfunctie''. Een postcode kan bij meerdere openbare ruimten horen; postcode en
+          huisnummer samen (met huisletter en huisnummertoevoeging) duiden een adres aan. Een verwijzing naar het postcodegebied
+          met de statistische gegevens van het CBS in de API Postcodegebieden (/postcode6/collections/postcode6): de link
+          naar het object, de postcode is het laatste deel ervan en de id van het object. De titel van de verwijzing is de
+          postcode. Niet elke postcode heeft een postcodegebied bij het CBS, bijvoorbeeld een postcode die na de peildatum
+          van de CBS-gegevens is uitgegeven of al eerder is vervallen; de link leidt dan niet naar een object. Als filter
+          volstaat de postcode, bijvoorbeeld `?postcode=3811LM`.'
+        constraints:
+          regex: ^[1-9][0-9]{3}[A-Z]{2}$
+        properties:
+          id:
+            sourcePath: postcode
+            type: STRING
+          title:
+            sourcePath: postcode
+            type: STRING
+      typeAdresseerbaarObject:
+        sourcePath: typeadresseerbaarobject
+        type: STRING
+        label: type adresseerbaar object
+        description: 'De aard van het object waaraan de nummeraanduiding is toegekend. Het object zelf vindt men in de betreffende
+          collectie (verblijfsobject, standplaats of ligplaats) via de eigenschap heeftAlsHoofdadres of heeftAlsNevenadres.
+          Toegestane waarden: ''Verblijfsobject'': Nummeraanduiding is bedoeld voor een verblijfsobject. ''Standplaats'':
+          Nummeraanduiding is bedoeld voor een standplaats. ''Ligplaats'': Nummeraanduiding is bedoeld voor een ligplaats.'
+        constraints:
+          enum:
+          - Verblijfsobject
+          - Standplaats
+          - Ligplaats
+          required: true
+      ligtAan:
+        type: FEATURE_REF
+        refType: openbareruimte
+        label: ligt aan
+        description: 'De unieke aanduiding van de openbare ruimte waaraan het adresseerbare object is gelegen; de naam van
+          de openbare ruimte is de straatnaam van het adres. De titel van de verwijzing is de naam van de openbare ruimte
+          die geldig was op de laatste dag van deze versie (bij de actuele versie: vandaag); is die op die dag ingetrokken,
+          dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}30[0-9]{10}$
+          required: true
+        properties:
+          id:
+            sourcePath: ligtaan
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam || CASE WHEN x_r.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)''
+              ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid - 1, current_date) AS d) x_d JOIN bag.openbareruimte
+              x_r ON x_r.identificatie = $T$.ligtaan ORDER BY (x_r.begingeldigheid <= x_d.d AND coalesce(x_r.eindgeldigheid
+              > x_d.d, true)) DESC, x_r.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      ligtIn:
+        type: FEATURE_REF
+        refType: woonplaats
+        label: ligt in
+        description: 'De unieke aanduiding van de woonplaats waarbinnen het object waaraan de nummeraanduiding is toegekend
+          is gelegen. Alleen opgenomen als het object in een andere woonplaats ligt dan de openbare ruimte (ligtAan); dan
+          gaat deze woonplaats voor. Meestal leeg: de woonplaats van het adres is dan de woonplaats van de openbare ruimte.
+          De titel van de verwijzing is de naam van de woonplaats die geldig was op de laatste dag van deze versie (bij de
+          actuele versie: vandaag); is die op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}$
+        properties:
+          id:
+            sourcePath: ligtin
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam || CASE WHEN x_r.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)''
+              ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid - 1, current_date) AS d) x_d JOIN bag.woonplaats x_r
+              ON x_r.identificatie = $T$.ligtin ORDER BY (x_r.begingeldigheid <= x_d.d AND coalesce(x_r.eindgeldigheid > x_d.d,
+              true)) DESC, x_r.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een nummeraanduiding waarin de betreffende nummeraanduiding zich bevindt.
+          De BAG bevat gegevens over zowel bestaande als ingetrokken nummeraanduidingen. Toegestane waarden: ''Naamgeving
+          uitgegeven'': Naam is uitgegeven door het bevoegd gezag of geconstateerd. ''Naamgeving ingetrokken'': Naam is ingetrokken
+          door het bevoegd gezag. Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Naamgeving
+          ingetrokken''.'
+        constraints:
+          enum:
+          - Naamgeving uitgegeven
+          - Naamgeving ingetrokken
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een nummeraanduiding in de registratie is opgenomen
+          als gevolg van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om door burgers aangebrachte nummeraanduidingen die binnen andere processen
+          aan het licht zijn gekomen. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven, niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een nummeraanduiding heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een nummeraanduiding heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van de nummeraanduiding. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van de nummeraanduiding geldig is in de werkelijkheid conform de ingangsdatum
+          in het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van de nummeraanduiding eindigt, bijvoorbeeld
+          als gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de
+          versie nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder
+          eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van de nummeraanduiding is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van de nummeraanduiding is beëindigd in de registratie van de bronhouder.
+          Een versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van de nummeraanduiding is opgenomen in de registratie van de landelijke
+          voorziening (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van de nummeraanduiding is opgenomen in de landelijke
+          voorziening (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van de nummeraanduiding; leeg bij de eerste versie. Wordt
+          als link met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van de nummeraanduiding; leeg bij de laatste versie. Wordt
+          als link met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  pand:
+    sourcePath: /pand{sortKey=skey}
+    type: OBJECT
+    objectType: Pand
+    label: Pand
+    description: Een pand is de kleinste, bij de totstandkoming functioneel en bouwkundig-constructief zelfstandige eenheid
+      die direct en duurzaam met de aarde is verbonden en betreedbaar en afsluitbaar is. Een pand heeft zelf geen adres; de
+      verblijfsobjecten in het pand (verblijfsobject.maaktDeelUitVan) hebben een adres. Een pand kan nul, één of meer verblijfsobjecten
+      bevatten.
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een pand. De identificatie bestaat uit 16 cijfers: de viercijferige gemeentecode
+          van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig objectvolgnummer.
+          De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De identificatie verandert
+          niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde identificatie.'
+        constraints:
+          regex: ^[0-9]{4}10[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: pand
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (pand); om de objecten in een resultaat met meerdere objecttypen
+          te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        label: geometrie
+        description: De minimaal tweedimensionale geometrische representatie van het bovenzicht van de omtrekken van een pand.
+          In de BAG met hoogte 0 geleverd; hier tweedimensionaal. Coördinaten in het Rijksdriehoeksstelsel (RD, EPSG:28992),
+          in meter met maximaal drie decimalen; tweedimensionaal opgeslagen.
+        constraints:
+          required: true
+        geometryType: POLYGON
+      oorspronkelijkBouwjaar:
+        sourcePath: oorspronkelijkbouwjaar
+        type: INTEGER
+        label: oorspronkelijk bouwjaar
+        description: De aanduiding van het jaar waarin een pand oorspronkelijk als bouwkundig gereed is of zal worden opgeleverd.
+          Bij het opvoeren van een pand maakt de gemeente een reële inschatting van het waarschijnlijke bouwjaar; latere verbouwingen
+          wijzigen het bouwjaar niet. De waarde 9999 komt veel voor en betekent in de praktijk 'onbekend' (niet officieel
+          gedocumenteerd); ook andere onwaarschijnlijke jaren komen voor. Bij oude panden is het bouwjaar vaak een schatting
+          op een rond jaartal (1800, 1750, 1700, 1600), zodat aantallen per bouwjaar voor ongeveer 1900 slechts een grove
+          indicatie zijn.
+        constraints:
+          required: true
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een pand waarin het betreffende pand zich bevindt. De BAG bevat gegevens
+          over daadwerkelijk aanwezige, nog tot stand te brengen en verdwenen panden. Toegestane waarden: ''Bouwvergunning
+          verleend'': Een nieuw pand dat nog niet is gebouwd maar waarvoor wel een vergunning of andere publiekrechtelijke
+          toestemming is verleend. ''Niet gerealiseerd pand'': Een pand waarvoor een vergunning of andere publiekrechtelijke
+          toestemming was verleend, maar waarvan is vastgesteld dat wordt afgezien van de bouw of waarvan de vergunning is
+          ingetrokken. ''Bouw gestart'': Een vergund pand waarvan is gemeld of vastgesteld dat de bouw is gestart (minimaal
+          de aanleg van de fundering). ''Pand in gebruik (niet ingemeten)'': Een pand dat in gebruik is genomen of gebruiksgereed
+          is, maar waarvan de definitieve geometrie nog niet is ingemeten. ''Pand in gebruik'': Een pand dat in gebruik is
+          en waarvan de definitieve geometrie is ingemeten. ''Sloopvergunning verleend'': Een pand waarvoor een vergunning
+          tot sloop is verleend. ''Pand gesloopt'': Een pand waarvan is gemeld of vastgesteld dat het is gesloopt; de bouwkundige
+          constructie is verdwenen. ''Pand buiten gebruik'': Een pand dat in dusdanige bouwkundige staat verkeert dat het
+          daardoor redelijkerwijs niet te gebruiken is. ''Verbouwing pand'': Een pand waarvoor een vergunning of andere publiekrechtelijke
+          toestemming tot verbouw is verleend en waarbij de verbouwing nog niet is voltooid. ''Pand ten onrechte opgevoerd'':
+          Een pand dat niet had mogen worden opgenomen in de BAG-registratie en vervolgens is beëindigd. Eindstatussen (het
+          object is beëindigd en de status kan niet meer wijzigen): ''Niet gerealiseerd pand'', ''Pand gesloopt'', ''Pand
+          ten onrechte opgevoerd''.'
+        constraints:
+          enum:
+          - Bouwvergunning verleend
+          - Niet gerealiseerd pand
+          - Bouw gestart
+          - Pand in gebruik (niet ingemeten)
+          - Pand in gebruik
+          - Sloopvergunning verleend
+          - Pand gesloopt
+          - Pand buiten gebruik
+          - Verbouwing pand
+          - Pand ten onrechte opgevoerd
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een pand in de registratie is opgenomen als gevolg van
+          een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument voor
+          deze opname. Het gaat bijvoorbeeld om panden die niet eerder in de registratie zijn opgenomen vanwege het ontbreken
+          van de benodigde vergunning. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven, niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een pand heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een pand heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      gemeentecode:
+        sourcePath: gemeentecode
+        type: STRING
+        label: gemeente
+        role: AUXILIARY
+        description: Code van de gemeente waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld 0307.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^[0-9]{4}$
+      wijkcode:
+        sourcePath: wijkcode
+        type: STRING
+        label: wijk
+        role: AUXILIARY
+        description: Code van de wijk waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld WK030701.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^WK[0-9]{6}$
+      buurtcode:
+        sourcePath: buurtcode
+        type: STRING
+        label: buurt
+        role: AUXILIARY
+        description: Code van de buurt waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld BU03070100.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^BU[0-9]{8}$
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeentecode)}'
+        type: STRING
+        label: gemeentenaam
+        role: AUXILIARY
+        description: Naam van de gemeente waarin het object ligt (zie gemeentecode), uit de CBS Wijk- en Buurtkaart 2026.
+          Filter hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht
+          traag. Geen BAG-gegeven; standaard niet in de uitvoer.
+      wijknaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.wijk x_n WHERE x_n.id = $T$.wijkcode)}'
+        type: STRING
+        label: wijknaam
+        role: AUXILIARY
+        description: Naam van de wijk waarin het object ligt (zie wijkcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk- en
+          buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de wijkcode, samen met de naam. Filter hierop
+          alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      buurtnaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.buurt x_n WHERE x_n.id = $T$.buurtcode)}'
+        type: STRING
+        label: buurtnaam
+        role: AUXILIARY
+        description: Naam van de buurt waarin het object ligt (zie buurtcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk-
+          en buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de buurtcode, samen met de naam. Filter
+          hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      grondoppervlakte:
+        sourcePath: '[EXPRESSION]{sql=round(ST_Area($T$.geometrie))::integer}'
+        type: INTEGER
+        label: grondoppervlakte
+        unit: m2
+        role: AUXILIARY
+        description: De oppervlakte van het bovenaanzicht van het pand (de geometrie) in gehele vierkante meters, berekend
+          uit de geometrie in het Rijksdriehoeksstelsel, voor elke versie uit de geometrie van die versie. Niet de gebruiksoppervlakte
+          van de verblijfsobjecten. Helpt hoofdgebouwen te onderscheiden van bijgebouwen zoals schuren en garages. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      aantalVerblijfsobjecten:
+        sourcePath: '[EXPRESSION]{sql=(SELECT count(DISTINCT x_v.identificatie) FROM (SELECT coalesce($T$.eindgeldigheid -
+          1, current_date) AS d) x_d JOIN bag.verblijfsobject_pand x_vp ON x_vp.pand = $T$.identificatie JOIN bag.verblijfsobject
+          x_v ON x_v.id = x_vp.voorkomen WHERE (x_v.begingeldigheid <= x_d.d AND coalesce(x_v.eindgeldigheid > x_d.d, true))
+          AND x_v.status NOT IN (''Verblijfsobject ingetrokken'', ''Niet gerealiseerd verblijfsobject'', ''Verblijfsobject
+          ten onrechte opgevoerd''))}'
+        type: INTEGER
+        label: aantal verblijfsobjecten
+        role: AUXILIARY
+        description: 'Het aantal verblijfsobjecten in het pand (verblijfsobject.maaktDeelUitVan), in de versies die geldig
+          waren op de laatste dag van deze versie van het pand (bij de actuele versie: vandaag), ook verblijfsobjecten die
+          nog gebouwd worden (''Verblijfsobject gevormd''), maar niet ''Verblijfsobject ingetrokken'', ''Niet gerealiseerd
+          verblijfsobject'', ''Verblijfsobject ten onrechte opgevoerd''. Een pand zonder verblijfsobjecten, bijvoorbeeld een
+          schuur, heeft 0. Filter hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is
+          de zoekopdracht traag. Geen BAG-gegeven; standaard niet in de uitvoer.'
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van het pand. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van het pand geldig is in de werkelijkheid conform de ingangsdatum in het
+          brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van het pand eindigt, bijvoorbeeld als gevolg
+          van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de versie nog
+          geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van het pand is geregistreerd in de registratie van de bronhouder (gemeente)
+          en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van het pand is beëindigd in de registratie van de bronhouder. Een versie
+          krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie van de
+          volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van het pand is opgenomen in de registratie van de landelijke voorziening
+          (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van het pand is opgenomen in de landelijke voorziening
+          (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van het pand; leeg bij de eerste versie. Wordt als link met
+          rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van het pand; leeg bij de laatste versie. Wordt als link met
+          rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  verblijfsobject:
+    sourcePath: /verblijfsobject{sortKey=skey}
+    type: OBJECT
+    objectType: Verblijfsobject
+    label: Verblijfsobject
+    description: 'Een verblijfsobject is de kleinste binnen een of meer panden gelegen en voor woon-, bedrijfsmatige, of recreatieve
+      doeleinden geschikte eenheid van gebruik die ontsloten wordt via een eigen afsluitbare toegang vanaf de openbare weg,
+      een erf of een gedeelde verkeersruimte, onderwerp kan zijn van goederenrechtelijke rechtshandelingen en in functioneel
+      opzicht zelfstandig is. Bijvoorbeeld een woning, winkel of kantoor. Een verblijfsobject is een adresseerbaar object:
+      het heeft een hoofdadres (heeftAlsHoofdadres) en eventueel nevenadressen.'
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een verblijfsobject. De identificatie bestaat uit 16 cijfers: de viercijferige
+          gemeentecode van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig
+          objectvolgnummer. De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De
+          identificatie verandert niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde
+          identificatie.'
+        constraints:
+          regex: ^[0-9]{4}01[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: verblijfsobject
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (verblijfsobject); om de objecten in een resultaat met meerdere
+          objecttypen te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        label: geometrie
+        description: De minimaal tweedimensionale geometrische representatie van een verblijfsobject. Meestal een punt binnen
+          het pand; in enkele gevallen een vlak, zoals in de BAG geregistreerd. In de BAG met hoogte 0 geleverd (in een klein
+          aantal historische versies met een foutieve hoogte); hier tweedimensionaal. Coördinaten in het Rijksdriehoeksstelsel
+          (RD, EPSG:28992), in meter met maximaal drie decimalen; tweedimensionaal opgeslagen.
+        constraints:
+          required: true
+        geometryTypes:
+        - POINT
+        - POLYGON
+      gebruiksdoel:
+        sourcePath: '[id=voorkomen]verblijfsobject_gebruiksdoel/gebruiksdoel'
+        type: VALUE_ARRAY
+        valueType: STRING
+        label: gebruiksdoel
+        description: 'Een categorisering van de gebruiksdoelen van het verblijfsobject zoals in de vergunning of andere publiekrechtelijke
+          toestemming is opgenomen of bij constatering is vastgesteld, conform de gebruiksfuncties van het Bouwbesluit 2012.
+          Niet te verwarren met de planologische bestemming of het feitelijk gebruik. Eén of meer waarden. Toegestane waarden:
+          ''woonfunctie'': gebruiksfunctie voor het wonen ''bijeenkomstfunctie'': gebruiksfunctie voor het samenkomen van
+          personen voor kunst, cultuur, godsdienst, communicatie, kinderopvang, het verstrekken van consumpties voor het gebruik
+          ter plaatse of het aanschouwen van sport ''celfunctie'': gebruiksfunctie voor dwangverblijf van personen ''gezondheidszorgfunctie'':
+          gebruiksfunctie voor medisch onderzoek, verpleging, verzorging of behandeling ''industriefunctie'': gebruiksfunctie
+          voor het bedrijfsmatig bewerken of opslaan van materialen en goederen, of voor agrarische doeleinden ''kantoorfunctie'':
+          gebruiksfunctie voor administratie ''logiesfunctie'': gebruiksfunctie voor het bieden van recreatief verblijf of
+          tijdelijk onderdak aan personen ''onderwijsfunctie'': gebruiksfunctie voor het geven van onderwijs ''sportfunctie'':
+          gebruiksfunctie voor het beoefenen van sport ''winkelfunctie'': gebruiksfunctie voor het verhandelen van materialen,
+          goederen of diensten ''overige gebruiksfunctie'': niet benoemde gebruiksfunctie voor activiteiten waarbij het verblijven
+          van personen een ondergeschikte rol speelt, bijvoorbeeld een garagebox'
+        constraints:
+          enum:
+          - woonfunctie
+          - bijeenkomstfunctie
+          - celfunctie
+          - gezondheidszorgfunctie
+          - industriefunctie
+          - kantoorfunctie
+          - logiesfunctie
+          - onderwijsfunctie
+          - sportfunctie
+          - winkelfunctie
+          - overige gebruiksfunctie
+          minOccurrence: 1
+      oppervlakte:
+        sourcePath: oppervlakte
+        type: INTEGER
+        label: oppervlakte
+        unit: m2
+        description: De gebruiksoppervlakte van een verblijfsobject in gehele vierkante meters, bepaald volgens NEN 2580;
+          gemeenschappelijke ruimten tellen niet mee. Oppervlakten kleiner dan 1 m² worden afgerond op 1 m². De waarde 999999
+          komt voor en is geen werkelijke oppervlakte (niet officieel gedocumenteerd).
+        constraints:
+          min: 1
+          max: 999999
+          required: true
+      heeftAlsHoofdadres:
+        type: FEATURE_REF
+        refType: nummeraanduiding
+        label: heeft als hoofdadres
+        description: 'De unieke aanduiding van de nummeraanduiding die in het kader van de Basisregistratie Adressen en Gebouwen
+          is aangemerkt als het hoofdadres van het verblijfsobject. Een adresseerbaar object heeft precies één hoofdadres.
+          Het volledige adres bestaat uit de naam van de openbare ruimte (nummeraanduiding.ligtAan), huisnummer, huisletter,
+          huisnummertoevoeging, postcode en de naam van de woonplaats (nummeraanduiding.ligtIn, anders openbareruimte.ligtIn).
+          De titel van de verwijzing is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de
+          nummeraanduiding, openbare ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele
+          versie: vandaag). Is de nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+          required: true
+        properties:
+          id:
+            sourcePath: heeftalshoofdadres
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid
+              - 1, current_date) AS d) x_d JOIN bag.nummeraanduiding x_n ON x_n.identificatie = $T$.heeftalshoofdadres JOIN
+              bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin,
+              x_o.ligtin) ORDER BY (x_n.begingeldigheid <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid
+              <= x_d.d AND coalesce(x_o.eindgeldigheid > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid
+              > x_d.d, true)) DESC, x_n.begingeldigheid DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      heeftAlsNevenadres:
+        type: FEATURE_REF_ARRAY
+        refType: nummeraanduiding
+        label: heeft als nevenadres
+        description: 'De unieke aanduiding van de nummeraanduidingen die in het kader van de Basisregistratie Adressen en
+          Gebouwen zijn aangemerkt als nevenadres van het verblijfsobject. Een nevenadres is een aanvullend adres, bijvoorbeeld
+          voor een leveranciersingang; het duidt niet een gedeelte van het object aan. Meestal leeg. De titel van de verwijzing
+          is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de nummeraanduiding, openbare
+          ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele versie: vandaag). Is de
+          nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+        sourcePath: '[id=voorkomen]verblijfsobject_nevenadres'
+        properties:
+          id:
+            sourcePath: nummeraanduiding
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT (SELECT coalesce(x_v.eindgeldigheid
+              - 1, current_date) FROM bag.verblijfsobject x_v WHERE x_v.id = $T$.voorkomen) AS d) x_d JOIN bag.nummeraanduiding
+              x_n ON x_n.identificatie = $T$.nummeraanduiding JOIN bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan
+              JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin, x_o.ligtin) ORDER BY (x_n.begingeldigheid
+              <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid <= x_d.d AND coalesce(x_o.eindgeldigheid
+              > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid > x_d.d, true)) DESC, x_n.begingeldigheid
+              DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      maaktDeelUitVan:
+        sourcePath: '[id=voorkomen]verblijfsobject_pand/pand'
+        type: FEATURE_REF_ARRAY
+        refType: pand
+        label: maakt deel uit van
+        description: De unieke aanduidingen van de panden waarvan het verblijfsobject onderdeel uitmaakt. In de meeste gevallen
+          één pand, soms meerdere. De administratieve relatie is leidend boven de ruimtelijke ligging.
+        constraints:
+          regex: ^[0-9]{4}10[0-9]{10}$
+          minOccurrence: 1
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een verblijfsobject waarin het betreffende verblijfsobject zich bevindt.
+          De BAG bevat gegevens over daadwerkelijk aanwezige, nog tot stand te brengen en verdwenen verblijfsobjecten. Toegestane
+          waarden: ''Verblijfsobject gevormd'': Een nieuw verblijfsobject in een nog niet gebouwd pand waarvoor een vergunning
+          of andere publiekrechtelijke toestemming is verleend, of dat wordt gerealiseerd in een reeds bestaand pand. ''Niet
+          gerealiseerd verblijfsobject'': Een verblijfsobject waarvan is vastgesteld dat wordt afgezien van de bouw of waarvan
+          de vergunning is ingetrokken. ''Verblijfsobject in gebruik (niet ingemeten)'': Een verblijfsobject dat in gebruik
+          is genomen of gebruiksgereed is, maar waarvan de definitieve geometrie nog niet is ingemeten. ''Verblijfsobject
+          in gebruik'': Een verblijfsobject dat in gebruik is en waarvan de definitieve geometrie is ingemeten. ''Verblijfsobject
+          ingetrokken'': Een verblijfsobject dat als zodanig opgehouden heeft te bestaan, bijvoorbeeld na sloop. ''Verblijfsobject
+          buiten gebruik'': Een verblijfsobject in een pand dat in dusdanige bouwkundige staat verkeert dat het daardoor redelijkerwijs
+          niet te gebruiken is. ''Verbouwing verblijfsobject'': Een verblijfsobject waarvoor een vergunning of andere publiekrechtelijke
+          toestemming tot verbouw is verleend en waarbij de verbouwing nog niet is voltooid. ''Verblijfsobject ten onrechte
+          opgevoerd'': Een verblijfsobject dat niet had mogen worden opgenomen in de BAG-registratie en vervolgens is beëindigd.
+          Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Niet gerealiseerd verblijfsobject'',
+          ''Verblijfsobject ingetrokken'', ''Verblijfsobject ten onrechte opgevoerd''.'
+        constraints:
+          enum:
+          - Verblijfsobject gevormd
+          - Niet gerealiseerd verblijfsobject
+          - Verblijfsobject in gebruik (niet ingemeten)
+          - Verblijfsobject in gebruik
+          - Verblijfsobject ingetrokken
+          - Verblijfsobject buiten gebruik
+          - Verbouwing verblijfsobject
+          - Verblijfsobject ten onrechte opgevoerd
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een verblijfsobject in de registratie is opgenomen als
+          gevolg van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om verblijfsobjecten die niet eerder in de registratie zijn opgenomen vanwege
+          het ontbreken van de benodigde vergunning of omdat geen vergunning nodig was. In de BAG een indicatie J/N; hier
+          `true` (J) of `false` (N). Basisgegeven, niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een verblijfsobject heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een verblijfsobject heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      gemeentecode:
+        sourcePath: gemeentecode
+        type: STRING
+        label: gemeente
+        role: AUXILIARY
+        description: Code van de gemeente waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld 0307.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^[0-9]{4}$
+      wijkcode:
+        sourcePath: wijkcode
+        type: STRING
+        label: wijk
+        role: AUXILIARY
+        description: Code van de wijk waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld WK030701.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^WK[0-9]{6}$
+      buurtcode:
+        sourcePath: buurtcode
+        type: STRING
+        label: buurt
+        role: AUXILIARY
+        description: Code van de buurt waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld BU03070100.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^BU[0-9]{8}$
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeentecode)}'
+        type: STRING
+        label: gemeentenaam
+        role: AUXILIARY
+        description: Naam van de gemeente waarin het object ligt (zie gemeentecode), uit de CBS Wijk- en Buurtkaart 2026.
+          Filter hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht
+          traag. Geen BAG-gegeven; standaard niet in de uitvoer.
+      wijknaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.wijk x_n WHERE x_n.id = $T$.wijkcode)}'
+        type: STRING
+        label: wijknaam
+        role: AUXILIARY
+        description: Naam van de wijk waarin het object ligt (zie wijkcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk- en
+          buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de wijkcode, samen met de naam. Filter hierop
+          alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      buurtnaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.buurt x_n WHERE x_n.id = $T$.buurtcode)}'
+        type: STRING
+        label: buurtnaam
+        role: AUXILIARY
+        description: Naam van de buurt waarin het object ligt (zie buurtcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk-
+          en buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de buurtcode, samen met de naam. Filter
+          hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      bouwjaarPand:
+        sourcePath: '[EXPRESSION]{sql=(SELECT min(x_b.j) FROM bag.verblijfsobject_pand x_vp CROSS JOIN LATERAL (SELECT x_p.oorspronkelijkbouwjaar
+          AS j FROM (SELECT coalesce($T$.eindgeldigheid - 1, current_date) AS d) x_d JOIN bag.pand x_p ON x_p.identificatie
+          = x_vp.pand ORDER BY (x_p.begingeldigheid <= x_d.d AND coalesce(x_p.eindgeldigheid > x_d.d, true)) DESC, x_p.begingeldigheid
+          DESC LIMIT 1) x_b WHERE x_vp.voorkomen = $T$.id)}'
+        type: INTEGER
+        label: bouwjaar pand
+        role: AUXILIARY
+        description: 'Het oorspronkelijk bouwjaar van het pand waarvan het verblijfsobject deel uitmaakt (maaktDeelUitVan),
+          uit de versie van het pand die geldig was op de laatste dag van deze versie (bij de actuele versie: vandaag); bij
+          meerdere panden het oudste bouwjaar. Zie oorspronkelijkBouwjaar van pand voor de betekenis van 9999 en van ronde
+          jaartallen. Geen BAG-gegeven; standaard niet in de uitvoer.'
+      statusPand:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_b.s FROM bag.verblijfsobject_pand x_vp CROSS JOIN LATERAL (SELECT x_p.status
+          AS s FROM (SELECT coalesce($T$.eindgeldigheid - 1, current_date) AS d) x_d JOIN bag.pand x_p ON x_p.identificatie
+          = x_vp.pand ORDER BY (x_p.begingeldigheid <= x_d.d AND coalesce(x_p.eindgeldigheid > x_d.d, true)) DESC, x_p.begingeldigheid
+          DESC LIMIT 1) x_b WHERE x_vp.voorkomen = $T$.id ORDER BY array_position(ARRAY[''Bouwvergunning verleend'', ''Bouw
+          gestart'', ''Verbouwing pand'', ''Pand in gebruik (niet ingemeten)'', ''Pand in gebruik'', ''Pand buiten gebruik'',
+          ''Sloopvergunning verleend'', ''Pand gesloopt'', ''Niet gerealiseerd pand'', ''Pand ten onrechte opgevoerd'']::text[],
+          x_b.s) LIMIT 1)}'
+        type: STRING
+        label: status pand
+        role: AUXILIARY
+        description: 'De status van het pand waarvan het verblijfsobject deel uitmaakt (maaktDeelUitVan), uit de versie van
+          het pand die geldig was op de laatste dag van deze versie (bij de actuele versie: vandaag); bij meerdere panden
+          de status van het pand dat het minst ver is, in de volgorde ''Bouwvergunning verleend'', ''Bouw gestart'', ''Verbouwing
+          pand'', ''Pand in gebruik (niet ingemeten)'', ''Pand in gebruik'', ''Pand buiten gebruik'', ''Sloopvergunning verleend'',
+          ''Pand gesloopt'', ''Niet gerealiseerd pand'', ''Pand ten onrechte opgevoerd''. Zo hoort een verblijfsobject in
+          een pand met status ''Bouw gestart'' bij de bouw, ook als het verblijfsobject zelf de status ''Verblijfsobject gevormd''
+          heeft, net als verblijfsobjecten in panden waarvoor alleen een vergunning is verleend. Filter hierop alleen samen
+          met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag. Geen BAG-gegeven; standaard
+          niet in de uitvoer.'
+        constraints:
+          enum:
+          - Bouwvergunning verleend
+          - Bouw gestart
+          - Verbouwing pand
+          - Pand in gebruik (niet ingemeten)
+          - Pand in gebruik
+          - Pand buiten gebruik
+          - Sloopvergunning verleend
+          - Pand gesloopt
+          - Niet gerealiseerd pand
+          - Pand ten onrechte opgevoerd
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van het verblijfsobject. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van het verblijfsobject geldig is in de werkelijkheid conform de ingangsdatum
+          in het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van het verblijfsobject eindigt, bijvoorbeeld
+          als gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de
+          versie nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder
+          eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van het verblijfsobject is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van het verblijfsobject is beëindigd in de registratie van de bronhouder.
+          Een versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van het verblijfsobject is opgenomen in de registratie van de landelijke
+          voorziening (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van het verblijfsobject is opgenomen in de landelijke
+          voorziening (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van het verblijfsobject; leeg bij de eerste versie. Wordt
+          als link met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van het verblijfsobject; leeg bij de laatste versie. Wordt
+          als link met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  ligplaats:
+    sourcePath: /ligplaats
+    type: OBJECT
+    objectType: Ligplaats
+    label: Ligplaats
+    description: Een ligplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen plaats in het water al
+      dan niet aangevuld met een op de oever aanwezig terrein of een gedeelte daarvan, die bestemd is voor het permanent afmeren
+      van een voor woon-, bedrijfsmatige of recreatieve doeleinden geschikt drijvend object, bijvoorbeeld een woonboot. Een
+      ligplaats is een adresseerbaar object.
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een ligplaats. De identificatie bestaat uit 16 cijfers: de viercijferige gemeentecode
+          van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig objectvolgnummer.
+          De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De identificatie verandert
+          niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde identificatie.'
+        constraints:
+          regex: ^[0-9]{4}02[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: ligplaats
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (ligplaats); om de objecten in een resultaat met meerdere objecttypen
+          te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        label: geometrie
+        description: De tweedimensionale geometrische representatie van de omtrekken van een ligplaats. Coördinaten in het
+          Rijksdriehoeksstelsel (RD, EPSG:28992), in meter met maximaal drie decimalen; tweedimensionaal opgeslagen.
+        constraints:
+          required: true
+        geometryType: POLYGON
+      heeftAlsHoofdadres:
+        type: FEATURE_REF
+        refType: nummeraanduiding
+        label: heeft als hoofdadres
+        description: 'De unieke aanduiding van de nummeraanduiding die in het kader van de Basisregistratie Adressen en Gebouwen
+          is aangemerkt als het hoofdadres van de ligplaats. Een adresseerbaar object heeft precies één hoofdadres. Het volledige
+          adres bestaat uit de naam van de openbare ruimte (nummeraanduiding.ligtAan), huisnummer, huisletter, huisnummertoevoeging,
+          postcode en de naam van de woonplaats (nummeraanduiding.ligtIn, anders openbareruimte.ligtIn). De titel van de verwijzing
+          is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de nummeraanduiding, openbare
+          ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele versie: vandaag). Is de
+          nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+          required: true
+        properties:
+          id:
+            sourcePath: heeftalshoofdadres
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid
+              - 1, current_date) AS d) x_d JOIN bag.nummeraanduiding x_n ON x_n.identificatie = $T$.heeftalshoofdadres JOIN
+              bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin,
+              x_o.ligtin) ORDER BY (x_n.begingeldigheid <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid
+              <= x_d.d AND coalesce(x_o.eindgeldigheid > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid
+              > x_d.d, true)) DESC, x_n.begingeldigheid DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      heeftAlsNevenadres:
+        type: FEATURE_REF_ARRAY
+        refType: nummeraanduiding
+        label: heeft als nevenadres
+        description: 'De unieke aanduiding van de nummeraanduidingen die in het kader van de Basisregistratie Adressen en
+          Gebouwen zijn aangemerkt als nevenadres van de ligplaats. Een nevenadres is een aanvullend adres, bijvoorbeeld voor
+          een leveranciersingang; het duidt niet een gedeelte van het object aan. Meestal leeg. De titel van de verwijzing
+          is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de nummeraanduiding, openbare
+          ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele versie: vandaag). Is de
+          nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+        sourcePath: '[id=voorkomen]ligplaats_nevenadres'
+        properties:
+          id:
+            sourcePath: nummeraanduiding
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT (SELECT coalesce(x_v.eindgeldigheid
+              - 1, current_date) FROM bag.ligplaats x_v WHERE x_v.id = $T$.voorkomen) AS d) x_d JOIN bag.nummeraanduiding
+              x_n ON x_n.identificatie = $T$.nummeraanduiding JOIN bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan
+              JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin, x_o.ligtin) ORDER BY (x_n.begingeldigheid
+              <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid <= x_d.d AND coalesce(x_o.eindgeldigheid
+              > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid > x_d.d, true)) DESC, x_n.begingeldigheid
+              DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een ligplaats waarin de betreffende ligplaats zich bevindt. De BAG bevat
+          gegevens over zowel daadwerkelijk aanwezige als ingetrokken ligplaatsen. Toegestane waarden: ''Plaats aangewezen'':
+          Plaats is aangewezen door het bevoegd gezag of geconstateerd. ''Plaats ingetrokken'': Plaats is ingetrokken door
+          het bevoegd gezag. Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Plaats ingetrokken''.'
+        constraints:
+          enum:
+          - Plaats aangewezen
+          - Plaats ingetrokken
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een ligplaats in de registratie is opgenomen als gevolg
+          van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om het feitelijk permanent gebruik van een plaats in het water dat binnen
+          andere processen aan het licht is gekomen. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven,
+          niet authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een ligplaats heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een ligplaats heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      gemeentecode:
+        sourcePath: gemeentecode
+        type: STRING
+        label: gemeente
+        role: AUXILIARY
+        description: Code van de gemeente waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld 0307.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^[0-9]{4}$
+      wijkcode:
+        sourcePath: wijkcode
+        type: STRING
+        label: wijk
+        role: AUXILIARY
+        description: Code van de wijk waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld WK030701.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^WK[0-9]{6}$
+      buurtcode:
+        sourcePath: buurtcode
+        type: STRING
+        label: buurt
+        role: AUXILIARY
+        description: Code van de buurt waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld BU03070100.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^BU[0-9]{8}$
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeentecode)}'
+        type: STRING
+        label: gemeentenaam
+        role: AUXILIARY
+        description: Naam van de gemeente waarin het object ligt (zie gemeentecode), uit de CBS Wijk- en Buurtkaart 2026.
+          Filter hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht
+          traag. Geen BAG-gegeven; standaard niet in de uitvoer.
+      wijknaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.wijk x_n WHERE x_n.id = $T$.wijkcode)}'
+        type: STRING
+        label: wijknaam
+        role: AUXILIARY
+        description: Naam van de wijk waarin het object ligt (zie wijkcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk- en
+          buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de wijkcode, samen met de naam. Filter hierop
+          alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      buurtnaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.buurt x_n WHERE x_n.id = $T$.buurtcode)}'
+        type: STRING
+        label: buurtnaam
+        role: AUXILIARY
+        description: Naam van de buurt waarin het object ligt (zie buurtcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk-
+          en buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de buurtcode, samen met de naam. Filter
+          hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van de ligplaats. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van de ligplaats geldig is in de werkelijkheid conform de ingangsdatum in
+          het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van de ligplaats eindigt, bijvoorbeeld als
+          gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de versie
+          nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van de ligplaats is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van de ligplaats is beëindigd in de registratie van de bronhouder. Een
+          versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van de ligplaats is opgenomen in de registratie van de landelijke voorziening
+          (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van de ligplaats is opgenomen in de landelijke voorziening
+          (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van de ligplaats; leeg bij de eerste versie. Wordt als link
+          met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van de ligplaats; leeg bij de laatste versie. Wordt als link
+          met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  standplaats:
+    sourcePath: /standplaats
+    type: OBJECT
+    objectType: Standplaats
+    label: Standplaats
+    description: Een standplaats is een door het bevoegde gemeentelijke orgaan als zodanig aangewezen terrein of gedeelte
+      daarvan dat bestemd is voor het permanent plaatsen van een niet direct en niet duurzaam met de aarde verbonden en voor
+      woon-, bedrijfsmatige, of recreatieve doeleinden geschikte ruimte, bijvoorbeeld een woonwagen of strandtent. Een standplaats
+      is een adresseerbaar object.
+    properties:
+      identificatie:
+        sourcePath: identificatie
+        type: STRING
+        role: ID
+        label: identificatie
+        description: 'De unieke aanduiding van een standplaats. De identificatie bestaat uit 16 cijfers: de viercijferige
+          gemeentecode van de gemeente die de identificatie heeft toegekend, de tweecijferige objecttypecode en een tiencijferig
+          objectvolgnummer. De gemeentecode in de identificatie zegt niets over de gemeente waarin het object nu ligt. De
+          identificatie verandert niet zolang het object bestaat; alle voorkomens (versies) van een object hebben dezelfde
+          identificatie.'
+        constraints:
+          regex: ^[0-9]{4}03[0-9]{10}$
+          required: true
+      objecttype:
+        constantValue: standplaats
+        type: STRING
+        label: objecttype
+        role: AUXILIARY
+        description: Het objecttype, de naam van de collectie (standplaats); om de objecten in een resultaat met meerdere
+          objecttypen te onderscheiden. In de zoekopdrachten (stored queries) met meerdere objecttypen standaard in de uitvoer.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        label: geometrie
+        description: De tweedimensionale geometrische representatie van de omtrekken van een standplaats. Coördinaten in het
+          Rijksdriehoeksstelsel (RD, EPSG:28992), in meter met maximaal drie decimalen; tweedimensionaal opgeslagen.
+        constraints:
+          required: true
+        geometryType: POLYGON
+      heeftAlsHoofdadres:
+        type: FEATURE_REF
+        refType: nummeraanduiding
+        label: heeft als hoofdadres
+        description: 'De unieke aanduiding van de nummeraanduiding die in het kader van de Basisregistratie Adressen en Gebouwen
+          is aangemerkt als het hoofdadres van de standplaats. Een adresseerbaar object heeft precies één hoofdadres. Het
+          volledige adres bestaat uit de naam van de openbare ruimte (nummeraanduiding.ligtAan), huisnummer, huisletter, huisnummertoevoeging,
+          postcode en de naam van de woonplaats (nummeraanduiding.ligtIn, anders openbareruimte.ligtIn). De titel van de verwijzing
+          is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de nummeraanduiding, openbare
+          ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele versie: vandaag). Is de
+          nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+          required: true
+        properties:
+          id:
+            sourcePath: heeftalshoofdadres
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT coalesce($T$.eindgeldigheid
+              - 1, current_date) AS d) x_d JOIN bag.nummeraanduiding x_n ON x_n.identificatie = $T$.heeftalshoofdadres JOIN
+              bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin,
+              x_o.ligtin) ORDER BY (x_n.begingeldigheid <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid
+              <= x_d.d AND coalesce(x_o.eindgeldigheid > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid
+              > x_d.d, true)) DESC, x_n.begingeldigheid DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      heeftAlsNevenadres:
+        type: FEATURE_REF_ARRAY
+        refType: nummeraanduiding
+        label: heeft als nevenadres
+        description: 'De unieke aanduiding van de nummeraanduidingen die in het kader van de Basisregistratie Adressen en
+          Gebouwen zijn aangemerkt als nevenadres van de standplaats. Een nevenadres is een aanvullend adres, bijvoorbeeld
+          voor een leveranciersingang; het duidt niet een gedeelte van het object aan. Meestal leeg. De titel van de verwijzing
+          is het adres, bijvoorbeeld ''Stadhuisplein 1, 3811LM Amersfoort'', samengesteld uit de nummeraanduiding, openbare
+          ruimte en woonplaats die geldig waren op de laatste dag van deze versie (bij de actuele versie: vandaag). Is de
+          nummeraanduiding op die dag ingetrokken, dan eindigt de titel op ''(ingetrokken)''.'
+        constraints:
+          regex: ^[0-9]{4}20[0-9]{10}$
+        sourcePath: '[id=voorkomen]standplaats_nevenadres'
+        properties:
+          id:
+            sourcePath: nummeraanduiding
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_o.naam || '' '' || x_n.huisnummer || coalesce(x_n.huisletter, '''') ||
+              coalesce(''-'' || x_n.huisnummertoevoeging, '''') || '', '' || coalesce(x_n.postcode || '' '', '''') || x_w.naam
+              || CASE WHEN x_n.status LIKE ''%ingetrokken'' THEN '' (ingetrokken)'' ELSE '''' END FROM (SELECT (SELECT coalesce(x_v.eindgeldigheid
+              - 1, current_date) FROM bag.standplaats x_v WHERE x_v.id = $T$.voorkomen) AS d) x_d JOIN bag.nummeraanduiding
+              x_n ON x_n.identificatie = $T$.nummeraanduiding JOIN bag.openbareruimte x_o ON x_o.identificatie = x_n.ligtaan
+              JOIN bag.woonplaats x_w ON x_w.identificatie = coalesce(x_n.ligtin, x_o.ligtin) ORDER BY (x_n.begingeldigheid
+              <= x_d.d AND coalesce(x_n.eindgeldigheid > x_d.d, true)) DESC, (x_o.begingeldigheid <= x_d.d AND coalesce(x_o.eindgeldigheid
+              > x_d.d, true)) DESC, (x_w.begingeldigheid <= x_d.d AND coalesce(x_w.eindgeldigheid > x_d.d, true)) DESC, x_n.begingeldigheid
+              DESC, x_o.begingeldigheid DESC, x_w.begingeldigheid DESC LIMIT 1)}'
+            type: STRING
+      status:
+        sourcePath: status
+        type: STRING
+        label: status
+        description: 'De fase van de levenscyclus van een standplaats waarin de betreffende standplaats zich bevindt. De BAG
+          bevat gegevens over zowel daadwerkelijk aanwezige als ingetrokken standplaatsen. Toegestane waarden: ''Plaats aangewezen'':
+          Plaats is aangewezen door het bevoegd gezag of geconstateerd. ''Plaats ingetrokken'': Plaats is ingetrokken door
+          het bevoegd gezag. Eindstatussen (het object is beëindigd en de status kan niet meer wijzigen): ''Plaats ingetrokken''.'
+        constraints:
+          enum:
+          - Plaats aangewezen
+          - Plaats ingetrokken
+          required: true
+      geconstateerd:
+        sourcePath: geconstateerd
+        type: BOOLEAN
+        label: geconstateerd
+        description: Een aanduiding waarmee kan worden aangegeven dat een standplaats in de registratie is opgenomen als gevolg
+          van een feitelijke constatering, zonder dat er op het moment van opname sprake was van een regulier brondocument
+          voor deze opname. Het gaat bijvoorbeeld om het feitelijk gebruik van (een gedeelte van) een terrein dat binnen andere
+          processen aan het licht is gekomen. In de BAG een indicatie J/N; hier `true` (J) of `false` (N). Basisgegeven, niet
+          authentiek.
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum waarop het brondocument is vastgesteld op basis waarvan een opname, mutatie of een verwijdering
+          van gegevens ten aanzien van een standplaats heeft plaatsgevonden.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: De unieke aanduiding van het brondocument op basis waarvan een opname, mutatie of een verwijdering van
+          gegevens ten aanzien van een standplaats heeft plaatsgevonden binnen een gemeente. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      gemeentecode:
+        sourcePath: gemeentecode
+        type: STRING
+        label: gemeente
+        role: AUXILIARY
+        description: Code van de gemeente waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld 0307.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^[0-9]{4}$
+      wijkcode:
+        sourcePath: wijkcode
+        type: STRING
+        label: wijk
+        role: AUXILIARY
+        description: Code van de wijk waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld WK030701.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^WK[0-9]{6}$
+      buurtcode:
+        sourcePath: buurtcode
+        type: STRING
+        label: buurt
+        role: AUXILIARY
+        description: Code van de buurt waarin het object ligt, volgens de CBS Wijk- en Buurtkaart 2026, bijvoorbeeld BU03070100.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+        constraints:
+          regex: ^BU[0-9]{8}$
+      gemeentenaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.gemeente x_n WHERE x_n.id = $T$.gemeentecode)}'
+        type: STRING
+        label: gemeentenaam
+        role: AUXILIARY
+        description: Naam van de gemeente waarin het object ligt (zie gemeentecode), uit de CBS Wijk- en Buurtkaart 2026.
+          Filter hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht
+          traag. Geen BAG-gegeven; standaard niet in de uitvoer.
+      wijknaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.wijk x_n WHERE x_n.id = $T$.wijkcode)}'
+        type: STRING
+        label: wijknaam
+        role: AUXILIARY
+        description: Naam van de wijk waarin het object ligt (zie wijkcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk- en
+          buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de wijkcode, samen met de naam. Filter hierop
+          alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag. Geen BAG-gegeven;
+          standaard niet in de uitvoer.
+      buurtnaam:
+        sourcePath: '[EXPRESSION]{sql=(SELECT x_n.naam FROM cbs.buurt x_n WHERE x_n.id = $T$.buurtcode)}'
+        type: STRING
+        label: buurtnaam
+        role: AUXILIARY
+        description: Naam van de buurt waarin het object ligt (zie buurtcode), uit de CBS Wijk- en Buurtkaart 2026. Wijk-
+          en buurtnamen zijn alleen binnen een gemeente uniek; groepeer daarom op de buurtcode, samen met de naam. Filter
+          hierop alleen samen met een gebiedscode (gemeentecode, wijkcode of buurtcode), anders is de zoekopdracht traag.
+          Geen BAG-gegeven; standaard niet in de uitvoer.
+      voorkomenidentificatie:
+        sourcePath: voorkomenidentificatie
+        type: INTEGER
+        label: voorkomenidentificatie
+        description: Volgnummer van dit voorkomen (deze versie) van de standplaats. De identificatie en de voorkomenidentificatie
+          samen bepalen een unieke versie van een object. Het nummer begint bij 1 en wordt bij elke nieuwe versie opgehoogd;
+          nummers van versies die niet in deze API zijn opgenomen (zie beginGeldigheid) ontbreken.
+        constraints:
+          min: 1
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze versie van de standplaats geldig is in de werkelijkheid conform de ingangsdatum
+          in het brondocument. Als er geen expliciete ingangsdatum van geldigheid is opgenomen, wordt de datum van het brondocument
+          overgenomen. De versies van een object sluiten naadloos op elkaar aan: de eindGeldigheid van een versie is de beginGeldigheid
+          van de volgende. Versies die op dezelfde dag weer zijn vervangen (beginGeldigheid = eindGeldigheid) en inactieve
+          of niet-BAG-voorkomens zijn in deze API niet opgenomen. Zonder parameter `datetime` levert de API de versie die
+          vandaag geldig is; met `datetime=<datum>` de versie die op die datum geldig was.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: De datum waarop de periode van geldigheid van deze versie van de standplaats eindigt, bijvoorbeeld als
+          gevolg van de vaststelling van een nieuw brondocument. Geldig tot (niet tot en met) deze datum. Leeg als de versie
+          nog geldig is. Een object dat niet meer bestaat heeft een versie met een eindstatus (zie status) en zonder eindGeldigheid.
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop deze versie van de standplaats is geregistreerd in de registratie van de bronhouder
+          (gemeente) en daarmee authentiek is gemaakt.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop deze versie van de standplaats is beëindigd in de registratie van de bronhouder.
+          Een versie krijgt een eindRegistratie op het moment dat zij een eindGeldigheid krijgt; het is het tijdstipRegistratie
+          van de volgende versie. Leeg als de versie nog niet is beëindigd.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop deze versie van de standplaats is opgenomen in de registratie van de landelijke voorziening
+          (LV BAG). De gegevens zijn vanaf dat moment beschikbaar voor afnemers.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van deze versie van de standplaats is opgenomen in de landelijke voorziening
+          (LV BAG). Leeg als de versie nog niet is beëindigd.
+      voorgaandeVersie:
+        sourcePath: _vg
+        type: DATE
+        role: PREDECESSOR_INTERVAL_START
+        label: begin geldigheid voorgaande versie
+        description: De beginGeldigheid van de voorgaande versie van de standplaats; leeg bij de eerste versie. Wordt als
+          link met rel 'predecessor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+      volgendeVersie:
+        sourcePath: _nf
+        type: DATE
+        role: SUCCESSOR_INTERVAL_START
+        label: begin geldigheid volgende versie
+        description: De beginGeldigheid van de volgende versie van de standplaats; leeg bij de laatste versie. Wordt als link
+          met rel 'successor-version' weergegeven.
+        excludedScopes:
+        - RECEIVABLE
+  kenmerkinonderzoek:
+    sourcePath: /kenmerkinonderzoek
+    type: OBJECT
+    objectType: KenmerkInOnderzoek
+    label: Kenmerk in onderzoek
+    description: 'Een kenmerk (attribuut of relatie) van een BAG-object waarvoor wordt of werd onderzocht of het gegeven juist
+      is. Als een gegeven in onderzoek is, mogen gebruikers een ander gegeven gebruiken; de bronhouder moet het onderzoek
+      binnen zes maanden afronden. Elk record heeft een eigen geldigheidsperiode, los van de versies van het object. Het plaatsen
+      in onderzoek levert een record met inOnderzoek = true; het afronden beëindigt dat record en levert een nieuw record
+      met inOnderzoek = false. Een kenmerk is op een datum in onderzoek als er een record met inOnderzoek = true geldig is
+      op die datum (parameter `datetime`, bijvoorbeeld `datetime=now`). Kenmerken per objecttype: woonplaats: naam, geometrie,
+      status; openbareruimte: naam, type, status, ligt in; nummeraanduiding: huisnummer, huisletter, huisnummertoevoeging,
+      postcode, type adresseerbaar object, status, ligt in, ligt aan; pand: geometrie, oorspronkelijk bouwjaar, status; verblijfsobject:
+      geometrie, gebruiksdoel, oppervlakte, status, maakt deel uit van, heeft als hoofdadres, heeft als nevenadres; standplaats:
+      geometrie, status, heeft als hoofdadres, heeft als nevenadres; ligplaats: geometrie, status, heeft als hoofdadres, heeft
+      als nevenadres.'
+    properties:
+      id:
+        sourcePath: id
+        type: INTEGER
+        role: ID
+        label: id
+        description: Technische sleutel van het record in deze API; geen BAG-gegeven.
+      objecttype:
+        sourcePath: objecttype
+        type: STRING
+        label: objecttype
+        description: 'Het type van het BAG-object dat in onderzoek is geplaatst: ''WPL'' (woonplaats), ''OPR'' (openbareruimte),
+          ''NUM'' (nummeraanduiding), ''PND'' (pand), ''VBO'' (verblijfsobject), ''STA'' (standplaats), ''LIG'' (ligplaats).'
+        constraints:
+          enum:
+          - WPL
+          - OPR
+          - NUM
+          - PND
+          - VBO
+          - STA
+          - LIG
+          required: true
+      object:
+        type: FEATURE_REF
+        label: object
+        description: Het BAG-object waarvan een kenmerk in onderzoek is geplaatst.
+        properties:
+          id:
+            sourcePath: identificatie
+            type: STRING
+          type:
+            sourcePath: collectie
+            type: STRING
+        constraints:
+          required: true
+      kenmerk:
+        sourcePath: kenmerk
+        type: STRING
+        label: kenmerk
+        description: De naam van het attribuut of de relatie van het object dat in onderzoek is geplaatst, zoals in de BAG
+          benoemd (met spaties, bijvoorbeeld 'oorspronkelijk bouwjaar' voor oorspronkelijkBouwjaar).
+        constraints:
+          enum:
+          - gebruiksdoel
+          - geometrie
+          - heeft als hoofdadres
+          - heeft als nevenadres
+          - huisletter
+          - huisnummer
+          - huisnummertoevoeging
+          - ligt aan
+          - ligt in
+          - maakt deel uit van
+          - naam
+          - oorspronkelijk bouwjaar
+          - oppervlakte
+          - postcode
+          - status
+          - type
+          - type adresseerbaar object
+          required: true
+      inOnderzoek:
+        sourcePath: inonderzoek
+        type: BOOLEAN
+        label: in onderzoek
+        description: Geeft aan of het kenmerk in deze periode in onderzoek is (`true`, in de BAG J) of niet (`false`, N).
+        constraints:
+          required: true
+      documentdatum:
+        sourcePath: documentdatum
+        type: DATE
+        label: documentdatum
+        description: De datum van het document waarin de grondslag van het onderzoek wordt vastgelegd.
+        constraints:
+          required: true
+      documentnummer:
+        sourcePath: documentnummer
+        type: STRING
+        label: documentnummer
+        description: Het nummer van het document waarin de grondslag van het onderzoek wordt vastgelegd. Maximaal 40 tekens.
+        constraints:
+          regex: ^\S.{0,39}$
+          required: true
+      beginGeldigheid:
+        sourcePath: begingeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_START
+        label: begin geldigheid
+        description: 'De datum waarop deze toestand ingaat: bij inOnderzoek = true de datum waarop het kenmerk bij de bronhouder
+          in onderzoek is geplaatst.'
+        constraints:
+          required: true
+      eindGeldigheid:
+        sourcePath: eindgeldigheid
+        type: DATE
+        role: PRIMARY_INTERVAL_END
+        label: eind geldigheid
+        description: 'De datum waarop deze toestand eindigt (niet tot en met): bij inOnderzoek = true de datum waarop het
+          onderzoek is afgerond. Leeg als de toestand nog geldt.'
+      tijdstipRegistratie:
+        sourcePath: tijdstipregistratie
+        type: DATETIME
+        label: tijdstip registratie
+        description: Het tijdstip waarop het record is geregistreerd bij de bronhouder.
+        constraints:
+          required: true
+      eindRegistratie:
+        sourcePath: eindregistratie
+        type: DATETIME
+        label: eind registratie
+        description: Het tijdstip waarop de registratie van het record is beëindigd bij de bronhouder.
+      tijdstipRegistratieLV:
+        sourcePath: tijdstipregistratielv
+        type: DATETIME
+        label: tijdstip registratie LV
+        description: Het tijdstip waarop het record is geregistreerd in de landelijke voorziening.
+        constraints:
+          required: true
+      tijdstipEindRegistratieLV:
+        sourcePath: tijdstipeindregistratielv
+        type: DATETIME
+        label: tijdstip eind registratie LV
+        description: Het tijdstip waarop de beëindiging van het record is opgenomen in de landelijke voorziening.

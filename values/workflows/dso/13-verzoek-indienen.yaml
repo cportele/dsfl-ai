@@ -1,0 +1,525 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store;
+# the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
+# count() of an array is 1 in RFC 9535 (it counts nodes); length() where the number of items is meant
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.1.0
+info:
+  title: 'DSO • Functionele vraag: een verzoek indienen via het Open Stelsel'
+  version: 0.1.0
+  summary: De 4+1 stappen uit "003 - Uitgebreide uitleg" (p. 3–6), aangevuld met wat een echte indiening via het Omgevingsloket
+    laat zien ("004 - Requests en responses").
+  description: "Bron: \"Indienen via het Open Stelsel van het DSO\" (003, p. 3–6) en de vastgelegde\nloketsessie in 004 (58\
+    \ calls, 10 april 2026). Waar die twee verschillen, volgt\ndeze workflow de sessie.\n\nDe 4+1 stappen uit de uitleg:\n\
+    \  +1  Samengestelde services RTR → de Algemene set (projectnaam, contactgegevens …)\n  1   Omgevingsdocument Toepasbaar\
+    \ opvragen → locatie-identificaties op de plek\n  2   Toepasbare regels zoeken → de activiteit en het soort verzoek\n\
+    \  3   Uitvoeren services → de vragen, en of de antwoorden volstaan\n  4   Verzoeken indienen → in twee fasen: initiëren\
+    \ (validatie) en indienen\n\nWat de sessie toevoegt:\n- Stap 3 heet bij indienen `indieningsvereisten/_bepaal`, niet `conclusie/_bepaal`.\n\
+    \  De Algemene set en de activiteit gaan samen in één call, elk met de antwoorden\n  tot dan toe. Het antwoord zegt per\
+    \ onderdeel `indienbaar` en `compleet`.\n- Het bevoegd gezag komt uit een vijfde API die de uitleg niet noemt:\n  verzoeksroutering/v2/bevoegdgezag/_bepalen.\n\
+    - In het indienverzoek is `activiteit[].id` de functioneleStructuurRef, en de\n  Algemene set is zelf een 'activiteit'\
+    \ (urn AlgemeneSet).\n- Het loket zoekt op het perceel (polygoon). Deze workflow gebruikt het adrespunt\n  uit de BAG;\
+    \ Verzoeken indienen accepteert ook een punt.\n\nTwee workflows, met opzet gescheiden:\n- `verzoek-voorbereiden` leest\
+    \ alleen. Het vraag-antwoordspel wordt hier een\n  batch: je geeft de antwoorden mee en krijgt terug of het verzoek indienbaar\
+    \ is\n  en welke vragen er zijn. Nog niet indienbaar? Antwoorden aanvullen en opnieuw.\n- `verzoek-indienen` dient echt\
+    \ in bij een bevoegd gezag. Alleen tegen\n  pre-productie, met een testdatum en een verzoeknaam die met\n  '##Testverzoek:##\
+    \ ' begint.\n"
+sourceDescriptions:
+- name: bag
+  url: https://api.pdok.nl/kadaster/bag/ogc/v2/api?f=json
+  type: openapi
+- name: samengesteld
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/samengestelderegistratietoepasbareregelsservices/v2/openapi.json
+  type: openapi
+- name: toepasbaarOpvragen
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/toepasbaaropvragen/v7/openapi.json
+  type: openapi
+- name: zoekinterface
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/zoekinterface/v2/openapi.json
+  type: openapi
+- name: verzoeksroutering
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/verzoeksroutering/v2/openapi.json
+  type: openapi
+  x-dso-bron: niet in de uitleg (003); wel in de loketsessie (004, regel 38)
+- name: uitvoeren
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerenservices/v2/openapi.json
+  type: openapi
+- name: indienen
+  url: https://service.pre.omgevingswet.overheid.nl/publiek/verzoeken/api/indienen/v5/openapi.json
+  type: openapi
+  x-dso-veiligheid: 'Bewust pre-productie. Indienen in productie zet een echt verzoek klaar bij een
+
+    bevoegd gezag; dat hoort niet in een voorbeeld of een test.
+
+    '
+  x-dso-te-verifieren: 'Hoe de indiener zich identificeert. De uitleg noemt OIN-registratie, autorisatie
+
+    voor deze API (met callback-URL) en eHerkenning/DigiD/eIDAS; de OpenAPI-spec
+
+    noemt geen securityScheme.
+
+    '
+- name: bagAdres
+  url: ./bag-adres.yaml
+  type: arazzo
+workflows:
+- workflowId: verzoek-voorbereiden
+  x-ldproxy-readOnly: true
+  summary: Adres + zoekterm + antwoorden → locaties, activiteit, bevoegd gezag, vragen en of het verzoek indienbaar is. Alleen
+    lezen.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - postcode
+    - huisnummer
+    - datum
+    - peildatum
+    - zoekterm
+    - toestemming
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      postcode:
+        type: string
+        examples:
+        - 3811LM
+      huisnummer:
+        type: string
+        examples:
+        - '1'
+      datum:
+        type: string
+        description: Vandaag als dd-MM-jjjj (toepasbare-regels-API's).
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+      peildatum:
+        type: string
+        description: Dezelfde dag als jjjj-MM-dd (Toepasbaar opvragen). Twee notaties voor één datum; Arazzo kan niet omzetten.
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      zoekterm:
+        type: string
+        examples:
+        - dakkapel
+      toestemming:
+        type: string
+        enum:
+        - Vergunning
+        - Melding
+        - Informatie
+        - InformatieOngewoonVoorval
+        - AanvraagMaatwerkvoorschrift
+      antwoordenAlgemeneSet:
+        type: array
+        default: []
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            antwoord:
+              type: string
+      antwoordenActiviteit:
+        type: array
+        default: []
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            antwoord:
+              type: string
+  steps:
+  - stepId: adres
+    description: Het adres uit de BAG van deze server, in plaats van de collectie adres van PDOK.
+    workflowId: $sourceDescriptions.bagAdres.adres-rd
+    parameters:
+    - name: postcode
+      value: $inputs.postcode
+    - name: huisnummer
+      value: $inputs.huisnummer
+    outputs:
+      rdX: $outputs.rdX
+      rdY: $outputs.rdY
+      nummeraanduidingId: $outputs.nummeraanduidingId
+      straat: $outputs.straat
+      woonplaats: $outputs.woonplaats
+  - stepId: algemene-set
+    description: '+1 uit de uitleg: de Algemene set (projectgegevens, contact). De uitleg raadt aan hem als eerste op te halen;
+      de loketsessie doet dat ook.'
+    operationPath: '{$sourceDescriptions.samengesteld.url}#/paths/~1activiteiten~1algemeen/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: datum
+      in: query
+      value: $inputs.datum
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      functioneleStructuurRef: $response.body#/functioneleStructuurRef
+  - stepId: locaties
+    description: 'Stap 1: alle locatie-identificaties van alle bevoegde gezagen op deze plek.'
+    operationPath: '{$sourceDescriptions.toepasbaarOpvragen.url}#/paths/~1locatieidentificaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+      x-dso-waarom: Gemeten 19-10-2026. De URI-vorm die Presenteren v8 en Ontsluiten v2 eisen, geeft hier 422.
+    - name: geldigOp
+      in: query
+      value: $inputs.peildatum
+    - name: inWerkingOp
+      in: query
+      value: $inputs.peildatum
+    requestBody:
+      contentType: application/json
+      payload:
+        geo:
+          geometrie:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+          spatialOperator: intersects
+      replacements:
+      - target: /geo/geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geo/geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - context: $response.body
+      condition: $[?length(@._embedded.locatieidentificaties) > 0]
+      type: jsonpath
+      x-dso-leegIs: alarm
+    outputs:
+      locatieIds: $response.body#/_embedded/locatieidentificaties
+  - stepId: activiteiten
+    description: 'Stap 2: de activiteit en het soort verzoek. Alle locatie-identificaties uit stap 1
+
+      gaan mee (in de loketsessie ruim 40). Elke activiteit komt terug per toestemming,
+
+      elk met een eigen functioneleStructuurRef voor de indieningsvereisten.
+
+      '
+    operationPath: '{$sourceDescriptions.zoekinterface.url}#/paths/~1activiteiten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: page
+      in: query
+      value: 1
+    - name: pageSize
+      in: query
+      value: 50
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: $inputs.datum
+        locaties: $steps.locaties.outputs.locatieIds
+        zoekterm: $inputs.zoekterm
+        toestemmingen:
+        - '{$inputs.toestemming}'
+    successCriteria:
+    - condition: $statusCode == 200
+    onSuccess:
+    - name: geen-eenduidige-keuze
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $[?length(@._embedded.activiteiten) != 1]
+        type: jsonpath
+      x-dso-waarom: Het loket laat de gebruiker hier kiezen. Een workflow kiest niet zelf; hij stopt en geeft de kandidaten
+        terug. Verfijn de zoekterm en draai opnieuw.
+    outputs:
+      kandidaten:
+        context: $response.body
+        selector: $._embedded.activiteiten[*]['omschrijving','toestemming','urn']
+        type: jsonpath
+      functioneleStructuurRef:
+        context: $response.body
+        selector: $._embedded.activiteiten[*].functioneleStructuurRef
+        type: jsonpath
+      urn:
+        context: $response.body
+        selector: $._embedded.activiteiten[*].urn
+        type: jsonpath
+  - stepId: bevoegd-gezag
+    description: Naar welk bevoegd gezag het verzoek gaat. Niet in de uitleg, wel in de loketsessie (regel 38).
+    operationPath: '{$sourceDescriptions.verzoeksroutering.url}#/paths/~1bevoegdgezag~1_bepalen/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: $inputs.datum
+        activiteiten:
+        - functioneleStructuurRef: $steps.activiteiten.outputs.functioneleStructuurRef
+          subFunctioneleStructuurRefs: []
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      bevoegdGezagen:
+        context: $response.body
+        selector: $[*].bevoegdGezagen[*]
+        type: jsonpath
+        x-dso-te-verifieren: De sessie stuurde het verzoek naar het gezag met afgeleid = true (gemeente). Of dat de regel
+          is, zegt geen van beide bronnen.
+  - stepId: vragen
+    description: 'Stap 3: het vraag-antwoordspel, hier als batch. De Algemene set en de activiteit
+
+      gaan samen, elk met de antwoorden tot nu toe. Het antwoord zegt per onderdeel
+
+      of het indienbaar is en geeft de vraaggroepen terug.
+
+      '
+    operationPath: '{$sourceDescriptions.uitvoeren.url}#/paths/~1indieningsvereisten~1_bepaal/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: $inputs.datum
+        functioneleStructuurRefs:
+        - functioneleStructuurRef: $steps.algemene-set.outputs.functioneleStructuurRef
+          subFunctioneleStructuurRefs: []
+          antwoorden: $inputs.antwoordenAlgemeneSet
+        - functioneleStructuurRef: $steps.activiteiten.outputs.functioneleStructuurRef
+          subFunctioneleStructuurRefs: []
+          antwoorden: $inputs.antwoordenActiviteit
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+        rolaanduiding:
+          rol: INITIATIEFNEMER
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      indienbaar:
+        context: $response.body
+        selector: $[*].indienbaar
+        type: jsonpath
+      vraagIds:
+        context: $response.body
+        selector: $[*].subactiviteiten[*].vraaggroepen[*].vragen[*].id
+        type: jsonpath
+      vraagTeksten:
+        context: $response.body
+        selector: $[*].subactiviteiten[*].vraaggroepen[*].vragen[*].tekst
+        type: jsonpath
+      verplichteVragen:
+        context: $response.body
+        selector: $[*].subactiviteiten[*].vraaggroepen[*].vragen[?@.verplicht == true].id
+        type: jsonpath
+    x-dso-lus: 'In het loket is dit een lus: antwoorden, opnieuw bepalen, tot alles indienbaar
+
+      is (in de sessie 25 keer). Arazzo kent geen lus en geen gebruikersinvoer
+
+      tijdens een run, dus hier is het een batch: vul aan en draai opnieuw.
+
+      '
+  outputs:
+    kandidaten: $steps.activiteiten.outputs.kandidaten
+    activiteit: $steps.activiteiten.outputs.urn
+    functioneleStructuurRef: $steps.activiteiten.outputs.functioneleStructuurRef
+    algemeneSet: $steps.algemene-set.outputs.functioneleStructuurRef
+    bevoegdGezagen: $steps.bevoegd-gezag.outputs.bevoegdGezagen
+    indienbaar: $steps.vragen.outputs.indienbaar
+    vraagIds: $steps.vragen.outputs.vraagIds
+    vraagTeksten: $steps.vragen.outputs.vraagTeksten
+    verplichteVragen: $steps.vragen.outputs.verplichteVragen
+    aantalLocaties: $steps.locaties.outputs.locatieIds
+- workflowId: verzoek-indienen
+  summary: 'Stap 4: initiëren (validatie), indienen, en opruimen als het misgaat. Alleen tegen pre-productie, als testverzoek.'
+  description: "Draai eerst verzoek-voorbereiden tot alles indienbaar is. Daarna:\n1. POST /verzoeken: het verzoek wordt gevalideerd\
+    \ en geïnitieerd. Een geldig verzoek\n   geeft 201 en een id (in de sessie 1476214).\n2. POST /verzoeken/{id}: het verzoek\
+    \ wordt ingediend en krijgt een verzoeknummer\n   (in de sessie 2026041001199).\nMislukt stap 2, dan ruimt de workflow\
+    \ het geïnitieerde verzoek op met DELETE.\nBijlagen (POST /verzoeken/{id}/documenten/{documentId}) zijn hier weggelaten.\n"
+  inputs:
+    type: object
+    required:
+    - testDatum
+    - verzoekType
+    - bevoegdGezagOin
+    - rdX
+    - rdY
+    - nummeraanduidingId
+    - straat
+    - huisnummer
+    - woonplaats
+    - functioneleStructuurRefAlgemeneSet
+    - functioneleStructuurRefActiviteit
+    - activiteitUrn
+    - antwoordenAlgemeneSet
+    - antwoordenActiviteit
+    properties:
+      testDatum:
+        type: string
+        description: Verplicht in deze workflow. Maakt het verzoek een testverzoek; het antwoord op de verzoeknaam-vraag moet
+          dan met '##Testverzoek:## ' beginnen.
+      verzoekType:
+        type: string
+        enum:
+        - Aanvraag vergunning
+        - Melding
+        - Informatie
+        - Informatie ongewoon voorval
+        - Aanvraag maatwerkvoorschrift
+      bevoegdGezagOin:
+        type: string
+      rdX:
+        type: number
+      rdY:
+        type: number
+      nummeraanduidingId:
+        type: string
+      straat:
+        type: string
+      huisnummer:
+        type: string
+      woonplaats:
+        type: string
+      functioneleStructuurRefAlgemeneSet:
+        type: string
+      functioneleStructuurRefActiviteit:
+        type: string
+      activiteitUrn:
+        type: string
+      antwoordenAlgemeneSet:
+        type: array
+      antwoordenActiviteit:
+        type: array
+  steps:
+  - stepId: initieren
+    operationPath: '{$sourceDescriptions.indienen.url}#/paths/~1verzoeken/post'
+    parameters:
+    - name: X-Staging-Test-Datum
+      in: header
+      value: $inputs.testDatum
+    requestBody:
+      contentType: application/json
+      payload:
+        verzoekMetadata:
+          verzoekType: $inputs.verzoekType
+          doelVerzoek: Initieren
+          ambtshalve: false
+        bevoegdGezag:
+          organisatieIdentificatieNummer: $inputs.bevoegdGezagOin
+        locatie:
+          geometrie:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+          bronLocatie:
+            adres:
+              nummeraanduidingId: $inputs.nummeraanduidingId
+              straat: $inputs.straat
+              nummer: $inputs.huisnummer
+              woonplaats: $inputs.woonplaats
+        activiteit:
+        - id: $inputs.functioneleStructuurRefAlgemeneSet
+          urn: AlgemeneSet
+          vraagAntwoord: $inputs.antwoordenAlgemeneSet
+          bijlage: []
+        - id: $inputs.functioneleStructuurRefActiviteit
+          urn: $inputs.activiteitUrn
+          vraagAntwoord: $inputs.antwoordenActiviteit
+          bijlage: []
+        document: []
+        rolaanduiding:
+          rol: INITIATIEFNEMER
+      replacements:
+      - target: /locatie/geometrie/coordinates/0
+        value: $inputs.rdX
+      - target: /locatie/geometrie/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 201
+    onFailure:
+    - name: validatie-mislukt
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      x-dso-waarom: De eerste fase is de validatie. Afgekeurd betekent antwoorden aanvullen in verzoek-voorbereiden, niet
+        herhalen.
+    outputs:
+      verzoekId: $response.body#/id
+  - stepId: indienen
+    operationPath: '{$sourceDescriptions.indienen.url}#/paths/~1verzoeken~1{verzoekId}/post'
+    parameters:
+    - name: verzoekId
+      in: path
+      value: $steps.initieren.outputs.verzoekId
+    successCriteria:
+    - condition: $statusCode == 200
+    onSuccess:
+    - name: ingediend
+      type: end
+    onFailure:
+    - name: opruimen
+      type: goto
+      stepId: opruimen
+    outputs:
+      verzoeknummer: $response.body#/verzoeknummer
+      volgnummer: $response.body#/volgnummer
+      datumIngediend: $response.body#/datumIngediend
+  - stepId: opruimen
+    description: Een geïnitieerd maar niet ingediend verzoek weghalen, zodat er niets half blijft staan.
+    operationPath: '{$sourceDescriptions.indienen.url}#/paths/~1verzoeken~1{verzoekId}/delete'
+    parameters:
+    - name: verzoekId
+      in: path
+      value: $steps.initieren.outputs.verzoekId
+    successCriteria:
+    - condition: $statusCode < 300
+  outputs:
+    verzoekId: $steps.initieren.outputs.verzoekId
+    verzoeknummer: $steps.indienen.outputs.verzoeknummer
+    datumIngediend: $steps.indienen.outputs.datumIngediend
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent

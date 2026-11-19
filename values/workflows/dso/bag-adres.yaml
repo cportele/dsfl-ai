@@ -1,0 +1,81 @@
+arazzo: 1.1.0
+info:
+  title: 'Adres in de BAG van deze server'
+  summary: 'Van postcode en huisnummer naar het punt in RD, de gemeentecode, de straat en de woonplaats.'
+  description: |
+    Vervangt in de DSO-werkstromen de stap naar de collectie adres van de BAG-API van PDOK, met dezelfde outputs. De BAG van deze server levert het adres in vier aanvragen op deze server: nummeraanduiding, openbare ruimte, woonplaats en verblijfsobject.
+  version: 1.0.0
+sourceDescriptions:
+- name: bag
+  url: /bag/api
+  type: openapi
+workflows:
+- workflowId: adres-rd
+  x-ldproxy-readOnly: true
+  summary: 'Adres in de BAG: punt in RD, gemeentecode, straat en woonplaats'
+  description: |
+    Zoekt de nummeraanduiding met de postcode en het huisnummer en levert het punt van het verblijfsobject met dit adres als hoofdadres in het Rijksdriehoeksstelsel, de gemeentecode (vier cijfers), de naam van de straat en de naam van de woonplaats. Er moet precies één nummeraanduiding zijn; bij huisletters of toevoegingen zijn er meer. Een adres zonder verblijfsobject (een ligplaats of standplaats) levert een fout.
+  inputs:
+    type: object
+    required: [postcode, huisnummer]
+    properties:
+      postcode:
+        type: string
+        description: 'De postcode zonder spatie, bijvoorbeeld 5623KA.'
+      huisnummer:
+        type: string
+        description: 'Het huisnummer, zonder huisletter of toevoeging.'
+  steps:
+  - stepId: nummeraanduiding
+    operationId: $sourceDescriptions.bag.nummeraanduiding.getItems
+    parameters:
+    - {name: postcode, in: query, value: $inputs.postcode}
+    - {name: huisnummer, in: query, value: $inputs.huisnummer}
+    - {name: profile, in: query, value: rel-as-key}
+    - {name: limit, in: query, value: 10}
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/numberReturned == 1
+    outputs:
+      id: $response.body#/features/0/id
+      openbareruimte: $response.body#/features/0/properties/ligtAan
+  - stepId: openbareruimte
+    operationId: $sourceDescriptions.bag.openbareruimte.getItem
+    parameters:
+    - {name: featureId, in: path, value: $steps.nummeraanduiding.outputs.openbareruimte}
+    - {name: profile, in: query, value: rel-as-key}
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      naam: $response.body#/properties/naam
+      woonplaats: $response.body#/properties/ligtIn
+  - stepId: woonplaats
+    operationId: $sourceDescriptions.bag.woonplaats.getItem
+    parameters:
+    - {name: featureId, in: path, value: $steps.openbareruimte.outputs.woonplaats}
+    - {name: properties, in: query, value: naam}
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      naam: $response.body#/properties/naam
+  - stepId: verblijfsobject
+    operationId: $sourceDescriptions.bag.verblijfsobject.getItems
+    parameters:
+    - {name: heeftAlsHoofdadres, in: query, value: $steps.nummeraanduiding.outputs.id}
+    - {name: crs, in: query, value: 'http://www.opengis.net/def/crs/EPSG/0/28992'}
+    - {name: properties, in: query, value: 'geometrie,gemeentecode'}
+    - {name: limit, in: query, value: 1}
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/numberReturned == 1
+    outputs:
+      rdX: $response.body#/features/0/geometry/coordinates/0
+      rdY: $response.body#/features/0/geometry/coordinates/1
+      gemeentecode: $response.body#/features/0/properties/gemeentecode
+  outputs:
+    rdX: $steps.verblijfsobject.outputs.rdX
+    rdY: $steps.verblijfsobject.outputs.rdY
+    gemeentecode: $steps.verblijfsobject.outputs.gemeentecode
+    nummeraanduidingId: $steps.nummeraanduiding.outputs.id
+    straat: $steps.openbareruimte.outputs.naam
+    woonplaats: $steps.woonplaats.outputs.naam

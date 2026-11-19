@@ -1,0 +1,361 @@
+{
+  "id": "verblijfsobjecten-in-gebied",
+  "title": "Verblijfsobjecten in een gebied",
+  "description": "De verblijfsobjecten (woningen, winkels, kantoren, sportaccommodaties enzovoort) in een gemeente, wijk of buurt, optioneel beperkt op gebruiksdoel, status, oppervlakte en de datum waarop de huidige versie is ingegaan, gesorteerd op oppervlakte (standaard de grootste eerst). Elk verblijfsobject heeft zijn adres (titel van heeftAlsHoofdadres), gebruiksoppervlakte, alle gebruiksdoelen, een punt als geometrie en het pand (maaktDeelUitVan). Voor vragen als: waar zijn de winkels, wat zijn de grootste kantoren, hoeveel woningen zijn er, waar worden woningen gebouwd (status 'Verblijfsobject gevormd'). Eigenschappen in het resultaat, voor zover niet weggelaten: verblijfsobject: gebruiksdoel (alle gebruiksdoelen), oppervlakte (gebruiksoppervlakte in m²; 999999 is geen werkelijke oppervlakte), status, beginGeldigheid, heeftAlsHoofdadres en heeftAlsNevenadres (titel: het adres), maaktDeelUitVan (de panden), geometrie (een punt), bouwjaarPand (het oudste oorspronkelijk bouwjaar van die panden). Een verwijzing heeft een titel en, in een MCP-resultaat, de identificatie (id) of, in de API, een link (href); de titel van een ingetrokken adres, straat of woonplaats eindigt op '(ingetrokken)'. English: addressable units (dwellings, shops, offices, sports facilities) in a municipality, district or neighbourhood, by use and floor area, largest first.",
+  "parameters": {
+    "gebied": {
+      "title": "gebied",
+      "description": "De code van het gebied: een gemeentecode (vier cijfers, bijvoorbeeld 0307 voor Amersfoort), een wijkcode (bijvoorbeeld WK030701) of een buurtcode (bijvoorbeeld BU03070100) volgens de CBS Wijk- en Buurtkaart 2026. De code bij een naam staat in de API Wijken en buurten (/wijkenbuurten), bijvoorbeeld /wijkenbuurten/collections/gemeente/items?naam=Amersfoort.",
+      "type": "string",
+      "pattern": "^([0-9]{4}|WK[0-9]{6}|BU[0-9]{8})$"
+    },
+    "gebruiksdoel": {
+      "title": "gebruiksdoel",
+      "description": "Een of meer gebruiksdoelen van het verblijfsobject volgens het Bouwbesluit 2012; een verblijfsobject voldoet als het ten minste een van de gebruiksdoelen heeft. Bijvoorbeeld sportfunctie voor sporthallen, winkelfunctie voor winkels, woonfunctie voor woningen. Het gebruiksdoel is het geregistreerde, toegestane gebruik, geen soort voorziening: sportfunctie omvat bijvoorbeeld sporthallen, fitnesscentra, bowlingcentra en clubgebouwen, maar ook de sportruimte van een hotel of winkelcentrum. Een verblijfsobject kan meerdere gebruiksdoelen hebben; de oppervlakte en de andere gebruiksdoelen helpen om het object te duiden. De BAG bevat geen namen van gebouwen of bedrijven; die komen uit andere bronnen, zoals een zoekdienst voor plaatsen of OpenStreetMap. Standaard alle gebruiksdoelen.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "woonfunctie",
+          "bijeenkomstfunctie",
+          "celfunctie",
+          "gezondheidszorgfunctie",
+          "industriefunctie",
+          "kantoorfunctie",
+          "logiesfunctie",
+          "onderwijsfunctie",
+          "sportfunctie",
+          "winkelfunctie",
+          "overige gebruiksfunctie"
+        ]
+      },
+      "minItems": 1,
+      "default": [
+        "woonfunctie",
+        "bijeenkomstfunctie",
+        "celfunctie",
+        "gezondheidszorgfunctie",
+        "industriefunctie",
+        "kantoorfunctie",
+        "logiesfunctie",
+        "onderwijsfunctie",
+        "sportfunctie",
+        "winkelfunctie",
+        "overige gebruiksfunctie"
+      ]
+    },
+    "status": {
+      "title": "status",
+      "description": "Een of meer statussen van het verblijfsobject. Standaard de bestaande objecten die in gebruik zijn ('Verblijfsobject in gebruik', 'Verblijfsobject in gebruik (niet ingemeten)', 'Verbouwing verblijfsobject'); andere statussen, bijvoorbeeld gesloopt, ingetrokken of in aanbouw, alleen als ze worden opgegeven.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Verblijfsobject gevormd",
+          "Niet gerealiseerd verblijfsobject",
+          "Verblijfsobject in gebruik (niet ingemeten)",
+          "Verblijfsobject in gebruik",
+          "Verblijfsobject ingetrokken",
+          "Verblijfsobject buiten gebruik",
+          "Verbouwing verblijfsobject",
+          "Verblijfsobject ten onrechte opgevoerd"
+        ]
+      },
+      "default": [
+        "Verblijfsobject in gebruik",
+        "Verblijfsobject in gebruik (niet ingemeten)",
+        "Verbouwing verblijfsobject"
+      ]
+    },
+    "oppervlakteMin": {
+      "title": "oppervlakte vanaf",
+      "description": "Minimale gebruiksoppervlakte in m². Standaard 1.",
+      "type": "integer",
+      "default": 1
+    },
+    "oppervlakteMax": {
+      "title": "oppervlakte tot en met",
+      "description": "Maximale gebruiksoppervlakte in m². De waarde 999999 komt voor en is geen werkelijke oppervlakte; met de standaardwaarde 999998 is die uitgesloten.",
+      "type": "integer",
+      "default": 999998
+    },
+    "sinds": {
+      "title": "sinds",
+      "description": "Alleen objecten waarvan de huidige versie op of na deze datum is ingegaan (beginGeldigheid), bijvoorbeeld om met status 'Pand gesloopt' de panden te vinden die sinds die datum gesloopt zijn. Bij een gesloopt pand is dat de datum waarop de sloop in de BAG is geregistreerd, niet altijd de werkelijke sloopdatum. Standaard geen beperking.",
+      "type": "string",
+      "format": "date",
+      "default": "1000-01-01"
+    },
+    "tot": {
+      "title": "tot",
+      "description": "Alleen objecten waarvan de huidige versie voor deze datum is ingegaan. Standaard geen beperking.",
+      "type": "string",
+      "format": "date",
+      "default": "9999-12-31"
+    },
+    "sortering": {
+      "title": "sortering",
+      "description": "'-oppervlakte' (standaard) voor de grootste verblijfsobjecten eerst, 'oppervlakte' voor de kleinste eerst.",
+      "type": "string",
+      "enum": [
+        "-oppervlakte",
+        "oppervlakte"
+      ],
+      "default": "-oppervlakte"
+    },
+    "weglaten": {
+      "title": "weglaten",
+      "description": "Eigenschappen van de objecten die niet worden geleverd. Standaard de registratiegegevens (geconstateerd, documentdatum, documentnummer, voorkomenidentificatie, tijdstipRegistratie, eindRegistratie, tijdstipRegistratieLV, tijdstipEindRegistratieLV) en de niet-BAG-gegevens (gemeentecode, wijkcode, buurtcode, gemeentenaam, wijknaam, buurtnaam, bouwjaarPand, statusPand, objecttype); een lege lijst (weglaten=) levert alle eigenschappen. Een eigen lijst vervangt de standaardlijst: neem ook de standaardwaarden op die weggelaten moeten blijven. Om resultaten per gebied te groeperen: de standaardlijst zonder buurtcode (en zonder buurtnaam voor de naam van de buurt); de buurtcode bevat ook de gemeentecode en de wijkcode. Ook elke andere eigenschap behalve identificatie is weg te laten (gebruiksdoel, oppervlakte, heeftAlsHoofdadres, heeftAlsNevenadres, maaktDeelUitVan, status, beginGeldigheid, eindGeldigheid, voorgaandeVersie, volgendeVersie), bijvoorbeeld bij veel verblijfsobjecten waarvan alleen adres, oppervlakte en gebruiksdoelen nodig zijn: heeftAlsNevenadres, maaktDeelUitVan, beginGeldigheid, status. 'geometrie' laat de punten weg.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "geometrie",
+          "geconstateerd",
+          "documentdatum",
+          "documentnummer",
+          "voorkomenidentificatie",
+          "tijdstipRegistratie",
+          "eindRegistratie",
+          "tijdstipRegistratieLV",
+          "tijdstipEindRegistratieLV",
+          "gemeentecode",
+          "wijkcode",
+          "buurtcode",
+          "gemeentenaam",
+          "wijknaam",
+          "buurtnaam",
+          "bouwjaarPand",
+          "statusPand",
+          "objecttype",
+          "gebruiksdoel",
+          "oppervlakte",
+          "heeftAlsHoofdadres",
+          "heeftAlsNevenadres",
+          "maaktDeelUitVan",
+          "status",
+          "beginGeldigheid",
+          "eindGeldigheid",
+          "voorgaandeVersie",
+          "volgendeVersie"
+        ]
+      },
+      "default": [
+        "geconstateerd",
+        "documentdatum",
+        "documentnummer",
+        "voorkomenidentificatie",
+        "tijdstipRegistratie",
+        "eindRegistratie",
+        "tijdstipRegistratieLV",
+        "tijdstipEindRegistratieLV",
+        "gemeentecode",
+        "wijkcode",
+        "buurtcode",
+        "gemeentenaam",
+        "wijknaam",
+        "buurtnaam",
+        "bouwjaarPand",
+        "statusPand",
+        "objecttype"
+      ]
+    },
+    "limit": {
+      "title": "limit",
+      "description": "Het maximale aantal objecten per pagina; volgende pagina's met de parameter offset.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5000,
+      "default": 100
+    }
+  },
+  "filterCrs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+  "filter": {
+    "op": "t_intersects",
+    "args": [
+      {
+        "interval": [
+          {
+            "property": "beginGeldigheid"
+          },
+          {
+            "property": "eindGeldigheid"
+          }
+        ]
+      },
+      {
+        "timestamp": "now"
+      }
+    ]
+  },
+  "filterOperator": "AND",
+  "excludeProperties": {
+    "$parameter": {
+      "weglaten": {
+        "$ref": "#/parameters/weglaten"
+      }
+    }
+  },
+  "supportPaging": true,
+  "limit": {
+    "$parameter": {
+      "limit": {
+        "$ref": "#/parameters/limit"
+      }
+    }
+  },
+  "deduplicate": true,
+  "queries": [
+    {
+      "collections": [
+        "verblijfsobject"
+      ],
+      "sortby": [
+        {
+          "$parameter": {
+            "sortering": {
+              "$ref": "#/parameters/sortering"
+            }
+          }
+        }
+      ],
+      "filter": {
+        "op": "and",
+        "args": [
+          {
+            "op": "or",
+            "args": [
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "gemeentecode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "wijkcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "=",
+                "args": [
+                  {
+                    "property": "buurtcode"
+                  },
+                  {
+                    "$parameter": {
+                      "gebied": {
+                        "$ref": "#/parameters/gebied"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "a_overlaps",
+            "args": [
+              {
+                "property": "gebruiksdoel"
+              },
+              {
+                "$parameter": {
+                  "gebruiksdoel": {
+                    "$ref": "#/parameters/gebruiksdoel"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "in",
+            "args": [
+              {
+                "property": "status"
+              },
+              {
+                "$parameter": {
+                  "status": {
+                    "$ref": "#/parameters/status"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "between",
+            "args": [
+              {
+                "property": "oppervlakte"
+              },
+              {
+                "$parameter": {
+                  "oppervlakteMin": {
+                    "$ref": "#/parameters/oppervlakteMin"
+                  }
+                }
+              },
+              {
+                "$parameter": {
+                  "oppervlakteMax": {
+                    "$ref": "#/parameters/oppervlakteMax"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": ">=",
+            "args": [
+              {
+                "property": "beginGeldigheid"
+              },
+              {
+                "$parameter": {
+                  "sinds": {
+                    "$ref": "#/parameters/sinds"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "op": "<",
+            "args": [
+              {
+                "property": "beginGeldigheid"
+              },
+              {
+                "$parameter": {
+                  "tot": {
+                    "$ref": "#/parameters/tot"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

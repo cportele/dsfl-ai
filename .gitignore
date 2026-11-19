@@ -1,0 +1,9 @@
+.DS_Store
+.env
+__pycache__
+db/data
+# local working directories, not published
+doc
+scripts
+skills
+tmp

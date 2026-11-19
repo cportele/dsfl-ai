@@ -1,0 +1,185 @@
+---
+id: wijkenbuurten
+providerType: FEATURE
+providerSubType: SQL
+nativeCrs:
+  code: 28992
+  forceAxisOrder: NONE
+defaultLanguage: nl
+connectionInfo:
+  dialect: PGIS
+  host: ${db.host:-db}
+  database: ${db.database:-bag}
+  user: ${db.user:-bag}
+  password: ${db.password>base64:-YmFn}
+  schemas:
+  - cbs
+sourcePathDefaults:
+  primaryKey: id
+  sortKey: id
+datasetChanges:
+  mode: 'OFF'
+types:
+  gemeente:
+    sourcePath: /gemeente
+    type: OBJECT
+    objectType: Gemeente
+    label: Gemeente
+    description: Een gemeente in Nederland per 1 januari 2026, met de begrenzing van het grondgebied (land en water). De gemeentegrenzen komen uit de Basisregistratie Kadaster.
+    properties:
+      code:
+        sourcePath: id
+        type: STRING
+        role: ID
+        label: gemeentecode
+        description: De viercijferige gemeentecode volgens Tabel 33 Gemeententabel, zoals ook in de BAG gebruikt (bijvoorbeeld 0307 voor Amersfoort). De code is de id van het object (feature id) en staat daarom niet bij de eigenschappen.
+        constraints:
+          regex: ^[0-9]{4}$
+          required: true
+      statcode:
+        sourcePath: statcode
+        type: STRING
+        label: CBS-code
+        description: "De code van de gemeente bij het CBS: 'GM' gevolgd door de gemeentecode."
+        constraints:
+          regex: ^GM[0-9]{4}$
+          required: true
+      naam:
+        sourcePath: naam
+        type: STRING
+        label: naam
+        description: De naam van de gemeente.
+        constraints:
+          required: true
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        geometryType: MULTI_POLYGON
+        label: geometrie
+        description: De begrenzing van de gemeente, inclusief water.
+        constraints:
+          required: true
+  wijk:
+    sourcePath: /wijk
+    type: OBJECT
+    objectType: Wijk
+    label: Wijk
+    description: Een wijk volgens de CBS Wijk- en Buurtkaart 2026, een deel van een gemeente dat in buurten is ingedeeld. De indeling is grotendeels gebaseerd op wat de gemeenten aan het CBS doorgeven.
+    properties:
+      code:
+        sourcePath: id
+        type: STRING
+        role: ID
+        label: wijkcode
+        description: "De code van de wijk: 'WK', de gemeentecode en een tweecijferig wijknummer. De code is de id van het object (feature id) en staat daarom niet bij de eigenschappen."
+        constraints:
+          regex: ^WK[0-9]{6}$
+          required: true
+      naam:
+        sourcePath: naam
+        type: STRING
+        label: naam
+        description: De naam van de wijk. Wijknamen zijn alleen binnen een gemeente uniek.
+        constraints:
+          required: true
+      gemeente:
+        type: FEATURE_REF
+        refType: gemeente
+        label: gemeente
+        description: De gemeente waarin de wijk ligt. De titel van de verwijzing is de naam van de gemeente.
+        constraints:
+          regex: ^[0-9]{4}$
+          required: true
+        properties:
+          id:
+            sourcePath: gemeente
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam FROM cbs.gemeente x_r WHERE x_r.id = $T$.gemeente)}'
+            type: STRING
+      water:
+        sourcePath: water
+        type: BOOLEAN
+        label: water
+        description: Geeft aan of de wijk (vrijwel) geheel uit water bestaat.
+        constraints:
+          required: true
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        geometryType: MULTI_POLYGON
+        label: geometrie
+        description: De begrenzing van de wijk.
+        constraints:
+          required: true
+  buurt:
+    sourcePath: /buurt
+    type: OBJECT
+    objectType: Buurt
+    label: Buurt
+    description: Een buurt volgens de CBS Wijk- en Buurtkaart 2026, het kleinste gebied van de indeling van een gemeente in wijken en buurten.
+    properties:
+      code:
+        sourcePath: id
+        type: STRING
+        role: ID
+        label: buurtcode
+        description: "De code van de buurt: 'BU', de gemeentecode, het wijknummer en een tweecijferig buurtnummer. De code is de id van het object (feature id) en staat daarom niet bij de eigenschappen."
+        constraints:
+          regex: ^BU[0-9]{8}$
+          required: true
+      naam:
+        sourcePath: naam
+        type: STRING
+        label: naam
+        description: De naam van de buurt. Buurtnamen zijn alleen binnen een gemeente uniek.
+        constraints:
+          required: true
+      wijk:
+        type: FEATURE_REF
+        refType: wijk
+        label: wijk
+        description: De wijk waarin de buurt ligt. De titel van de verwijzing is de naam van de wijk.
+        constraints:
+          regex: ^WK[0-9]{6}$
+          required: true
+        properties:
+          id:
+            sourcePath: wijk
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam FROM cbs.wijk x_r WHERE x_r.id = $T$.wijk)}'
+            type: STRING
+      gemeente:
+        type: FEATURE_REF
+        refType: gemeente
+        label: gemeente
+        description: De gemeente waarin de buurt ligt. De titel van de verwijzing is de naam van de gemeente.
+        constraints:
+          regex: ^[0-9]{4}$
+          required: true
+        properties:
+          id:
+            sourcePath: gemeente
+            type: STRING
+          title:
+            sourcePath: '[EXPRESSION]{sql=(SELECT x_r.naam FROM cbs.gemeente x_r WHERE x_r.id = $T$.gemeente)}'
+            type: STRING
+      water:
+        sourcePath: water
+        type: BOOLEAN
+        label: water
+        description: Geeft aan of de buurt (vrijwel) geheel uit water bestaat.
+        constraints:
+          required: true
+      geometrie:
+        sourcePath: geometrie
+        type: GEOMETRY
+        role: PRIMARY_GEOMETRY
+        geometryType: MULTI_POLYGON
+        label: geometrie
+        description: De begrenzing van de buurt.
+        constraints:
+          required: true

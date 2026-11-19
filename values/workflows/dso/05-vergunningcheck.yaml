@@ -1,0 +1,337 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.0.1
+info:
+  title: DSO • Mag ik hier iets bouwen? — toepasbare regels (RTR → STTR)
+  version: 0.1.0
+  summary: Activiteit op locatie zoeken in de RTR en de beslisregels als DMN ophalen uit de STTR. Niet via Presenteren.
+  description: 'De toepasbare regel is een ánder artefact dan de juridische regel, met een eigen
+
+    levenscyclus en een eigen bronhouderproces. Wie een vergunningvraag in de
+
+    regelingtekst probeert te beantwoorden, doet veel calls voor een antwoord dat
+
+    elders kant-en-klaar staat. De vergunningcheck in het Omgevingsloket nabootsen
+
+    door de webflow te scripten is duurder en levert minder op: als DMN heb je
+
+    dezelfde regels deterministisch en herhaalbaar.
+
+
+    Beide API''s zijn geldigheidsgestuurd. `datum` (dd-MM-jjjj) betekent: welke regels
+
+    golden op die dag. Zet hem op vandaag; een hardgecodeerde datum bevriest je beeld
+
+    zonder dat iets klaagt.
+
+    '
+sourceDescriptions:
+- name: rtr
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/rtrgegevens/v2/openapi.json
+  type: openapi
+  x-dso-let-op: De spec is alleen met sleutel op te halen en mist een servers-blok. Arazzo-tooling moet de basis-URL daarom
+    apart krijgen.
+- name: sttr
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerengegevens/v1/openapi.json
+  type: openapi
+  x-dso-let-op: Idem.
+workflows:
+- workflowId: activiteiten-op-locatie
+  x-ldproxy-readOnly: true
+  summary: Welke activiteiten (bijv. 'dakkapel') kent het stelsel op dit punt — van alle bestuursorganen tegelijk.
+  description: 'De voorkeursroute. Met `_geo` krijg je de activiteiten van gemeente én Rijk die op
+
+    het punt gelden, zonder dat je het bevoegd gezag hoeft af te leiden. Gemeten op
+
+    Eindhoven-Woensel, omschrijving ''dakkapel'': twee activiteiten, gm0772 en mnre1034.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - datum
+    - rdX
+    - rdY
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      datum:
+        type: string
+        description: Vandaag, als dd-MM-jjjj.
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+        examples:
+        - 19-10-2026
+      omschrijving:
+        type: string
+        examples:
+        - dakkapel
+      rdX:
+        type: number
+        examples:
+        - 154792.05
+      rdY:
+        type: number
+        examples:
+        - 463172.16
+  steps:
+  - stepId: activiteiten-zoeken
+    operationPath: '{$sourceDescriptions.rtr.url}#/paths/~1activiteiten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+    - name: pageSize
+      in: query
+      value: 200
+      x-dso-waarom: RTR en STTR heten `pageSize`, niet `size`. Default 20.
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: ''
+        omschrijving: ''
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /datum
+        value: $inputs.datum
+      - target: /omschrijving
+        value: $inputs.omschrijving
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      antwoord: $response.body
+      aantal: $response.body#/page/totalElements
+    x-dso-leegIs: antwoord-met-omschrijving-alarm-zonder
+    x-dso-waarom: Met een omschrijving kan leeg kloppen (de activiteit bestaat hier niet onder die naam). Zonder omschrijving
+      is leeg op een punt in Nederland altijd een fout in de vraag.
+  outputs:
+    antwoord: $steps.activiteiten-zoeken.outputs.antwoord
+    aantal: $steps.activiteiten-zoeken.outputs.aantal
+  x-dso-selectie:
+    per: _embedded.activiteiten[]
+    neem: regelBeheerObjecten[?(@.typering == 'Conclusie')].functioneleStructuurRef
+    toelichting: Conclusie = de vergunningcheck zelf. Indieningsvereisten en Maatregelen zijn aparte regelbeheerobjecten bij
+      dezelfde activiteit.
+    vervolg: toepasbare-regels-ophalen
+- workflowId: activiteiten-van-bestuursorgaan
+  x-ldproxy-readOnly: true
+  summary: Alternatief zonder locatie — alle activiteiten van één bestuursorgaan.
+  description: 'Alleen als je geen locatie hebt. Hier zit de valkuil: de RTR wil de kále
+
+    organisatiecode. `gm0772` geeft 200 met 0 resultaten, `0772` geeft de activiteiten
+
+    (gemeten). Er is geen vaste breedte: `pv27` → `27`, en `0027` geeft weer 0. En de
+
+    kale code is niet uniek (`0664` is gemeente én waterschap), dus geef ook het
+
+    organisatieType mee.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - datum
+    - organisatieCode
+    - organisatieType
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      datum:
+        type: string
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+      organisatieCode:
+        type: string
+        description: Kaal, zonder letterprefix en zonder aanvullen.
+        pattern: ^[0-9]+$
+        examples:
+        - '0307'
+      organisatieType:
+        type: string
+        enum:
+        - GM
+        - PV
+        - WS
+        - MNRE
+      omschrijving:
+        type: string
+  steps:
+  - stepId: activiteiten-van-orgaan
+    operationPath: '{$sourceDescriptions.rtr.url}#/paths/~1activiteiten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: pageSize
+      in: query
+      value: 200
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: ''
+        omschrijving: ''
+        bestuursorgaan:
+          organisatieCode: ''
+          organisatieType: ''
+      replacements:
+      - target: /datum
+        value: $inputs.datum
+      - target: /omschrijving
+        value: $inputs.omschrijving
+      - target: /bestuursorgaan/organisatieCode
+        value: $inputs.organisatieCode
+      - target: /bestuursorgaan/organisatieType
+        value: $inputs.organisatieType
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+      x-dso-leegIs: alarm
+      x-dso-waarom: 200 OK met nul resultaten is hier bijna altijd een fout in de vraag — het bekendste geval van de stille
+        fout in het stelsel.
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    - name: alarm-lege-respons
+      type: end
+      criteria:
+      - condition: $statusCode == 200
+      x-dso-melding: Structureel lege respons. Controleer de organisatiecode (kaal?) en het type voordat je opnieuw vraagt.
+        Niet blijven pollen.
+    outputs:
+      antwoord: $response.body
+  outputs:
+    antwoord: $steps.activiteiten-van-orgaan.outputs.antwoord
+  x-dso-transform:
+  - naar:
+    - organisatieCode
+    - organisatieType
+    van: bronhoudercode (gm0772, pv27, ws0664, mnre1034)
+    regel: 'letterprefix afsplitsen: gm→GM, pv→PV, ws→WS, mnre→MNRE; rest = organisatieCode, niet aanvullen'
+- workflowId: toepasbare-regels-ophalen
+  x-ldproxy-readOnly: true
+  summary: Van functioneleStructuurRef naar het DMN-bestand met de beslisregels.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - datum
+    - functioneleStructuurRef
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      datum:
+        type: string
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+      functioneleStructuurRef:
+        type: string
+        examples:
+        - http://toepasbare-regels.omgevingswet.overheid.nl/00000001001902763000/id/concept/Conclusienl.imow-gm0772.activiteit.Dakkapel
+  steps:
+  - stepId: regelbestand-zoeken
+    operationPath: '{$sourceDescriptions.sttr.url}#/paths/~1toepasbareRegels/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: functioneleStructuurRef
+      in: query
+      value: $inputs.functioneleStructuurRef
+    - name: datum
+      in: query
+      value: $inputs.datum
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements == 1
+      x-dso-waarom: 'Hier is [0] wél veilig, omdat je eerst afdwingt dat er precies één
+
+        regelbestand is voor deze referentie op deze datum. Dat is het patroon:
+
+        een positie-pointer alleen na een uniciteitscheck.
+
+        '
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      identifier: $response.body#/_embedded/toepasbareRegels/0/identifier
+      laatsteWijzigingDatum: $response.body#/_embedded/toepasbareRegels/0/laatsteWijzigingDatum
+  - stepId: dmn-ophalen
+    operationPath: '{$sourceDescriptions.sttr.url}#/paths/~1toepasbareRegels~1{toepasbareRegelsIdentifier}~1sttrBestand/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: toepasbareRegelsIdentifier
+      in: path
+      value: $steps.regelbestand-zoeken.outputs.identifier
+    successCriteria:
+    - condition: $statusCode == 200
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    - reference: $components.failureActions.stopBijClientfout
+    outputs:
+      dmn: $response.body
+    x-dso-cache:
+      sleutel:
+      - functioneleStructuurRef
+      - laatsteWijzigingDatum
+      regel: Is laatsteWijzigingDatum gelijk aan wat je bij de vorige keer bewaarde, sla deze download over.
+  outputs:
+    dmn: $steps.dmn-ophalen.outputs.dmn
+    identifier: $steps.regelbestand-zoeken.outputs.identifier
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500
+      x-dso-backoff:
+      - 2
+      - 5
+      - 15
+      - 30
+    stopBijClientfout:
+      name: stop-bij-clientfout
+      type: end
+      criteria:
+      - condition: $statusCode >= 400
+      - condition: $statusCode < 500

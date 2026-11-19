@@ -1,0 +1,591 @@
+# Unofficial, edited copy of an Arazzo description of the DSO team, for testing in the DSFL AI project.
+# Official workflows are planned to be published in the future at
+# https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
+# Not covered by the CC BY 4.0 licence of this repository.
+# Changes: YAML aliases expanded for the value store;
+# the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
+# examples changed to Stadhuisplein 1, Amersfoort
+arazzo: 1.1.0
+info:
+  title: 'DSO • Functionele vraag: mag ik hier een dakkapel bouwen, en wat moet ik weten?'
+  version: 0.1.0
+  summary: Van adres, activiteit en antwoorden naar de uitkomst van de vergunningcheck (vergunningplicht of niet), de regels
+    in het omgevingsplan en de Wro-maatvoering ter plekke.
+  description: "De vraag van een woningeigenaar raakt drie soorten informatie die in het stelsel\nop verschillende plekken\
+    \ staan:\n\n- Toepasbare regels (RTR → Uitvoeren services): welke activiteiten gelden hier,\n  welke vragen stelt de vergunningcheck,\
+    \ en wat is de uitkomst bij de gegeven\n  antwoorden? Het stelsel rekent die uitkomst zelf uit (conclusie/_bepaal).\n\
+    - Juridische regels (Ontsluiten → Presenteren): wat zegt het omgevingsplan over\n  deze activiteit op dit punt?\n- Oude\
+    \ regime (Ontsluiten → IHR): welke maatvoering geldt hier nog uit een\n  bestemmingsplan?\n\nDe sleutel die RTR en omgevingsplan\
+    \ verbindt: de urn van de gemeentelijke\nactiviteit in de RTR (nl.imow-gm0772.activiteit.Dakkapel) is dezelfde identificatie\n\
+    als de activiteit in de annotaties van het omgevingsplan. Daarmee haal je precies\nde regels op die bij de vergunningcheck\
+    \ horen, zonder op tekst te zoeken.\n\nKetenstappen:\n1. BAG → punt en gemeentecode.\n2. RTR activiteiten/_zoek op het\
+    \ punt → gemeentelijke en rijksactiviteiten.\n   De gemeentelijke kies je met de gemeentecode uit de BAG: geen prefix-valkuil.\n\
+    3. Per activiteit: Uitvoeren services conclusie/_bepaal met de antwoorden →\n   de vragen die er nog toe doen en, zodra\
+    \ die beantwoord zijn, de conclusie\n   (Vergunningplicht, Toestemmingsvrij, Niet van toepassing …) plus de activiteit\n\
+    \   waarvoor je dan aanvraagt of meldt. Zonder antwoorden: alleen de vragen.\n4. Ontsluiten → het geldende omgevingsplan\
+    \ en de geldende Wro-plannen.\n5. Presenteren → annotaties op het punt → regels bij de gemeentelijke activiteit\n   →\
+    \ tekst (via de sub-workflow uit 10-regels-over-wonen).\n6. Per Wro-plan: IHR maatvoeringen op het punt.\n\nNiet in deze\
+    \ workflow: de rijksregels uit het Bbl bij de rijksactiviteit. Dat is\ndezelfde keten op het AMvB-document; de vergunningcheck\
+    \ van het Rijk komt wel mee\nin stap 3.\n"
+sourceDescriptions:
+- name: bag
+  url: https://api.pdok.nl/kadaster/bag/ogc/v2/api?f=json
+  type: openapi
+- name: rtr
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/rtrgegevens/v2/openapi.json
+  type: openapi
+- name: uitvoeren
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerenservices/v2/openapi.json
+  type: openapi
+- name: sttr
+  url: https://service.omgevingswet.overheid.nl/publiek/toepasbare-regels/api/toepasbareregelsuitvoerengegevens/v1/openapi.json
+  type: openapi
+- name: ontsluiten
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsinformatie/api/ontsluiten/v2/openapi.json
+  type: openapi
+- name: presenteren
+  url: https://service.omgevingswet.overheid.nl/publiek/omgevingsdocumenten/api/presenteren/v8/openapi.json
+  type: openapi
+- name: ihr
+  url: https://ruimte.omgevingswet.overheid.nl/ruimtelijke-plannen/api/opvragen/v4/openapi.json
+  type: openapi
+- name: wonen
+  url: ./10-regels-over-wonen.arazzo.yaml
+  type: arazzo
+- name: bagAdres
+  url: ./bag-adres.yaml
+  type: arazzo
+workflows:
+- workflowId: dakkapel-hier
+  x-ldproxy-readOnly: true
+  summary: Adres + activiteit → vergunningcheck, regels uit het omgevingsplan en Wro-maatvoering.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - ihrApiKey
+    - userAgent
+    - postcode
+    - huisnummer
+    - activiteit
+    - datum
+    properties:
+      apiKey:
+        type: string
+        format: password
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      postcode:
+        type: string
+        examples:
+        - 3811LM
+      huisnummer:
+        type: string
+        examples:
+        - '1'
+      activiteit:
+        type: string
+        examples:
+        - dakkapel
+      datum:
+        type: string
+        description: Vandaag, als dd-MM-jjjj. RTR en STTR zijn geldigheidsgestuurd.
+        pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+      antwoorden:
+        type: array
+        default: []
+        description: 'Antwoorden op de vragen van de vergunningcheck, als {id, antwoord}. Leeg bij de
+
+          eerste ronde: dan krijg je de vragen terug. Ja/nee als "true"/"false", keuzes
+
+          als de optietekst. Eén lijst voor alle checks: id''s die bij een check niet
+
+          horen, worden genegeerd (gemeten).
+
+          '
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            antwoord:
+              type: string
+  steps:
+  - stepId: adres
+    description: Het adres uit de BAG van deze server, in plaats van de collectie adres van PDOK.
+    workflowId: $sourceDescriptions.bagAdres.adres-rd
+    parameters:
+    - name: postcode
+      value: $inputs.postcode
+    - name: huisnummer
+      value: $inputs.huisnummer
+    outputs:
+      rdX: $outputs.rdX
+      rdY: $outputs.rdY
+      gemeentecode: $outputs.gemeentecode
+  - stepId: activiteiten
+    description: Op locatie zoeken geeft gemeente én Rijk in één call, zonder het bevoegd gezag af te leiden.
+    operationPath: '{$sourceDescriptions.rtr.url}#/paths/~1activiteiten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+    - name: pageSize
+      in: query
+      value: 200
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: ''
+        omschrijving: ''
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /datum
+        value: $inputs.datum
+      - target: /omschrijving
+        value: $inputs.activiteit
+      - target: /_geo/intersects/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements > 0
+      x-dso-leegIs: antwoord
+      x-dso-waarom: Geen activiteit onder deze naam op dit punt. Dat kan kloppen; de workflow stopt dan netjes.
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      activiteiten:
+        context: $response.body
+        selector: $._embedded.activiteiten[*].omschrijving
+        type: jsonpath
+      gemeentelijkeActiviteit:
+        context: $response.body
+        selector: $._embedded.activiteiten[?@.bestuursorgaan.organisatieType == 'GM' && @.bestuursorgaan.organisatieCode ==
+          '{$steps.adres.outputs.gemeentecode}'].urn
+        type: jsonpath
+      conclusies:
+        context: $response.body
+        selector: $._embedded.activiteiten[*].regelBeheerObjecten[?@.typering == 'Conclusie'].functioneleStructuurRef
+        type: jsonpath
+  - stepId: vergunningcheck
+    description: Per activiteit (gemeente en Rijk) de vergunningcheck laten uitrekenen met de gegeven antwoorden.
+    workflowId: vergunningcheck-uitrekenen
+    x-dso-forEach:
+      items: $steps.activiteiten.outputs.conclusies
+      als: functioneleStructuurRef
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: datum
+      value: $inputs.datum
+    - name: antwoorden
+      value: $inputs.antwoorden
+    - name: rdX
+      value: $steps.adres.outputs.rdX
+    - name: rdY
+      value: $steps.adres.outputs.rdY
+    outputs:
+      activiteit: $outputs.activiteit
+      conclusie: $outputs.conclusie
+      aanvragenVoor: $outputs.aanvragenVoor
+      vragen: $outputs.vragen
+      vraagIds: $outputs.vraagIds
+  - stepId: documenten
+    operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: size
+      in: query
+      value: 200
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    - context: $response.body
+      condition: $[?count(@._embedded.documenten[?@.type == 'Omgevingsplan' && @.omgevingsdocumentMetadata.isOntwerp == false])
+        == 1]
+      type: jsonpath
+    onFailure:
+    - reference: $components.failureActions.herhaalBijStoring
+    outputs:
+      omgevingsplan:
+        context: $response.body
+        selector: $._embedded.documenten[?@.type == 'Omgevingsplan' && @.omgevingsdocumentMetadata.isOntwerp == false].uriIdentificatie
+        type: jsonpath
+      wroPlannen:
+        context: $response.body
+        selector: $._embedded.documenten[?@.imroDocumentMetadata.regelStatus == 'geldend' && (@.type == 'bestemmingsplan'
+          || @.type == 'wijzigingsplan' || @.type == 'uitwerkingsplan' || @.type == 'inpassingsplan' || @.type == 'beheersverordening')].uriIdentificatie
+        type: jsonpath
+  - stepId: wro-maatvoering
+    workflowId: wro-maatvoering-in-plan
+    x-dso-forEach:
+      items: $steps.documenten.outputs.wroPlannen
+      als: planId
+    parameters:
+    - name: ihrApiKey
+      value: $inputs.ihrApiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: rdX
+      value: $steps.adres.outputs.rdX
+    - name: rdY
+      value: $steps.adres.outputs.rdY
+    outputs:
+      maatvoeringen: $outputs.maatvoeringen
+  - stepId: ow-annotaties
+    operationPath: '{$sourceDescriptions.presenteren.url}#/paths/~1regelingen~1{uriIdentificatie}~1regeltekstannotaties~1_zoek/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - reference: $components.parameters.contentCrsRd
+    - name: uriIdentificatie
+      in: path
+      value: $steps.documenten.outputs.omgevingsplan
+    - name: locatieSelectie
+      in: query
+      value: primair
+    requestBody:
+      contentType: application/json
+      payload:
+        geometrie:
+          type: Point
+          coordinates:
+          - 0
+          - 0
+      replacements:
+      - target: /geometrie/coordinates/0
+        value: $steps.adres.outputs.rdX
+      - target: /geometrie/coordinates/1
+        value: $steps.adres.outputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    onSuccess:
+    - name: activiteit-niet-in-omgevingsplan-hier
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $[?count(@.activiteiten[?@.identificatie == '{$steps.activiteiten.outputs.gemeentelijkeActiviteit}']) ==
+          0]
+        type: jsonpath
+      x-dso-waarom: De RTR kent de activiteit, maar het omgevingsplan annoteert haar niet op dit punt. Dan zijn er geen regels
+        op te halen; stoppen is het juiste antwoord, niet doorzoeken.
+    outputs:
+      annotaties: $response.body
+      activiteitNaam:
+        context: $response.body
+        selector: $.activiteiten[?@.identificatie == '{$steps.activiteiten.outputs.gemeentelijkeActiviteit}'].naam
+        type: jsonpath
+  - stepId: regels
+    description: De regels die de gemeentelijke activiteit op dit punt annoteren, met tekst. Hergebruikt tekst-van-regel uit
+      10.
+    workflowId: $sourceDescriptions.wonen.tekst-van-regel
+    x-dso-forEach:
+      items:
+        context: $steps.ow-annotaties.outputs.annotaties
+        selector: $.regelsVoorIedereen[?@.activiteitLocatieaanduidingen[?@.activiteitRef == '{$steps.activiteiten.outputs.gemeentelijkeActiviteit}']].regeltekstRef
+        type: jsonpath
+      als: regeltekstRef
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    - name: omgevingsplan
+      value: $steps.documenten.outputs.omgevingsplan
+    - name: annotaties
+      value: $steps.ow-annotaties.outputs.annotaties
+    outputs:
+      artikelen: $outputs.label
+      teksten: $outputs.tekst
+  outputs:
+    activiteiten: $steps.activiteiten.outputs.activiteiten
+    gemeentelijkeActiviteit: $steps.activiteiten.outputs.gemeentelijkeActiviteit
+    checkVoor: $steps.vergunningcheck.outputs.activiteit
+    conclusie: $steps.vergunningcheck.outputs.conclusie
+    aanvragenVoor: $steps.vergunningcheck.outputs.aanvragenVoor
+    vragenVergunningcheck: $steps.vergunningcheck.outputs.vragen
+    vraagIds: $steps.vergunningcheck.outputs.vraagIds
+    wroMaatvoeringen: $steps.wro-maatvoering.outputs.maatvoeringen
+    owArtikelen: $steps.regels.outputs.artikelen
+    owTeksten: $steps.regels.outputs.teksten
+- workflowId: vergunningcheck-uitrekenen
+  x-ldproxy-readOnly: true
+  summary: De vergunningcheck van één activiteit laten uitrekenen door het stelsel.
+  description: 'Uitvoeren services v2, conclusie/_bepaal. Je stuurt de functioneleStructuurRef van
+
+    de Conclusie mee, met de antwoorden tot nu toe. Het antwoord bevat de vragen die
+
+    bij die antwoorden nog relevant zijn en, zodra de uitkomst vaststaat, de conclusie.
+
+    Gemeten (Generaal Pattonlaan 5, gemeentelijke dakkapel): zonder antwoorden 14
+
+    vragen; ''Dakkapel'' + ''zijkant'' + ''naar openbaar gebied'' → Vergunningplicht na 3
+
+    vragen; achterkant binnen de maten → Toestemmingsvrij na 12 vragen.
+
+    De lijst met vragen markeert niet welke al beantwoord zijn: houd dat zelf bij.
+
+    '
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - datum
+    - functioneleStructuurRef
+    - rdX
+    - rdY
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      datum:
+        type: string
+      functioneleStructuurRef:
+        type: string
+      antwoorden:
+        type: array
+        default: []
+      rdX:
+        type: number
+      rdY:
+        type: number
+  steps:
+  - stepId: conclusie
+    operationPath: '{$sourceDescriptions.uitvoeren.url}#/paths/~1conclusie~1_bepaal/post'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: Content-Crs
+      in: header
+      value: EPSG:28992
+    requestBody:
+      contentType: application/json
+      payload:
+        datum: $inputs.datum
+        functioneleStructuurRefs:
+        - functioneleStructuurRef: $inputs.functioneleStructuurRef
+          antwoorden: $inputs.antwoorden
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      activiteit:
+        context: $response.body
+        selector: $[*].activiteiten[*].subactiviteitNaam
+        type: jsonpath
+      conclusie:
+        context: $response.body
+        selector: $[*].activiteiten[*].conclusies[*].toestemmingstype.waarde
+        type: jsonpath
+        x-dso-leegIs: nog-niet-genoeg-antwoorden
+      aanvragenVoor:
+        context: $response.body
+        selector: $[*].activiteiten[*].conclusies[*].toonbareActiviteitFunctioneleStructuurRef
+        type: jsonpath
+        x-dso-waarom: Bij Vergunningplicht of Meldingsplicht de activiteit waarvoor je aanvraagt of meldt. Dit is de ingang
+          voor 13-verzoek-indienen (indieningsvereisten).
+      vragen:
+        context: $response.body
+        selector: $[*].activiteiten[*].vraaggroepen[*].vragen[*].tekst
+        type: jsonpath
+      vraagIds:
+        context: $response.body
+        selector: $[*].activiteiten[*].vraaggroepen[*].vragen[*].id
+        type: jsonpath
+  outputs:
+    activiteit: $steps.conclusie.outputs.activiteit
+    conclusie: $steps.conclusie.outputs.conclusie
+    aanvragenVoor: $steps.conclusie.outputs.aanvragenVoor
+    vragen: $steps.conclusie.outputs.vragen
+    vraagIds: $steps.conclusie.outputs.vraagIds
+- workflowId: vragenlijst-uit-dmn
+  x-ldproxy-readOnly: true
+  summary: Alternatief zonder uitrekenen — de hele vragenlijst en alle mogelijke uitkomsten uit het regelbestand (STTR → DMN).
+  description: Niet meer in de hoofdketen. Nuttig om de vergunningcheck offline te bekijken of te documenteren; voor een antwoord
+    op "moet ik een vergunning" gebruik je vergunningcheck-uitrekenen.
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - datum
+    - functioneleStructuurRef
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      datum:
+        type: string
+      functioneleStructuurRef:
+        type: string
+  steps:
+  - stepId: regelbestand
+    operationPath: '{$sourceDescriptions.sttr.url}#/paths/~1toepasbareRegels/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: functioneleStructuurRef
+      in: query
+      value: $inputs.functioneleStructuurRef
+    - name: datum
+      in: query
+      value: $inputs.datum
+    successCriteria:
+    - condition: $statusCode == 200
+    - condition: $response.body#/page/totalElements == 1
+    outputs:
+      identifier: $response.body#/_embedded/toepasbareRegels/0/identifier
+  - stepId: dmn
+    operationPath: '{$sourceDescriptions.sttr.url}#/paths/~1toepasbareRegels~1{toepasbareRegelsIdentifier}~1sttrBestand/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: toepasbareRegelsIdentifier
+      in: path
+      value: $steps.regelbestand.outputs.identifier
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      vragen:
+        context: $response.body
+        selector: //*[local-name()='vraagTekst']/text()
+        type: xpath
+      uitkomsten:
+        context: $response.body
+        selector: (//*[local-name()='decision'])[1]//*[local-name()='outputEntry']/*[local-name()='text']/text()
+        type: xpath
+        x-dso-uniek: true
+        x-dso-waarom: Alleen de hoofdbeslissing. De onderliggende beslistabellen hebben interne tussenwaarden ('pad 3', true/false).
+  outputs:
+    vragen: $steps.dmn.outputs.vragen
+    uitkomsten: $steps.dmn.outputs.uitkomsten
+- workflowId: wro-maatvoering-in-plan
+  x-ldproxy-readOnly: true
+  summary: Maatvoeringen (bouwhoogte, goothoogte …) uit één Wro-plan op het punt.
+  inputs:
+    type: object
+    required:
+    - ihrApiKey
+    - userAgent
+    - planId
+    - rdX
+    - rdY
+    properties:
+      ihrApiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      planId:
+        type: string
+      rdX:
+        type: number
+      rdY:
+        type: number
+  steps:
+  - stepId: maatvoeringen
+    operationPath: '{$sourceDescriptions.ihr.url}#/paths/~1plannen~1{planId}~1maatvoeringen~1_zoek/post'
+    parameters:
+    - name: X-Api-Key
+      in: header
+      value: $inputs.ihrApiKey
+    - name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    - name: Content-Crs
+      in: header
+      value: epsg:28992
+    - name: planId
+      in: path
+      value: $inputs.planId
+    - name: pageSize
+      in: query
+      value: 100
+    requestBody:
+      contentType: application/json
+      payload:
+        _geo:
+          intersects:
+            type: Point
+            coordinates:
+            - 0
+            - 0
+      replacements:
+      - target: /_geo/intersects/coordinates/0
+        value: $inputs.rdX
+      - target: /_geo/intersects/coordinates/1
+        value: $inputs.rdY
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      maatvoeringen:
+        context: $response.body
+        selector: $._embedded.maatvoeringen[*].omvang[*]
+        type: jsonpath
+  outputs:
+    maatvoeringen: $steps.maatvoeringen.outputs.maatvoeringen
+components:
+  parameters:
+    apiKey:
+      name: x-api-key
+      in: header
+      value: $inputs.apiKey
+    userAgent:
+      name: User-Agent
+      in: header
+      value: $inputs.userAgent
+    contentCrsRd:
+      name: Content-Crs
+      in: header
+      value: http://www.opengis.net/def/crs/EPSG/0/28992
+  failureActions:
+    herhaalBijStoring:
+      name: herhaal-bij-storing
+      type: retry
+      retryAfter: 5
+      retryLimit: 4
+      criteria:
+      - condition: $statusCode >= 500

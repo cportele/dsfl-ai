@@ -53,6 +53,10 @@ een verwijzing `{"id": ..., "title": ...}`; de titel van een adres is bijvoorbee
 | Verblijfsobjecten met een gebruiksdoel binnen een afstand | `query_verblijfsobjecten-in-de-buurt` |
 | De toestand op een datum, andere eigenschappen | `collection_<type>` met `datetime`, eigenschappen of `filter` |
 
+Welke objecttypen een zoekopdracht levert en wat hun eigenschappen betekenen:
+`references/eigenschappen.md` (met de tool `skill_bag` en het argument `file`). Lees het voor de
+eerste aanroep van een zoekopdracht.
+
 Om te tellen nooit alle objecten ophalen: `process_aggregate-features` geeft het getal direct, ook
 met kenmerken van het pand bij het verblijfsobject (`statusPand`, `bouwjaarPand`), zodat vragen over
 woningen in oude of gesloopte panden één aanroep op `verblijfsobject` zijn. Er worden per aanroep

@@ -65,7 +65,7 @@ metadata:
   - panden
   - inrichtingselementen
   attribution: 'Bron: Basisregistratie Grootschalige Topografie (BGT), PDOK'
-  version: '261119143926'
+  version: '261119145849'
 accessControl:
   groups:
     public:

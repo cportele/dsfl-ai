@@ -1,13 +1,13 @@
 ---
 name: dso
 description: >-
-  Lees dit voor vragen over de regels van de Omgevingswet op een adres met de DSO-werkstromen:
-  welke werkstroom bij welke vraag, de invoer (adres, datums, identificaties), hoe de uitvoer te
-  lezen is (parallelle lijsten, regelteksten in XML), de vergunningcheck in rondes, regels op een
-  eerdere datum, en hoe het antwoord te presenteren. English: read before answering questions
-  about the rules of the Dutch Environment and Planning Act at an address with the DSO workflows:
-  choosing a workflow, inputs, reading the outputs, the permit check in rounds, rules on an
-  earlier date, presenting the answer.
+  Uitgebreide handleiding voor de DSO-werkstromen over de regels van de Omgevingswet op een adres,
+  aanvullend op de instructies van de server: welke werkstroom bij welke vraag, de invoer (adres,
+  datums, identificaties, een punt in RD), de uitvoer per werkstroom, de vergunningcheck in rondes,
+  regels op een eerdere datum, en hoe het antwoord te presenteren. English: extended guide to the
+  DSO workflows on the rules of the Dutch Environment and Planning Act at an address, beyond the
+  server instructions: choosing a workflow, inputs, outputs per workflow, the permit check in
+  rounds, rules on an earlier date, presenting the answer.
 ---
 
 # Regels van de Omgevingswet op een adres

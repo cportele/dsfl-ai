@@ -1,13 +1,13 @@
 ---
 name: bgt
 description: >-
-  Lees dit voor vragen over de topografie in de BGT (Basisregistratie Grootschalige Topografie):
-  welke tool bij welke vraag, hoe de objecten zijn ingedeeld, oppervlakten en aandelen (groen,
-  verharding, water, bebouwing), wegen, inrichtingselementen en bomen, wat er op een adres ligt,
-  wijzigingen, en de valkuilen; met de betekenis van alle waarden per collectie. English: read
-  before answering questions about the large-scale topography of the Netherlands (BGT): choosing a
-  tool, classification, areas and shares of land cover, roads, street furniture and trees, what is
-  at an address, changes, pitfalls; value definitions per collection.
+  Uitgebreide handleiding voor de BGT (Basisregistratie Grootschalige Topografie), aanvullend op de
+  instructies van de server: welke tool bij welke vraag, hoe de objecten zijn ingedeeld,
+  oppervlakten en aandelen (groen, verharding, water, bebouwing), wegen, inrichtingselementen en
+  bomen, wat er op een adres ligt, wijzigingen, met voorbeelden en de betekenis van alle waarden per
+  collectie. English: extended guide to the large-scale topography of the Netherlands (BGT), beyond
+  the server instructions: choosing a tool, classification, areas and shares of land cover, roads,
+  street furniture and trees, what is at an address, changes, examples, value definitions.
 ---
 
 # De BGT bevragen

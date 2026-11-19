@@ -36,7 +36,7 @@ metadata:
   - woonplaatsen
   attribution: 'Bron: Kadaster, Basisregistratie Adressen en Gebouwen (BAG)'
   # the version of this configuration (date of the last change, yymmdd)
-  version: '261119135239'
+  version: '261119143926'
 accessControl:
   groups:
     public: [read, 'processes:write']

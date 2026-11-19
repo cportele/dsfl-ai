@@ -29,7 +29,7 @@ metadata:
   - Arazzo
   attribution: 'Bron: Digitaal Stelsel Omgevingswet (DSO) en Kadaster, Basisregistratie Adressen en Gebouwen (BAG)'
   # the version of this configuration (UTC timestamp of the last change, yymmddHHMMSS)
-  version: '261119111612'
+  version: '261119143926'
 accessControl:
   groups:
     public: [read, 'processes:write']

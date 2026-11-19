@@ -144,14 +144,9 @@ api:
     collections:
     - pand
     - wegdeel
-    - ondersteunendwegdeel
     - begroeidterreindeel
     - onbegroeidterreindeel
     - waterdeel
-    - overigbouwwerk
-    - scheiding
-    - kunstwerkdeel
-    - spoor
     queries:
     - '*'
     processes:

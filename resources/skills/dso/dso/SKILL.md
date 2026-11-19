@@ -40,9 +40,11 @@ een halve minuut; roep een werkstroom niet onnodig opnieuw aan.
   `peildatum` is `jjjj-MM-dd`. `verzoek-voorbereiden` vraagt dezelfde dag in beide notaties.
 - **Regeling**: `uriIdentificatie` met underscores, zoals de werkstromen hem leveren, bijvoorbeeld
   `_akn_nl_act_gm0307_2020_omgevingsplan`; de vorm met schuine strepen wordt geweigerd.
-- **Punt in RD** (`rdX`, `rdY` voor de peildatum-werkstromen): de BAG-tools leveren
-  lengte/breedtegraad (WGS84). Reken om met de benaderingsformule (nauwkeurig tot ongeveer 1 m,
-  genoeg om documenten op een punt te vinden):
+- **Punt in RD** (`rdX`, `rdY` voor de peildatum-werkstromen): de BAG levert het met het argument
+  `crs` = `http://www.opengis.net/def/crs/EPSG/0/28992`, bijvoorbeeld `query_adres-op-postcode`
+  (postcode, huisnummer, crs): de geometrie van het verblijfsobject is dan `[rdX, rdY]`. Alleen als
+  de BAG-tools niet beschikbaar zijn: reken lengte/breedtegraad om met de benaderingsformule
+  (nauwkeurig tot ongeveer 1 m, genoeg om documenten op een punt te vinden):
   ```
   dp = 0.36 * (lat - 52.15517440);  dl = 0.36 * (lon - 5.38720621)
   rdX = 155000 + 190094.945*dl - 11832.228*dp*dl - 114.221*dp^2*dl - 32.391*dl^3 - 0.705*dp

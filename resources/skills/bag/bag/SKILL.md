@@ -117,7 +117,9 @@ hoogstens 100.000 objecten gelezen; beperk de selectie anders tot een gemeente o
   verwijst met `identificatieBAGPND` naar het pand in de BAG.
 - **Postcodegebieden** (`/postcode6`): CBS-cijfers per postcode; de postcode van een
   nummeraanduiding verwijst ernaar.
-- **DSO** (`/dso`): de regels van de Omgevingswet op een adres (postcode en huisnummer).
+- **DSO** (`/dso`): de regels van de Omgevingswet op een adres (postcode en huisnummer). Een punt
+  in het Rijksdriehoeksstelsel (voor de DSO-werkstromen op een peildatum): het argument `crs` =
+  `http://www.opengis.net/def/crs/EPSG/0/28992` bij de collecties en zoekopdrachten.
 
 ## Resultaten klein houden
 

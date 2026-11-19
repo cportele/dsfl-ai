@@ -1,0 +1,27 @@
+# generated - do not edit
+---
+label: FysiekVoorkomenWegPlus
+description: Waardelijst FysiekVoorkomenWegPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten
+  van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  asfalt: Gesloten verharding bestaande uit asfaltbeton of andere met bitumen gebonden materialen.
+  cementbeton: Gesloten verharding bestaande uit gewapend of ongewapend beton.
+  betonstraatstenen: Verharding gemaakt van betonstraatstenen. Straatsteen die als goedkope vervanging van de gebakken klinkers
+    is ontwikkeld.
+  gebakken klinkers: Verharding gemaakt van straatbakstenen. Gebakken klinkers worden voornamelijk geproduceerd uit grondstof
+    van eigen bodem; de beddingen van onze rivieren.
+  tegels: Bestrating van tegels, een platte vaak vierkante betonnen steen; veelal gebruikt voor trottoirbestrating.
+  sierbestrating: Bestrating, uitgevoerd in verschillende bestratingsverbanden en -materialen, of in een sierverband, die
+    vooral wordt toegepast uit esthetische overwegingen.
+  beton element: Geprepareerde elementen van beton zoals, trottoirbanden, opsluitbanden en stelconplaten.
+  grasklinkers: Elementenverharding bestaande uit elementen van beperkte afmetingen die ten behoeve van de doorgroei van grassen
+    en kruiden, zijn voorzien van openingen of met tussenruimten aangebracht.
+  schelpen: Ongebonden verharding bestaande uit schelpenmateriaal.
+  puin: Puin is afvalmateriaal dat bestaat uit losse brokstukken, grotendeels bestaande uit stenen en beton, van gesloopte
+    of ingestorte gebouwen, viaducten, bruggen en andere objecten.
+  grind: Ongebonden verharding bestaande uit kiezelmateriaal, waarvan de stenen in doorsnede variëren van 1 tot 5 cm.
+  gravel: Gravel is een ondergrond van gemalen baksteen die veel wordt gebruikt bij tennis en ook wel op atletiekbanen.
+  boomschors: Onverhard met als deklaag boomschors.
+  zand: Onverhard met als deklaag zand.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

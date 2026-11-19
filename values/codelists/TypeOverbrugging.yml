@@ -1,0 +1,16 @@
+# generated - do not edit
+---
+label: TypeOverbrugging
+description: Waardelijst TypeOverbrugging van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten
+  van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  brug: Kunstwerk over een watervlakte of waterloop, bestaande uit een losliggend, al of niet beweegbaar brugdek gesteund
+    door pijlers en/of landhoofden.
+  aquaduct: Kunstwerk waarmee een watergang door een bakvormige constructie over een weg, een spoorweg, een andere watergang,
+    een leiding of een terrein wordt geleid.
+  viaduct: Kunstwerk over een weg, spoorweg of terreinverdieping, bestaande uit een dek gesteund door pijlers en/of landhoofden.
+  fly-over: Kunstwerk in de vorm van een viaduct dat deel uitmaakt van een verkeersbaan en waarmee een verkeersstroom over
+    twee of meer ongelijkvloerse verkeersstromen wordt geleid.
+  ecoduct: Wildwissel in de vorm van een viaduct voor passages van dieren over een weg of spoorweg.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

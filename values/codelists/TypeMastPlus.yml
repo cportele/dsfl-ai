@@ -1,0 +1,14 @@
+# generated - do not edit
+---
+label: TypeMastPlus
+description: Waardelijst TypeMastPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten van
+  1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  bovenleidingmast: Mast die een onderdeel vormt van de bovenleidingdraagconstructie.
+  laagspanningsmast: Houten of metalen mast waaraan kabels voor het transport van elektrische energie met een spanning lager
+    dan 500 V zijn bevestigd.
+  straalzender: Zender voor radio, televisie en telecommunicatie signalen die in smalle stralenbundels uitzendt.
+  zendmast: Mast bestemd voor het uitzenden van radio, televisie of telecommunicatie signalen.
+  radarmast: Vaste of neerklapbare constructie waarop de radarantenne bevestigd is.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

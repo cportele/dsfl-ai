@@ -1,0 +1,16 @@
+# generated - do not edit
+---
+label: TypeBakPlus
+description: Waardelijst TypeBakPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten van
+  1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  afval apart plaats: Boven- of ondergrondse opslagplaats voor het gescheiden inzamelen van afval, met stortkoker(s) op het
+    straatniveau.
+  afvalbak: Bak of korf in de openbare ruimte met een permanent karakter; bedoeld voor het verzamelen van (meestal los) afval.
+  drinkbak: Bak gevuld met water, waaruit vee of wild kan drinken.
+  bloembak: Bak in de openbare ruimte met een permanent karakter, waarin planten of struiken zijn geplant.
+  zand- / zoutbak: Een bak met strooisel ten behoeve van gladheidsbestrijding.
+  container: Nagelvast met de grond verbonden inzamelmiddel voor afvalstoffen, doorgaans van metaal of kunststof waarin afvalstoffen
+    worden verzameld, bewaard en waaruit deze afvalstoffen vervolgens worden overgeladen in een inzamelvoertuig.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

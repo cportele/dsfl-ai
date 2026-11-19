@@ -1,0 +1,14 @@
+# generated - do not edit
+---
+label: FunctieSpoor
+description: Waardelijst FunctieSpoor van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten van
+  1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  trein: Spoor voor een railvoertuig voor de langere afstand dat sneller dan 45 km per uur kan, bestaande uit een enkele of
+    een reeks van locomotieven, treinstellen en/of wagons.
+  sneltram: Spoor voor een boven- danwel ondergrondse interlokale tram met een vrije baan.
+  tram: Spoor voor een railvoertuig voor personenvervoer voor de korte afstand.
+  niet-bgt: Het object is geen BGT object.
+  transitie: Komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een
+    definitie is niet gepubliceerd.

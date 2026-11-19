@@ -1,0 +1,16 @@
+# generated - do not edit
+---
+label: FysiekVoorkomenOndersteunendWegdeel
+description: Waardelijst FysiekVoorkomenOndersteunendWegdeel van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo
+  2.2 (waardelijsten van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  gesloten verharding: Verharding bestaande uit een materiaal dat niet verwijderbaar is zonder definitieve destructie, zoals
+    bijvoorbeeld bitumen, cement of kunststof.
+  open verharding: Verharding gevormd door in verband aangebrachte elementen van beperkte afmetingen, zoals bijvoorbeeld klinkers
+    en tegels.
+  half verhard: Verharding bestaande uit een door verdichting gebonden materiaal, of onsamenhangend materiaal.
+  onverhard: Wegdelen waar geen verharding of aaneengesloten vegetatie aanwezig is.
+  groenvoorziening: Terreindeel met aangelegde beplanting, meestal gras, heesters of struiken.
+  transitie: Komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een
+    definitie is niet gepubliceerd.

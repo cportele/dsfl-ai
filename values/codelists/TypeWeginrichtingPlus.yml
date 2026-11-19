@@ -1,0 +1,19 @@
+# generated - do not edit
+---
+label: TypeWeginrichtingPlus
+description: Waardelijst TypeWeginrichtingPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten
+  van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  molgoot: Smalle goot (lijngeometrie) in de lengterichting van de verharding, met veelal een cirkelsegment als dwarsprofiel.
+  lijnafwatering: Goot in de lengterichting van de verharding, niet zijnde molgoot. Bijvoorbeeld roostergoot en verholen goot.
+  wegmarkering: Op of in het oppervlak van de verharding aangebrachte tekens ter geleiding, waarschuwing, regeling of informatie
+    van het verkeer.
+  wildrooster: Horizontaal raamwerk dat dient om wild de doorgang te beletten.
+  rooster: Een rooster niet zijnde lijnafwatering of wildrooster.
+  geleideconstructie: Bermbeveiligingsconstructie bedoeld voor fysieke geleiding van voertuigen die uit de koers zijn geraakt.
+  balustrade: Een balustrade is een hekwerk of afzetting aan de rand van een overbrugging. Een balustrade beveiligt tegen
+    het vallen.
+  boomspiegel: Het stuk grond rondom de stam van een boom dat van boven toegankelijk is voor lucht en water.
+  verblindingswering: Constructie bedoeld om verblinding van weggebruikers door tegenlicht te voorkomen.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

@@ -1,0 +1,15 @@
+# generated - do not edit
+---
+label: FunctieWegPlus
+description: Waardelijst FunctieWegPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten
+  van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  verkeersdrempel: Verhoging in een regionale rijbaan, bedoeld om het gemotoriseerde verkeer met een lage snelheid te laten
+    rijden.
+  verbindingsweg: Een verbindingsweg is (in principe) een eenrichtingsweg, gelegen binnen een knooppunt of aansluiting, die
+    onderdeel is van de wijze waarop de ongelijkvloersheid is gerealiseerd.
+  calamiteitendoorsteek: Een (Calamiteiten doorsteek) CADO heeft tot doel het verkeer op een rijbaan via een doorsteek van
+    de weg te kunnen geleiden in geval van een calamiteit of werkzaamheden op de rijbaan. Een tweede doel is het faciliteren
+    van toegang tot rijbanen voor hulpdiensten vanaf andere rijbanen of van een parallelweg.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

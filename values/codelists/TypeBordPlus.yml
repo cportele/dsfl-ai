@@ -1,0 +1,22 @@
+# generated - do not edit
+---
+label: TypeBordPlus
+description: Waardelijst TypeBordPlus van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2 (waardelijsten van
+  1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  informatiebord: Een bord met daarop specifieke actuele informatie, zoals plattegronden of vertrektijden.
+  plaatsnaambord: Een bord waarop een naam van een (woon)plaats of locatie is vermeld.
+  straatnaambord: Bord waarop de door de gemeente vastgestelde naam van de straat is vermeld. Bord kan zich op een paal of
+    aan de gevel bevinden.
+  verkeersbord: Bord waarop een verkeersteken is aangebracht en waarvan de uitvoering wettelijk is voorgeschreven volgens
+    het 'Reglement verkeersregels en verkeerstekens 1990 (RVV 1990)'.
+  scheepvaartbord: Bord waarop een scheepvaartteken is aangebracht en waarvan de uitvoering als richtlijn is voorgeschreven
+    volgens 'Richtlijnen Scheepvaarttekens (RST 2008)'.
+  verklikker transportleiding: Bovengrondse voorziening om een ondergrondse transportleiding te markeren.
+  reclamebord: Vrijstaand bord/zuil waarop rondom of aan één of meer zijden affiches kunnen worden (of zijn) geplakt.
+  wegwijzer: Constructie voorzien van een of meer panelen met informatie ten behoeve van de bewegwijzering.
+  waarschuwingshek: Constructie in de vorm van een hek, voorzien van rode en witte blokken of chevrons, die het verkeer attendeert
+    op een gevarenpunt.
+  dynamische snelheidsindicator: Een snelheidsinformatiebord dat in "real time" de snelheid van de weggebruikers aanduidt.
+  waardeOnbekend: De waarde is bij de bronhouder niet bekend.

@@ -86,27 +86,9 @@ types:
         sourcePath: bgtfunctie
         type: STRING
         label: bgt-functie
-        description: 'Specificatie van het hoofdgebruiksdoel van het wegdeel. BGT, authentiek. Waarden (waardelijst FunctieWeg):
-          ''OV-baan'': Wegdeel dat uitsluitend is bestemd en gemarkeerd voor openbaar vervoer en afgescheiden is van de andere
-          wegdelen niet uitsluitend door markering. ''overweg'': Een gelijkvloerse kruising van een wegdeel en een wegdeel
-          type ov-baan met spoor type trein of sneltram. ''spoorbaan'': Gebaand gedeelte voor het verkeer over rails. ''baan
-          voor vliegverkeer'': Wegdeel uitsluitend bedoeld voor vliegverkeer. ''rijbaan autosnelweg'': Wegdeel dat onderdeel
-          is van een weg uitsluitend bestemd voor snelverkeer en met gescheiden rijbanen en ongelijkvloerse kruisingen. ''rijbaan
-          autoweg'': Wegdeel dat onderdeel is van een weg uitsluitend bestemd voor snelverkeer. ''rijbaan regionale weg'':
-          Wegdeel dat onderdeel is van een weg die een verbinding vormt tussen bewoonde oorden of tussen wijken binnen een
-          dorp of stad waarbij er een, meestal fysieke, scheiding is tussen langzaam verkeer en snelverkeer. ''rijbaan lokale
-          weg'': Wegdeel dat onderdeel is van een weg van lokaal belang. ''fietspad'': Weg uitsluitend bestemd voor fietsers
-          en/of bromfietsers of een deel van een weg bestaande uit een oranjekleurige verhardingstrook met daarop een wit
-          rijwielsymbool. ''voetpad'': Wegdeel waar voetgangers gebruik van moeten maken. ''voetpad op trap'': Voetpad op
-          verkeersinfrastructurele voorziening bestaande uit een constructie van treden, waarop men een hoger of lager gelegen
-          plaats kan bereiken. ''ruiterpad'': Een wegdeel primair aangelegd voor het gebruik door ruiters. ''parkeervlak'':
-          Wegdeel bestemd voor het parkeren van motorvoertuigen. ''voetgangersgebied'': Wegdeel alleen voor het gebruik door
-          voetgangers, waarbij het door voetgangers te gebruiken gebied de volle breedte van de weg beslaat en het gebied
-          een nadrukkelijk openbaar karakter heeft. ''inrit'': Toegangswegen, oprijlanen en dergelijke met verkeersfunctie
-          die leiden naar erven en terreinen. ''woonerf'': Wegdeel waar de verblijfsfunctie (lopen, spelen, ontmoeten enzovoorts)
-          prioriteit heeft boven de verkeersfunctie. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten
-          van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het hoofdgebruiksdoel van het wegdeel. BGT, authentiek. Waarden: codelijst FunctieWeg.'
         constraints:
+          codelist: FunctieWeg
           enum:
           - OV-baan
           - overweg
@@ -131,15 +113,9 @@ types:
         type: STRING
         label: plus-functieWegdeel
         description: 'Specificatie van het hoofdgebruiksdoel van het wegdeel, nadere classificatie. IMGeo-plus, niet authentiek;
-          alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FunctieWegPlus): ''verkeersdrempel'': Verhoging
-          in een regionale rijbaan, bedoeld om het gemotoriseerde verkeer met een lage snelheid te laten rijden. ''verbindingsweg'':
-          Een verbindingsweg is (in principe) een eenrichtingsweg, gelegen binnen een knooppunt of aansluiting, die onderdeel
-          is van de wijze waarop de ongelijkvloersheid is gerealiseerd. ''calamiteitendoorsteek'': Een (Calamiteiten doorsteek)
-          CADO heeft tot doel het verkeer op een rijbaan via een doorsteek van de weg te kunnen geleiden in geval van een
-          calamiteit of werkzaamheden op de rijbaan. Een tweede doel is het faciliteren van toegang tot rijbanen voor hulpdiensten
-          vanaf andere rijbanen of van een parallelweg. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue):
-          ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst FunctieWegPlus.'
         constraints:
+          codelist: FunctieWegPlus
           enum:
           - verkeersdrempel
           - verbindingsweg
@@ -149,14 +125,9 @@ types:
         sourcePath: bgtfysiekvoorkomen
         type: STRING
         label: bgt-fysiekVoorkomen
-        description: 'Mate waarin het wegdeel al of niet verhard is. BGT, authentiek. Waarden (waardelijst FysiekVoorkomenWeg):
-          ''gesloten verharding'': Verharding bestaande uit een materiaal dat niet verwijderbaar is zonder definitieve destructie,
-          zoals bijvoorbeeld bitumen, cement of kunststof. ''open verharding'': Verharding gevormd door in verband aangebrachte
-          elementen van beperkte afmetingen, zoals bijvoorbeeld klinkers en tegels. ''half verhard'': Verharding bestaande
-          uit een door verdichting gebonden materiaal, of onsamenhangend materiaal. ''onverhard'': Wegdelen waar geen verharding
-          of aaneengesloten vegetatie aanwezig is. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten
-          van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Mate waarin het wegdeel al of niet verhard is. BGT, authentiek. Waarden: codelijst FysiekVoorkomenWeg.'
         constraints:
+          codelist: FysiekVoorkomenWeg
           enum:
           - gesloten verharding
           - open verharding
@@ -169,24 +140,9 @@ types:
         type: STRING
         label: plus-fysiekVoorkomenWegdeel
         description: 'Mate waarin het wegdeel al of niet verhard is, nadere classificatie. IMGeo-plus, niet authentiek; alleen
-          gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FysiekVoorkomenWegPlus): ''asfalt'': Gesloten verharding
-          bestaande uit asfaltbeton of andere met bitumen gebonden materialen. ''cementbeton'': Gesloten verharding bestaande
-          uit gewapend of ongewapend beton. ''betonstraatstenen'': Verharding gemaakt van betonstraatstenen. Straatsteen die
-          als goedkope vervanging van de gebakken klinkers is ontwikkeld. ''gebakken klinkers'': Verharding gemaakt van straatbakstenen.
-          Gebakken klinkers worden voornamelijk geproduceerd uit grondstof van eigen bodem; de beddingen van onze rivieren.
-          ''tegels'': Bestrating van tegels, een platte vaak vierkante betonnen steen; veelal gebruikt voor trottoirbestrating.
-          ''sierbestrating'': Bestrating, uitgevoerd in verschillende bestratingsverbanden en -materialen, of in een sierverband,
-          die vooral wordt toegepast uit esthetische overwegingen. ''beton element'': Geprepareerde elementen van beton zoals,
-          trottoirbanden, opsluitbanden en stelconplaten. ''grasklinkers'': Elementenverharding bestaande uit elementen van
-          beperkte afmetingen die ten behoeve van de doorgroei van grassen en kruiden, zijn voorzien van openingen of met
-          tussenruimten aangebracht. ''schelpen'': Ongebonden verharding bestaande uit schelpenmateriaal. ''puin'': Puin is
-          afvalmateriaal dat bestaat uit losse brokstukken, grotendeels bestaande uit stenen en beton, van gesloopte of ingestorte
-          gebouwen, viaducten, bruggen en andere objecten. ''grind'': Ongebonden verharding bestaande uit kiezelmateriaal,
-          waarvan de stenen in doorsnede variëren van 1 tot 5 cm. ''gravel'': Gravel is een ondergrond van gemalen baksteen
-          die veel wordt gebruikt bij tennis en ook wel op atletiekbanen. ''boomschors'': Onverhard met als deklaag boomschors.
-          ''zand'': Onverhard met als deklaag zand. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'':
-          de waarde is bij de bronhouder niet bekend.'
+          gevuld als de bronhouder het bijhoudt. Waarden: codelijst FysiekVoorkomenWegPlus.'
         constraints:
+          codelist: FysiekVoorkomenWegPlus
           enum:
           - asfalt
           - cementbeton
@@ -339,9 +295,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -350,12 +306,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -471,12 +425,9 @@ types:
         sourcePath: bgtfunctie
         type: STRING
         label: bgt-functie
-        description: 'Specificatie van de functie van het ondersteunend wegdeel. BGT, authentiek. Waarden (waardelijst FunctieOndersteunendWegdeel):
-          ''verkeerseiland'': Ondersteunend wegdeel van beperkte omvang, uitgevoerd als verhoging of wegmarkering, dat wordt
-          omsloten door wegdelen en ten doel heeft verkeersstromen te scheiden. ''berm'': Een strook grond langs een weg of
-          spoorweg. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT
-          1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van de functie van het ondersteunend wegdeel. BGT, authentiek. Waarden: codelijst FunctieOndersteunendWegdeel.'
         constraints:
+          codelist: FunctieOndersteunendWegdeel
           enum:
           - verkeerseiland
           - berm
@@ -496,15 +447,9 @@ types:
         sourcePath: bgtfysiekvoorkomen
         type: STRING
         label: bgt-fysiekVoorkomen
-        description: 'Mate waarin het ondersteunend wegdeel al of niet verhard is. BGT, authentiek. Waarden (waardelijst FysiekVoorkomenOndersteunendWegdeel):
-          ''gesloten verharding'': Verharding bestaande uit een materiaal dat niet verwijderbaar is zonder definitieve destructie,
-          zoals bijvoorbeeld bitumen, cement of kunststof. ''open verharding'': Verharding gevormd door in verband aangebrachte
-          elementen van beperkte afmetingen, zoals bijvoorbeeld klinkers en tegels. ''half verhard'': Verharding bestaande
-          uit een door verdichting gebonden materiaal, of onsamenhangend materiaal. ''onverhard'': Wegdelen waar geen verharding
-          of aaneengesloten vegetatie aanwezig is. ''groenvoorziening'': Terreindeel met aangelegde beplanting, meestal gras,
-          heesters of struiken. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi
-          BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Mate waarin het ondersteunend wegdeel al of niet verhard is. BGT, authentiek. Waarden: codelijst FysiekVoorkomenOndersteunendWegdeel.'
         constraints:
+          codelist: FysiekVoorkomenOndersteunendWegdeel
           enum:
           - gesloten verharding
           - open verharding
@@ -518,34 +463,9 @@ types:
         type: STRING
         label: plus-fysiekVoorkomenOndersteunendWegdeel
         description: 'Mate waarin het ondersteunend wegdeel al of niet verhard is, nadere classificatie. IMGeo-plus, niet
-          authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FysiekVoorkomenOndersteunendWegdeelPlus):
-          ''asfalt'': Gesloten verharding bestaande uit asfaltbeton of andere met bitumen gebonden materialen. ''cementbeton'':
-          Gesloten verharding bestaande uit gewapend of ongewapend beton. ''betonstraatstenen'': Verharding gemaakt van betonstraatstenen.
-          Straatsteen die als goedkope vervanging van de gebakken klinkers is ontwikkeld. ''gebakken klinkers'': Verharding
-          gemaakt van straatbakstenen. Gebakken klinkers worden voornamelijk geproduceerd uit grondstof van eigen bodem; de
-          beddingen van onze rivieren. ''tegels'': Bestrating van tegels, een platte vaak vierkante betonnen steen; veelal
-          gebruikt voor trottoirbestrating. ''sierbestrating'': Bestrating, uitgevoerd in verschillende bestratingsverbanden
-          en -materialen, of in een sierverband, die vooral wordt toegepast uit esthetische overwegingen. ''beton element'':
-          Geprepareerde elementen van beton zoals, trottoirbanden, opsluitbanden en stelconplaten. ''grasklinkers'': Elementenverharding
-          bestaande uit elementen van beperkte afmetingen die ten behoeve van de doorgroei van grassen en kruiden, zijn voorzien
-          van openingen of met tussenruimten aangebracht. ''schelpen'': Ongebonden verharding bestaande uit schelpenmateriaal.
-          ''puin'': Puin is afvalmateriaal dat bestaat uit losse brokstukken, grotendeels bestaande uit stenen en beton, van
-          gesloopte of ingestorte gebouwen, viaducten, bruggen en andere objecten. ''grind'': Ongebonden verharding bestaande
-          uit kiezelmateriaal, waarvan de stenen in doorsnede variëren van 1 tot 5 cm. ''gravel'': Gravel is een ondergrond
-          van gemalen baksteen die veel wordt gebruikt bij tennis en ook wel op atletiekbanen. ''boomschors'': Onverhard met
-          als deklaag boomschors. ''zand'': Onverhard met als deklaag zand. ''bosplantsoen'': Opgaande beplanting van houtachtige
-          gewassen die struikvormend en/of boomvormend zijn. De soorten zijn als bosplantsoen opgekweekt en aangeplant.De
-          beplanting kan open of gesloten zijn en bestaat vaak uit inheemse soorten. Onderscheidt zich van heesters omdat
-          de sierkenmerken niet voorop staan. ''gras- en kruidachtigen'': (Grond met) een laagblijvende, aaneengesloten kruidachtige
-          vegetatie. ''planten'': Beheerde niet nader gespecificeerde beplanting van groenvak in de openbare ruimte. ''struikrozen'':
-          Beheerde beplanting van groenvak in de openbare ruimte, zijnde in struikvorm groeiende rozen. ''heesters'': Beplanting
-          van houtige gewassen die struikvormend zijn en die al dan niet een gesloten geheel vormen. Het accent ligt op de
-          sierwaarde, de beplanting kan uit één soort of uit meerdere soorten bestaan. Onder de heesters kan een houtachtige
-          of kruidachtige onderbegroeiing aanwezig zijn. Het oppervlak met struikachtige gewassen is meer dan 50% van de totale
-          oppervlakte van het vak. ''bodembedekkers'': Beheerde beplanting van groenvak in de openbare ruimte, zijnde bodembedekkers.
-          Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder
-          niet bekend.'
+          authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst FysiekVoorkomenOndersteunendWegdeelPlus.'
         constraints:
+          codelist: FysiekVoorkomenOndersteunendWegdeelPlus
           enum:
           - asfalt
           - cementbeton
@@ -703,9 +623,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -714,12 +634,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -836,13 +754,9 @@ types:
         sourcePath: bgtfunctie
         type: STRING
         label: bgt-functie
-        description: 'Specificatie van het soort gebruik van het spoor. BGT, authentiek. Waarden (waardelijst FunctieSpoor):
-          ''trein'': Spoor voor een railvoertuig voor de langere afstand dat sneller dan 45 km per uur kan, bestaande uit
-          een enkele of een reeks van locomotieven, treinstellen en/of wagons. ''sneltram'': Spoor voor een boven- danwel
-          ondergrondse interlokale tram met een vrije baan. ''tram'': Spoor voor een railvoertuig voor personenvervoer voor
-          de korte afstand. ''niet-bgt'': Het object is geen BGT object. ''transitie'' komt in de gegevens voor, maar staat
-          niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het soort gebruik van het spoor. BGT, authentiek. Waarden: codelijst FunctieSpoor.'
         constraints:
+          codelist: FunctieSpoor
           enum:
           - trein
           - sneltram
@@ -855,9 +769,9 @@ types:
         type: STRING
         label: plus-functieSpoor
         description: 'Specificatie van het soort gebruik van het spoor, indien dit een IMGeo uitbreiding van de populatie
-          betreft. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FunctieSpoorPlus):
-          ''(haven)kraan'': Spoorbaan waarop een hefkraan (bij een haven) zich voortbeweegt.'
+          betreft. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst FunctieSpoorPlus.'
         constraints:
+          codelist: FunctieSpoorPlus
           enum:
           - (haven)kraan
       geometrie:
@@ -955,9 +869,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -966,12 +880,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -1088,29 +1000,10 @@ types:
         sourcePath: bgtfysiekvoorkomen
         type: STRING
         label: bgt-fysiekVoorkomen
-        description: 'Classificatie van het vegetatiedek, ingedeeld naar soort vegetatie. BGT, authentiek. Waarden (waardelijst
-          FysiekVoorkomenBegroeidTerrein): ''loofbos'': Terreindeel begroeid met een dusdanige aantal loofbomen dat deze een
-          min of meer gesloten geheel vormen of, na volgroeiing van de bomen, zullen vormen. ''gemengd bos'': Terreindeel
-          begroeid met een dusdanige aantal naald- en loofbomen dat deze een min of meer gesloten geheel vormen of, na volgroeiing
-          van de bomen, zullen vormen. ''naaldbos'': Terreindeel begroeid met een dusdanige aantal naaldbomen dat deze een
-          min of meer gesloten geheel vormen of, na volgroeiing van de bomen, zullen vormen. ''heide'': Terreindeel overwegend
-          begroeid met heide en heideachtige vegetaties. ''struiken'': Terreindeel bedekt met niet-gecultiveerde (natuurlijke),
-          lage, houtachtige, overblijvende planten gekenmerkt door verschillende vertakkingen dicht bij de wortel en afwezigheid
-          van opvallende stammen. ''houtwal'': Terreindeel zijnde een afscheiding met beperkte breedte en beplant met bomen
-          of struiken. ''duin'': Verhoging of heuvel van zand of fijne losse aarde en verpulverd gesteente opgeworpen door
-          wind of door stromend water. ''grasland overig'': Terreindeel met een vegetatie bestaande uit grassen en of grasachtigen,
-          en met de in graslanden voorkomende kruiden, dat niet in gebruik is voor agrarische doeleinden. ''moeras'': Terreindeel
-          met moerasvegetatie in stilstaand water van geringe diepte zonder merkbare toe- of afvloeiing. ''rietland'': Terreindeel
-          overwegend begroeid met rietvegetatie. ''kwelder'': Buitendijks gelegen aangeslibd land van een wad, dat bij gewone
-          vloed niet meer onder loopt. ''fruitteelt'': Terreindeel begroeid met fruitbomen in de vorm van hoogstam en laagstamboomgaard,
-          druiven of kleinfruit. ''boomteelt'': Grond in gebruik voor het kweken van jonge siergewassen, bomen enz. ten behoeve
-          van een later gebruik elders. ''bouwland'': Terreindeel in gebruik als akker, met gewassen die in een teelt roulatieschema
-          zijn opgenomen. Kan tijdelijk zonder gewas zijn of braak liggen. ''grasland agrarisch'': Terreindeel met een vegetatie
-          bestaande uit grassen en of grasachtigen, en met de in graslanden voorkomende kruiden, zijnde cultuurgrasland dat
-          in gebruik is voor de veeteelt, bijvoorbeeld als weiland of als hooiland. ''groenvoorziening'': Terreindeel met
-          aangelegde beplanting, meestal gras, heesters of struiken. ''transitie'' komt in de gegevens voor, maar staat niet
-          in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Classificatie van het vegetatiedek, ingedeeld naar soort vegetatie. BGT, authentiek. Waarden: codelijst
+          FysiekVoorkomenBegroeidTerrein.'
         constraints:
+          codelist: FysiekVoorkomenBegroeidTerrein
           enum:
           - loofbos
           - gemengd bos
@@ -1135,27 +1028,9 @@ types:
         type: STRING
         label: plus-fysiekVoorkomen
         description: 'Nadere classificatie van het vegetatiedek, ingedeeld naar soort vegetatie. IMGeo-plus, niet authentiek;
-          alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FysiekVoorkomenBegroeidTerreinPlus): ''akkerbouw'':
-          Terreindeel in gebruik als akker, voor de teelt van akkerbouwgewassen. ''braakliggend'': Terrein in gebruik als
-          akker, maar tijdelijk niet beteeld met een landbouwgewas. ''vollegrondsteelt'': Terreindeel in gebruik als akker,
-          voor de teelt van tuinbouwgewassen. ''bollenteelt'': Terreindeel in gebruik als akker, voor de teelt van bloembollen.
-          ''bosplantsoen'': Opgaande beplanting van houtachtige gewassen die struikvormend en/of boomvormend zijn. De soorten
-          zijn als bosplantsoen opgekweekt en aangeplant.De beplanting kan open of gesloten zijn en bestaat vaak uit inheemse
-          soorten. Onderscheidt zich van heesters omdat de sierkenmerken niet voorop staan. ''gras- en kruidachtigen'': (Grond
-          met) een laagblijvende, aaneengesloten kruidachtige vegetatie. ''planten'': Beheerde niet nader gespecificeerde
-          beplanting van groenvak in de openbare ruimte. ''struikrozen'': Beheerde beplanting van groenvak in de openbare
-          ruimte, zijnde in struikvorm groeiende rozen. ''heesters'': Beplanting van houtige gewassen die struikvormend zijn
-          en die al dan niet een gesloten geheel vormen. Het accent ligt op de sierwaarde, de beplanting kan uit één soort
-          of uit meerdere soorten bestaan. Onder de heesters kan een houtachtige of kruidachtige onderbegroeiing aanwezig
-          zijn. Het oppervlak met struikachtige gewassen is meer dan 50% van de totale oppervlakte van het vak. ''bodembedekkers'':
-          Beheerde beplanting van groenvak in de openbare ruimte, zijnde bodembedekkers. ''laagstam boomgaarden'': Terreindeel
-          begroeid met laagstamfruitbomen. ''hoogstam boomgaarden'': Terreindeel begroeid met hoogstamfruitbomen. ''wijngaarden'':
-          Terreindeel begroeid met druivenstokken voor wijnbouw. ''klein fruit'': Terreindeel begroeid met heesters voor zachtfruit
-          zoals bessen of frambozen. ''griend en hakhout'': Terreindeel met opgaande begroeiing van loofbomen, in een dicht
-          groeiverband, en die periodiek wordt afgezet. ''open duinvegetatie'': Duin met een overwegend grasachtige vegetatie.
-          ''gesloten duinvegetatie'': Duin met een overwegend opgaande vegetatie van struiken en of bomen. Daarnaast reden
-          voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst FysiekVoorkomenBegroeidTerreinPlus.'
         constraints:
+          codelist: FysiekVoorkomenBegroeidTerreinPlus
           enum:
           - akkerbouw
           - braakliggend
@@ -1317,9 +1192,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -1328,12 +1203,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -1451,16 +1324,9 @@ types:
         type: STRING
         label: bgt-fysiekVoorkomen
         description: 'Classificatie van het soort terrein, ingedeeld naar de uiterlijke verschijningsvorm. BGT, authentiek.
-          Waarden (waardelijst FysiekVoorkomenOnbegroeidTerrein): ''erf'': Terreindeel dat bij een pand of overig bouwwerk
-          hoort, dat niet nader wordt ingewonnen en dat bestaat uit een mengvorm van begroeiing, verharding, en/of water.
-          ''gesloten verharding'': Verharding bestaande uit een materiaal dat niet verwijderbaar is zonder definitieve destructie,
-          zoals bijvoorbeeld bitumen, cement of kunststof. ''open verharding'': Verharding gevormd door in verband aangebrachte
-          elementen van beperkte afmetingen, zoals bijvoorbeeld klinkers en tegels. ''half verhard'': Verharding bestaande
-          uit een door verdichting gebonden materiaal, of onsamenhangend materiaal. ''onverhard'': Terreindeel waar geen verharding
-          of aaneengesloten vegetatie aanwezig is, niet zijnde zand. Braakliggend valt hier wel onder. ''zand'': Terreindeel
-          dat grotendeels bedekt is met zand. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten
-          van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+          Waarden: codelijst FysiekVoorkomenOnbegroeidTerrein.'
         constraints:
+          codelist: FysiekVoorkomenOnbegroeidTerrein
           enum:
           - erf
           - gesloten verharding
@@ -1475,27 +1341,9 @@ types:
         type: STRING
         label: plus-fysiekVoorkomen
         description: 'Nadere classificatie van het soort terrein, ingedeeld naar de uiterlijke verschijningsvorm. IMGeo-plus,
-          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst FysiekVoorkomenOnbegroeidTerreinPlus):
-          ''strand en strandwal'': Onbegroeide zandige kustvlakte op de overgang van zee met land. Staat onder invloed van
-          het zeewater en de wind. ''zandverstuiving'': Een gebied met zandige bodem waarvan delen van het gebied zonder vegetatie
-          zijn, door invloed van wind. ''asfalt'': Gesloten verharding bestaande uit asfaltbeton of andere met bitumen gebonden
-          materialen. ''cementbeton'': Gesloten verharding bestaande uit gewapend of ongewapend beton. ''kunststof'': Synthetisch
-          vervaardigd materiaal dat als verharding dient, zoals kunstgras of kunststof toplagen op atletiekbanen. ''betonstraatstenen'':
-          Verharding gemaakt van betonstraatstenen. Straatsteen die als goedkope vervanging van de gebakken klinkers is ontwikkeld.
-          ''gebakken klinkers'': Verharding gemaakt van straatbakstenen. Gebakken klinkers worden voornamelijk geproduceerd
-          uit grondstof van eigen bodem \– de beddingen van onze rivieren. ''tegels'': Bestrating van tegels, een platte vaak
-          vierkante betonnen steen; veelal gebruikt voor trottoirbestrating. ''sierbestrating'': Bestrating, uitgevoerd in
-          verschillende bestratingsverbanden en -materialen, of in een sierverband, die vooral wordt toegepast uit esthetische
-          overwegingen. ''beton element'': Geprepareerde elementen van beton zoals, trottoirbanden, opsluitbanden en stelconplaten.
-          ''grasklinkers'': Elementenverharding bestaande uit elementen van beperkte afmetingen die ten behoeve van de doorgroei
-          van grassen en kruiden, zijn voorzien van openingen of met tussenruimten aangebracht. ''schelpen'': Ongebonden verharding
-          bestaande uit schelpenmateriaal. ''puin'': Puin is afvalmateriaal dat bestaat uit losse brokstukken, grotendeels
-          bestaande uit stenen en beton, van gesloopte of ingestorte gebouwen, viaducten, bruggen en andere objecten. ''grind'':
-          Ongebonden verharding bestaande uit kiezelmateriaal, waarvan de stenen in doorsnede variëren van 1 tot 5 cm. ''gravel'':
-          Gravel is een ondergrond van gemalen baksteen die veel wordt gebruikt bij tennis en ook wel op atletiekbanen. ''boomschors'':
-          Onverhard met als deklaag boomschors. ''zand'': Onverhard met als deklaag zand. Daarnaast reden voor het ontbreken
-          van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst FysiekVoorkomenOnbegroeidTerreinPlus.'
         constraints:
+          codelist: FysiekVoorkomenOnbegroeidTerreinPlus
           enum:
           - strand en strandwal
           - zandverstuiving
@@ -1652,9 +1500,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -1663,12 +1511,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -1785,13 +1631,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort Water. BGT, authentiek. Waarden (waardelijst TypeWater): ''zee'': Uitgestrekt
-          oppervlak zout water. ''waterloop'': Een voor de waterbeheersing bestemde geul die meestal permanent water bevat
-          (zoals rivier, kanaal, beek, sloot, gracht). ''watervlakte'': Alle oppervlakken die vrij permanent met zoet water
-          zijn bedekt. (zoals meer, plas, ven, vijver). ''greppel, droge sloot'': Een ten behoeve van de waterbeheersing gegraven
-          geul die al dan niet met water bedekt is. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten
-          van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het soort Water. BGT, authentiek. Waarden: codelijst TypeWater.'
         constraints:
+          codelist: TypeWater
           enum:
           - zee
           - waterloop
@@ -1804,18 +1646,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort Water, nadere classificatie. IMGeo-plus, niet authentiek; alleen gevuld als
-          de bronhouder het bijhoudt. Waarden (waardelijst TypeWaterPlus): ''rivier'': Het water, dat ten atmosferische neerslag
-          op hellende terreinen valt, vloeit, voor zover het niet verdampt of door planten wordt opgenomen, tezamen tot een
-          waterloop en stroomt naar laaggelegen streken. Zulk een natuurlijke afvloeiing heet een rivier. ''sloot'': Algemene
-          benaming voor een waterloop van beperkte breedte die stilstaand of slechts langzaam stromend water bevat. ''kanaal'':
-          Een gegraven grote waterloop die dient voor scheepvaart en/of watertransport. ''beek'': Een natuurlijke smalle waterloop
-          zonder getij. ''gracht'': Een gracht is een gegraven greppel met water, die hoofdzakelijk voorkomt in oude steden.
-          ''bron'': Grondwater dat op natuurlijke wijze uit het aardoppervlak tevoorschijn komt. ''haven'': Een tot ligplaats
-          van schepen geschikt, natuurlijk of gegraven waterbekken aan zee of aan de oever van een rivier of binnenwater,
-          dat beschutting biedt tegen wind en golven. ''meer, plas, ven, vijver'': Een massa stilstaand landoppervlaktewater.
-          Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder
-          niet bekend.'
+          de bronhouder het bijhoudt. Waarden: codelijst TypeWaterPlus.'
         constraints:
+          codelist: TypeWaterPlus
           enum:
           - rivier
           - sloot
@@ -1942,9 +1775,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -1953,12 +1786,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -2074,12 +1905,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort Water. BGT, authentiek. Waarden (waardelijst TypeOndersteunendWaterdeel):
-          ''oever, slootkant'': De strook land die in direct contact staat met water, inclusief het gebied tussen de hoogwaterlijn
-          en laagwaterlijn. ''slik'': Buitendijks aangeslibde, onbegroeide grond die bij vrijwel elk hoogwater onderloopt.
-          ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo
-          2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het soort Water. BGT, authentiek. Waarden: codelijst TypeOndersteunendWaterdeel.'
         constraints:
+          codelist: TypeOndersteunendWaterdeel
           enum:
           - oever, slootkant
           - slik
@@ -2210,9 +2038,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -2221,12 +2049,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -2572,11 +2398,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. Daarnaast
-          reden voor het ontbreken van een waarde (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen
-          waarde. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           - geenWaarde
@@ -2586,12 +2410,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -2707,16 +2529,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort overig bouwwerk. BGT, authentiek. Waarden (waardelijst TypeOverigBouwwerk):
-          ''overkapping'': Een afzonderlijk staande overdekking rustend op kolommen. ''open loods'': Niet verplaatsbaar licht
-          gebouw met een open gevel, bestemd als berg- of werkplaats of als tijdelijk onderdak voor andere doeleinden. ''opslagtank'':
-          Opslagfaciliteit voor vloeistoffen, gassen of energie. ''bezinkbak'': Een gesloten reservoir waarin het afvalwater
-          tijdelijk wordt opgevangen met een slibreinigende voorziening. ''windturbine'': Turbine waarin winddruk omgezet
-          wordt in mechanische energie. ''lage trafo'': Bouwwerk waarin transformator(en) zijn geplaatst voor elektriciteitsvoorziening.
-          ''bassin'': Waterbak, zoals een zwembad of een dok. ''niet-bgt'': Het object is geen BGT object. ''transitie'' komt
-          in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie
-          is niet gepubliceerd.'
+        description: 'Specificatie van het soort overig bouwwerk. BGT, authentiek. Waarden: codelijst TypeOverigBouwwerk.'
         constraints:
+          codelist: TypeOverigBouwwerk
           enum:
           - overkapping
           - open loods
@@ -2733,13 +2548,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort overig bouwwerk, indien dit een IMGeo uitbreiding van de populatie betreft.
-          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeOverigBouwwerkPlus):
-          ''bunker'': Een bunker is een van oorsprong militair verdedigingswerk dat een zekere mate van bescherming bood tegen
-          beschietingen en bombardementen. ''schuur'': Een vrijstaand, al of niet prefab, niet-vergunningsplichtig bouwwerk
-          dat gebruikt wordt om goederen in op te slaan en ook als werkruimte kan dienen. ''voedersilo'': Opslagfaciliteit
-          voor veevoer, bestaande uit een verticale container met een opening aan de onderkant. Daarnaast reden voor het ontbreken
-          van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeOverigBouwwerkPlus.'
         constraints:
+          codelist: TypeOverigBouwwerkPlus
           enum:
           - bunker
           - schuur
@@ -2861,9 +2672,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -2872,12 +2683,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -2994,19 +2803,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort kunstwerk. BGT, authentiek. Waarden (waardelijst TypeKunstwerk): ''hoogspanningsmast'':
-          Metalen mast of stellage ter ondersteuning van geleidedraden voor het transport van elektriciteit met een hoog voltage.
-          ''gemaal'': Een kunstwerk in principe bedoeld om water van een laag peil naar een hoog peil te brengen. ''perron'':
-          Verhoogde constructie langs een spoorrail of tramrail voor het in- en uitstappen van passagiers of voor het laden
-          en lossen van goederen. ''sluisdeur'': Het beweegbare deel van een kunstmatige waterkering die de verbinding tussen
-          twee wateren kan afsluiten of openstellen en daartoe van deuren of schuiven is voorzien. ''strekdam'': Constructie
-          in het water ter verdediging van de kust/oever. ''steiger'': Vaste (niet drijvende) waterbouwkundige constructie
-          voor het aanleggen van schepen en bedoeld om deze schepen vanaf de wal te laden en te lossen. ''stuw'': Een constructie
-          met een vaste drempel of een beweegbare klep, die dient om de waterstand boven- en benedenstrooms te regelen. ''sluis'':
-          Een kunstmatige, beweegbare waterkering die de verbinding tussen twee wateren kan afsluiten of openstellen en daartoe
-          van deuren of schuiven is voorzien. ''niet-bgt'': Het object is geen BGT object. ''transitie'' komt in de gegevens
-          voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het soort kunstwerk. BGT, authentiek. Waarden: codelijst TypeKunstwerk.'
         constraints:
+          codelist: TypeKunstwerk
           enum:
           - hoogspanningsmast
           - gemaal
@@ -3024,24 +2823,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort kunstwerk, indien dit een IMGeo uitbreiding van de populatie betreft. IMGeo-plus,
-          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeKunstwerkPlus): ''keermuur'':
-          Een keermuur of keerwand is een stijf, grond- of waterkerend kunstwerk dat door een groot gewicht en een brede voet
-          een grote standzekerheid kan bereiken. Een keermuur is meestal van gewapend beton, maar er kan ook ander materiaal
-          gebruikt worden. ''duiker'': Kunstwerk voor de waterhuishouding, bestaande uit een gesloten kokervormige constructie
-          met een in- en uitstroomopening, niet de gehele waterbreedte beslaand en aangebracht onder een weg of spoorweg of
-          in een dam. ''faunavoorziening'': Voorziening bij een weg of spoorweg, niet zijnde een ecoduct, om de uit dat werk
-          voortvloeiende negatieve gevolgen voor de fauna zoveel mogelijk te voorkomen of te beperken. ''vispassage'': Een
-          kunstmatige passage ten behoeve van de vistrek bij kunstwerken in wateren. ''bodemval'': Sprong in de bodem van
-          een waterloop. ''coupure'': Een onderbreking in een waterkering voor de doorvoer van een weg of spoorweg, die bij
-          extreme waterstanden afsluitbaar is. ''ponton'': Drijvende, dichte bak, waarover soms een dek is gelegd. ''voorde'':
-          Een doorwaadbare, doorgaans verharde, plaats in de waterloop, die dient voor de oversteek van die waterloop. ''overkluizing'':
-          Een overkluizing is een civieltechnisch kunstwerk waarmee een weg een andere weg, een plein of een waterloop (kruiselings)
-          overwelft. In het geval van een waterweg is er onder het bouwwerk (vaak) geen scheepvaart mogelijk, maar ligt het
-          wateroppervlak nog wel vrij. Een overkluizing is te vergelijken met een brug, alleen bestaat de brug in dit geval
-          vaak niet uit een wegdek maar uit een opstal. Anders gesteld: het maakt meestal geen deel uit van een weg. Daarnaast
-          reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet
-          bekend.'
+          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeKunstwerkPlus.'
         constraints:
+          codelist: TypeKunstwerkPlus
           enum:
           - keermuur
           - duiker
@@ -3173,9 +2957,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -3184,12 +2968,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -3313,15 +3095,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort scheiding. BGT, authentiek. Waarden (waardelijst TypeScheiding): ''muur'':
-          Een scheiding gemaakt van steen. ''kademuur'': Verticale wand ter scheiding van land en water, opgebouwd uit een
-          muur van gemetselde stenen of gestort beton. ''geluidsscherm'': Een scheiding bedoeld om geluidshinder in de buitenlucht
-          te verminderen. ''damwand'': Een grondkerende constructie die bestaat uit een verticaal in de grond geplaatste wand.
-          ''walbescherming'': Een nagenoeg verticale wand tot kering van grond om afkalving van water te voorkomen, niet zijnde
-          een kademuur. ''hek'': Een hekwerk of schutting, typisch ten behoeve van erfafscheiding. ''niet-bgt'': Het object
-          is geen BGT object. ''transitie'' komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi
-          BGT 1.2 en IMGeo 2.2; een definitie is niet gepubliceerd.'
+        description: 'Specificatie van het soort scheiding. BGT, authentiek. Waarden: codelijst TypeScheiding.'
         constraints:
+          codelist: TypeScheiding
           enum:
           - muur
           - kademuur
@@ -3337,12 +3113,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort scheiding, indien dit een IMGeo uitbreiding van de populatie betreft. IMGeo-plus,
-          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeScheidingPlus): ''draadraster'':
-          Kunstmatige terreinafscheiding, niet zijnde een faunaraster, in de vorm van een overwegend houten, metalen of kunststoffen
-          rechtopstaande palen met daartussen een of meerdere draden. ''faunaraster'': Kunstmatig aangebrachte scheiding van
-          metaaldraad tussen palen, bedoeld voor het leiden van dieren. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeScheidingPlus.'
         constraints:
+          codelist: TypeScheidingPlus
           enum:
           - draadraster
           - faunaraster
@@ -3464,9 +3237,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -3475,12 +3248,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -3606,13 +3377,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort overige scheiding. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeScheiding): ''muur'': Een scheiding gemaakt van steen. ''kademuur'': Verticale
-          wand ter scheiding van land en water, opgebouwd uit een muur van gemetselde stenen of gestort beton. ''geluidsscherm'':
-          Een scheiding bedoeld om geluidshinder in de buitenlucht te verminderen. ''damwand'': Een grondkerende constructie
-          die bestaat uit een verticaal in de grond geplaatste wand. ''walbescherming'': Een nagenoeg verticale wand tot kering
-          van grond om afkalving van water te voorkomen, niet zijnde een kademuur. ''hek'': Een hekwerk of schutting, typisch
-          ten behoeve van erfafscheiding. ''niet-bgt'': Het object is geen BGT object.'
+          het bijhoudt. Waarden: codelijst TypeScheiding.'
         constraints:
+          codelist: TypeScheiding
           enum:
           - muur
           - kademuur
@@ -3725,9 +3492,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -3736,12 +3503,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -3867,13 +3632,9 @@ types:
         type: STRING
         label: typeOverbruggingsdeel
         description: 'Het soort onderdeel van de brugconstructie. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeOverbruggingsdeel): ''dek'': Direct door het verkeer belaste deel van de
-          bovenbouw van de brug. ''landhoofd'': Ondersteuningsconstructie ter plaatse van een overgang van de aardebaan naar
-          een kunstwerk. ''pijler'': Ondersteuningsconstructie van bruggen en soortgelijke kunstwerken. ''sloof'': Deel van
-          de pijler voor de overdracht van krachten naar de ondergrond of de fundering. ''pyloon'': Boven de bovenbouw uitstekende
-          draagconstructie voor tuien (kabels). Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'':
-          de waarde is bij de bronhouder niet bekend.'
+          het bijhoudt. Waarden: codelijst TypeOverbruggingsdeel.'
         constraints:
+          codelist: TypeOverbruggingsdeel
           enum:
           - dek
           - landhoofd
@@ -3886,16 +3647,9 @@ types:
         type: STRING
         label: hoortBijTypeOverbrugging
         description: 'Nadere classificatie van de overbrugging waar het overbruggingsdeel een onderdeel van is. IMGeo-plus,
-          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeOverbrugging): ''brug'':
-          Kunstwerk over een watervlakte of waterloop, bestaande uit een losliggend, al of niet beweegbaar brugdek gesteund
-          door pijlers en/of landhoofden. ''aquaduct'': Kunstwerk waarmee een watergang door een bakvormige constructie over
-          een weg, een spoorweg, een andere watergang, een leiding of een terrein wordt geleid. ''viaduct'': Kunstwerk over
-          een weg, spoorweg of terreinverdieping, bestaande uit een dek gesteund door pijlers en/of landhoofden. ''fly-over'':
-          Kunstwerk in de vorm van een viaduct dat deel uitmaakt van een verkeersbaan en waarmee een verkeersstroom over twee
-          of meer ongelijkvloerse verkeersstromen wordt geleid. ''ecoduct'': Wildwissel in de vorm van een viaduct voor passages
-          van dieren over een weg of spoorweg. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'':
-          de waarde is bij de bronhouder niet bekend.'
+          niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeOverbrugging.'
         constraints:
+          codelist: TypeOverbrugging
           enum:
           - brug
           - aquaduct
@@ -4022,9 +3776,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -4033,12 +3787,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -4254,9 +4006,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -4265,12 +4017,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -4387,13 +4137,9 @@ types:
         type: STRING
         label: plus-typeGebouwInstallatie
         description: 'Specificatie van het soort gebouwinstallatie, indien dit een IMGeo uitbreiding van de populatie betreft.
-          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeGebouwInstallatiePlus):
-          ''bordes'': Een verhard oppervlak, eventueel verhoogd en/of uitgevoerd met treden, grenzend aan een pand en primair
-          bedoeld voor gebruik door voetgangers. ''luifel'': Afdak aangebracht aan de gevel van een pand, eventueel rustend
-          op kolommen. ''toegangstrap'': Niet afsluitbare trap (of trappenhuis) die toegang biedt aan een gebouw. Daarnaast
-          reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet
-          bekend.'
+          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeGebouwInstallatiePlus.'
         constraints:
+          codelist: TypeGebouwInstallatiePlus
           enum:
           - bordes
           - luifel
@@ -4508,11 +4254,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. Daarnaast
-          reden voor het ontbreken van een waarde (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen
-          waarde. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           - geenWaarde
@@ -4522,12 +4266,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -4643,10 +4385,9 @@ types:
         sourcePath: bgttype
         type: STRING
         label: bgt-type
-        description: 'Specificatie van het soort Functioneel Gebied. BGT, authentiek. Waarden (waardelijst TypeFunctioneelGebied):
-          ''kering'': Een waterkerende en / of scheidende, kunstmatige of natuurlijke hoogte of hooggelegen gronden inclusief
-          de daarin aanwezige waterkerende elementen. ''niet-bgt'': Het object is geen BGT object.'
+        description: 'Specificatie van het soort Functioneel Gebied. BGT, authentiek. Waarden: codelijst TypeFunctioneelGebied.'
         constraints:
+          codelist: TypeFunctioneelGebied
           enum:
           - kering
           - niet-bgt
@@ -4656,39 +4397,11 @@ types:
         type: STRING
         label: plus-type
         description: 'Specificatie van het soort Functioneel Gebied, indien het een IMGeo uitbreiding van de populatie betreft.
-          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden (waardelijst TypeFunctioneelGebiedPlus):
-          ''bedrijvigheid'': Gebied waarop panden of overige gebouwen staan, en / of niet bebouwde oppervlakte , voornamelijk
-          gebruikt voor economische activiteiten en non-profit activiteiten. ''natuur en landschap'': Gebied dat wegens natuurschoon
-          en/of natuurlijke historie in stand wordt gehouden. ''landbouw'': Gebied primair in gebruik voor land- en tuinbouwproductie.
-          ''bewoning'': Gebied waarop panden of overige bouwwerken staan die voornamelijk gebruikt worden voor bewoning, inclusief
-          erven en tuinen die bij de panden behoren. ''infrastructuur verkeer en vervoer'': Gebied primair in gebruik voor
-          verkeer en vervoer, waaronder verstaan spoorwegen, wegdelen, vliegverkeersbanen, parkeerterreinen, bermen en de
-          ondersteunende objecten als kunstwerken. ''infrastructuur waterstaatswerken'': Gebied grenzend aan oppervlaktewater,
-          primair in gebruik voor de oppervlaktewaterhuishouding (waterafvoer, wateraanvoer en waterconservering). ''waterbergingsgebied'':
-          Terrein met als functie het tijdelijk of langdurig bergen van (regen)wateroverschotten uit de omgeving. ''maatschappelijke
-          en/of publieksvoorziening'': Bebouwd of landelijk gebied, niet zijnde woon- of bedrijventerrein, in gebruik voor
-          maatschappelijke- en publieksdoeleinden (omvat overheids- en particuliere terreinen). ''recreatie'': Gebied in gebruik
-          voor openlucht recreatie. ''begraafplaats'': Een besloten gebied waar lichamen van overleden personen worden begraven.
-          Ook worden op begraafplaatsen urnen as van gecremeerde lichamen bewaard. ''functioneel beheer'': Gebied waar een
-          specifiek beheer voor benodigd is, louter bepaald vanuit beheer oogpunt. ''recreatie: speeltuin'': Geheel van begroeiing,
-          verharding, opstallen en speelwerktuigen, bedoeld als speelplaats voor kinderen. ''recreatie: park'': Landschappelijk
-          ingericht terrein, begroeid met houtachtige en kruidachtige vegetatie, verharding, objecten, waterpartijen en dergelijke,
-          bedoeld als (grootschalige) recreatieve voorziening. ''recreatie: sportterrein'': Terrein, mogelijk met groenvoorziening,
-          verharding en bebouwing, bestemd voor sportbeoefening. ''recreatie: camping'': Geheel van verharding, begroeiing
-          en opstallen, in gebruik als terrein waar tijdelijk tenten en/of caravans kunnen worden geplaatst ten behoeve van
-          recreatie. ''recreatie: bungalowpark'': Geheel van verharding, begroeiing, overige opstallen en gebouwen, bedoeld
-          als vakantie-/weekendhuisjes die niet permanent bewoond worden. ''recreatie: volkstuin'': Terreingedeelte in gebruik
-          als volkstuinen, inclusief bebouwing, verharding en dergelijke. ''functioneel beheer: hondenuitlaatplaats'': Een
-          uitlaatplaats waar uw hond zijn behoefte kan/ mag doen waarbij geen opruimplicht bestaat. ''bushalte'': Halteplaats
-          voor bussen van het openbaar vervoer. ''carpoolplaats'': Parkeerplaats die qua ligging en ontsluiting geschikt is
-          voor carpooling. ''benzinestation'': Geheel van installaties, verharding en opstallen waar brandstoffen ten behoeve
-          van verbrandingsmotoren worden verkocht. ''verzorgingsplaats'': Langs de weg gelegen parkeergelegenheid, met inbegrip
-          van de daarbij behorende verharde en onverharde banen en een of meer voorzieningen ten behoeve van reizigers en/of
-          voertuigen. Waarden met een dubbele punt verfijnen de waarde ervoor (''recreatie: speeltuin'' is een soort ''recreatie'');
-          om alle soorten te vinden zoekt men met een filter op het begin, bijvoorbeeld `filter=plusType LIKE ''recreatie%''`.
-          Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder
-          niet bekend.'
+          IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt. Waarden: codelijst TypeFunctioneelGebiedPlus.
+          Waarden met een dubbele punt verfijnen de waarde ervoor (''recreatie: speeltuin'' is een soort ''recreatie''); om
+          alle soorten te vinden zoekt men met een filter op het begin, bijvoorbeeld `filter=plusType LIKE ''recreatie%''`.'
         constraints:
+          codelist: TypeFunctioneelGebiedPlus
           enum:
           - bedrijvigheid
           - natuur en landschap
@@ -4825,9 +4538,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -4836,12 +4549,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -4992,15 +4703,10 @@ types:
         label: openbareRuimteType
         description: 'De aard van de als zodanig benoemde OPENBARE RUIMTE. Bij dit attribuut is aangegeven dat zowel materiële
           als formele historie worden bijgehouden. De openbare ruimtenaam is opgenomen in het BGT informatiemodel ten behoeve
-          van visualisatie maar wordt overgenomen uit de BAG. BGT, authentiek in een andere basisregistratie. Waarden (waardelijst
-          TypeOpenbareRuimte): ''Weg'': Gebaand gedeelte voor het wegverkeer en vliegverkeer te land. ''Water'': Grondoppervlak
-          in principe bedekt met water. ''Spoorbaan'': Gebaand gedeelte voor het verkeer over rails. ''Terrein'': Door een
-          fysiek voorkomen gekarakteriseerd zichtbaar begrensd stuk grond. ''Kunstwerk'': Civiel-technisch werk voor de infrastructuur
-          van wegen, water, spoorbanen, waterkeringen en/of leidingen en niet bedoeld voor permanent menselijk verblijf. ''Landschappelijk
-          gebied'': Definitie ontbreekt in de BAG. ''Administratief gebied'': Een niet tastbaar begrensd grondoppervlak dat
-          als eenheid geldt voor bestuurlijke verantwoordelijkheid, voor bedrijfsvoering, waarbinnen een specifieke rechtsverhouding
-          te onderscheiden is of waarvoor een specifieke functie of bestemming geldt.'
+          van visualisatie maar wordt overgenomen uit de BAG. BGT, authentiek in een andere basisregistratie. Waarden: codelijst
+          TypeOpenbareRuimte.'
         constraints:
+          codelist: TypeOpenbareRuimte
           enum:
           - Weg
           - Water
@@ -5123,11 +4829,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. Daarnaast
-          reden voor het ontbreken van een waarde (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen
-          waarde. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           - geenWaarde
@@ -5137,12 +4841,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -5349,9 +5051,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -5360,12 +5062,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -5482,16 +5182,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort bak (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het
-          bijhoudt. Waarden (waardelijst TypeBakPlus): ''afval apart plaats'': Boven- of ondergrondse opslagplaats voor het
-          gescheiden inzamelen van afval, met stortkoker(s) op het straatniveau. ''afvalbak'': Bak of korf in de openbare
-          ruimte met een permanent karakter; bedoeld voor het verzamelen van (meestal los) afval. ''drinkbak'': Bak gevuld
-          met water, waaruit vee of wild kan drinken. ''bloembak'': Bak in de openbare ruimte met een permanent karakter,
-          waarin planten of struiken zijn geplant. ''zand- / zoutbak'': Een bak met strooisel ten behoeve van gladheidsbestrijding.
-          ''container'': Nagelvast met de grond verbonden inzamelmiddel voor afvalstoffen, doorgaans van metaal of kunststof
-          waarin afvalstoffen worden verzameld, bewaard en waaruit deze afvalstoffen vervolgens worden overgeladen in een
-          inzamelvoertuig. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde
-          is bij de bronhouder niet bekend.'
+          bijhoudt. Waarden: codelijst TypeBakPlus.'
         constraints:
+          codelist: TypeBakPlus
           enum:
           - afval apart plaats
           - afvalbak
@@ -5601,9 +5294,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -5612,12 +5305,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -5726,21 +5417,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort bord (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeBordPlus): ''informatiebord'': Een bord met daarop specifieke actuele informatie,
-          zoals plattegronden of vertrektijden. ''plaatsnaambord'': Een bord waarop een naam van een (woon)plaats of locatie
-          is vermeld. ''straatnaambord'': Bord waarop de door de gemeente vastgestelde naam van de straat is vermeld. Bord
-          kan zich op een paal of aan de gevel bevinden. ''verkeersbord'': Bord waarop een verkeersteken is aangebracht en
-          waarvan de uitvoering wettelijk is voorgeschreven volgens het ''Reglement verkeersregels en verkeerstekens 1990
-          (RVV 1990)''. ''scheepvaartbord'': Bord waarop een scheepvaartteken is aangebracht en waarvan de uitvoering als
-          richtlijn is voorgeschreven volgens ''Richtlijnen Scheepvaarttekens (RST 2008)''. ''verklikker transportleiding'':
-          Bovengrondse voorziening om een ondergrondse transportleiding te markeren. ''reclamebord'': Vrijstaand bord/zuil
-          waarop rondom of aan één of meer zijden affiches kunnen worden (of zijn) geplakt. ''wegwijzer'': Constructie voorzien
-          van een of meer panelen met informatie ten behoeve van de bewegwijzering. ''waarschuwingshek'': Constructie in de
-          vorm van een hek, voorzien van rode en witte blokken of chevrons, die het verkeer attendeert op een gevarenpunt.
-          ''dynamische snelheidsindicator'': Een snelheidsinformatiebord dat in "real time" de snelheid van de weggebruikers
-          aanduidt. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is
-          bij de bronhouder niet bekend.'
+          het bijhoudt. Waarden: codelijst TypeBordPlus.'
         constraints:
+          codelist: TypeBordPlus
           enum:
           - informatiebord
           - plaatsnaambord
@@ -5861,9 +5540,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -5872,12 +5551,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -5986,10 +5663,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort installatie (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeInstallatiePlus): ''pomp'': Werktuig dat door middel van een verschil in
-          druk vloeistoffen of gassen verplaatst. ''zonnepaneel'': Een zonnepaneel is een paneel dat zonne-energie omzet in
-          elektriciteit.'
+          het bijhoudt. Waarden: codelijst TypeInstallatiePlus.'
         constraints:
+          codelist: TypeInstallatiePlus
           enum:
           - pomp
           - zonnepaneel
@@ -6090,9 +5766,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -6101,12 +5777,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -6215,15 +5889,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort kast (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeKastPlus): ''CAI-kast'': Kast ten behoeve van de regeling van radio- en televisiesignalen.
-          ''elektrakast'': Kast ten behoeve van de regeling van het transport van elektriciteit. ''gaskast'': Kast ten behoeve
-          van de regeling van het transport van gas. ''telecom kast'': Kast ten behoeve van de regeling van telecommunicatie.
-          ''rioolkast'': Kast ten behoeve van de regeling van het transport van rioolwater. ''openbare verlichtingkast'':
-          Kast ten behoeve van de regeling van de openbare verlichting. ''verkeersregelinstallatiekast'': Kast ten behoeve
-          van de regeling van het verkeer. ''telkast'': Kast ten behoeve van het meten van permanente verkeertellingen. ''GMS
-          kast'': Kast ten behoeve van het meten van weers- en wegdekomstandigheden. Daarnaast reden voor het ontbreken van
-          een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          het bijhoudt. Waarden: codelijst TypeKastPlus.'
         constraints:
+          codelist: TypeKastPlus
           enum:
           - CAI-kast
           - elektrakast
@@ -6339,9 +6007,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -6350,12 +6018,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -6464,13 +6130,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort mast (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeMastPlus): ''bovenleidingmast'': Mast die een onderdeel vormt van de bovenleidingdraagconstructie.
-          ''laagspanningsmast'': Houten of metalen mast waaraan kabels voor het transport van elektrische energie met een
-          spanning lager dan 500 V zijn bevestigd. ''straalzender'': Zender voor radio, televisie en telecommunicatie signalen
-          die in smalle stralenbundels uitzendt. ''zendmast'': Mast bestemd voor het uitzenden van radio, televisie of telecommunicatie
-          signalen. ''radarmast'': Vaste of neerklapbare constructie waarop de radarantenne bevestigd is. Daarnaast reden
-          voor het ontbreken van een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          het bijhoudt. Waarden: codelijst TypeMastPlus.'
         constraints:
+          codelist: TypeMastPlus
           enum:
           - bovenleidingmast
           - laagspanningsmast
@@ -6574,9 +6236,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -6585,12 +6247,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -6705,22 +6365,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort paal (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypePaalPlus): ''lichtmast'': Mast bestemd voor het dragen van een of meer verlichtingsarmaturen.
-          ''telpaal'': Paal waaraan de verkeersteller is bevestigd. ''portaal'': Geheel van twee of meer ondersteuningsconstructies
-          die door een ligger zijn verbonden, bedoelt voor het aanbrengen van verkeersaanduidingen. ''verkeersregelinstallatiepaal'':
-          Paal met daaraan bevestigd de verkeersregelinstallatie. ''verkeersbordpaal'': Paal waaraan een of meerdere verkeersborden
-          zijn bevestigd. ''poller'': Een poller of inzinkbare paal is een paal die door een elektrische of hydraulische aandrijving
-          uit een wegdek omhoog wordt gestuurd en die dient om het autoverkeer te reguleren. ''haltepaal'': Paal met daarop
-          de dienstregeling ten behoeve van het openbaar vervoer. ''vlaggenmast'': Paal bedoeld om vlaggen aan te hangen.
-          ''afsluitpaal'': Al dan niet verwijderbare paal in de grond om de weg of een gedeelte hiervan af te sluiten. ''praatpaal'':
-          Stalen of kunststof paal langs verkeerswegen welke bedoeld is telefonisch contact te leggen met een centrale meldkamer
-          (ANWB). ''hectometerpaal'': Paaltje of bordje geplaatst langs de weg, waarop een hectometerwaarde (weg) of kilometrering
-          (vaarweg) is vermeld eventueel gevolgd door een letter. ''dijkpaal'': Een markant punt op de waterkering of op het
-          strand dat dient als referentiepunt voor afstandsaanduidingen. ''drukknoppaal'': Paal met een lengte van ongeveer
-          1 m, met drukknop waarmee de verkeersdeelnemer zich meldt bij een verkeersregelinstallatie. ''grensmarkering'':
-          Paal ter afbakening van een grens. ''sirene'': Een apparaat dat geluiden van variabele toonhoogte kan voortbrengen
-          met als functie waarschuwingsdoeleinden.'
+          het bijhoudt. Waarden: codelijst TypePaalPlus.'
         constraints:
+          codelist: TypePaalPlus
           enum:
           - lichtmast
           - telpaal
@@ -6847,9 +6494,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -6858,12 +6505,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -6972,17 +6617,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort put (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het
-          bijhoudt. Waarden (waardelijst TypePutPlus): ''benzine- / olieput'': Putdeksel die toegang geeft tot een benzine-
-          of olietank ten behoeve van vullen, onderhoud of inspectie. ''brandkraan / -put'': Op de drinkwaterleiding aangesloten
-          kraan, of deksel van een put voor het plaatsen van een brandkraan, op of nabij de openbare weg, voor brandbestrijding.
-          ''drainageput'': Putdeksel welke toegang geeft naar een poreuze of geperforeerde buisleiding, aangebracht onder
-          de grond om de afwatering van de grond te verbeteren. ''gasput'': Deksel van een put met afsluitkraan ten behoeve
-          van het ondergrondse leidingenstelsel voor gastransport. ''inspectie- / rioolput'': Deksel van een constructie die
-          toegang geeft tot een rioolstelsel. ''kolk'': Deksel van een ingegraven bak voor de opvang en afvoer van neerslag
-          afkomstig van erop aangesloten oppervlakken. ''waterleidingput'': Deksel van een put met afsluitkraan ten behoeve
-          van het ondergrondse leidingenstelsel voor watertransport. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue):
-          ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          bijhoudt. Waarden: codelijst TypePutPlus.'
         constraints:
+          codelist: TypePutPlus
           enum:
           - benzine- / olieput
           - brandkraan / -put
@@ -7099,9 +6736,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -7110,12 +6747,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -7224,20 +6859,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort sensor (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder
-          het bijhoudt. Waarden (waardelijst TypeSensorPlus): ''camera'': Installatie voor de registratie van beelden van
-          situaties, waarvan directe observatie moeilijk of niet permanent mogelijk is. ''debietmeter'': Een instrument dat
-          de (afvoer)capaciteit van de volumestroom meet. ''hoogtedetectieapparaat'': Een mechanisch of elektronisch waarschuwingssysteem,
-          dat in werking treedt bij overschrijding van de aangegeven maximale doorrijhoogte. ''detectielus'': In de verharding
-          opgenomen lusvormig onderdeel van een verkeersdetector. ''weerstation'': Een weerstation is een verzameling instrumenten
-          die het weer kunnen meten. ''flitser'': Een flitser bevat een mechanisme om een snelheidsmeting uit te voeren om
-          snelheidsovertredingen in het verkeer te kunnen vaststellen. ''waterstandmeter'': Een meter die de waterstand, over
-          het algemeen ten opzichte van NAP, meet. ''windmeter'': Apparatuur waarmee de snelheid en de richting van de wind
-          kan worden gemeten. ''lichtcel'': Lichtcel waarmee het verlichtingsniveau naar een lager verlichtingsniveau omgeschakeld
-          wordt (dimmen) wanneer de situatie dit toelaat. ''GMS sensor'': Gladheidsmeldsysteem (GMS) waarmee de kans op gladheid
-          wordt voorspeld aan de hand van meting en interpretatie van de parameters die een rol spelen bij het ontstaan van
-          gladheid. ''radar detector'': Met een radardetector wordt het verkeer gedetecteerd, bijvoorbeeld voor het beïnvloeden
-          van verkeerslichten.'
+          het bijhoudt. Waarden: codelijst TypeSensorPlus.'
         constraints:
+          codelist: TypeSensorPlus
           enum:
           - camera
           - debietmeter
@@ -7347,9 +6971,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -7358,12 +6982,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -7480,26 +7102,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort straatmeubilair (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als de
-          bronhouder het bijhoudt. Waarden (waardelijst TypeStraatmeubilairPlus): ''abri'': Overdekte wachtplaats voor passagiers
-          van het openbaar vervoer. ''bolder'': Een inrichting aan de wal, waar een schip, door middel van een tros of landvast,
-          aan vastgelegd kan worden. ''brievenbus'': Uitpandige kast waar post in kan worden gedeponeerd ter bezorging. ''fietsenrek'':
-          Een duurzaam verankerd rek in de openbare ruimte voor het stallen van fietsen. ''kunstobject'': Een object dat als
-          kunst gezien wordt en een bepaalde schoonheid heeft, niet door de natuur gemaakt. ''openbaar toilet'': Voor mensen
-          bedoeld toilet niet zijnde een pand, langs de openbare weg. ''slagboom'': Boom of balk om de weg of een gedeelte
-          hiervan af te sluiten. ''speelvoorziening'': Aard en nagelvast met de grond verbonden constructie in de openbare
-          ruimte, bedoeld als speelmateriaal voor kinderen. ''telefooncel'': Niet-inpandige ruimte in openbaar gebied louter
-          bestemd voor telefoneren. ''bank'': Aaneengesloten zitplaats voor verscheidene personen, bedoeld voor openbaar gebruik
-          en geplaatst in de openbare ruimte (vnl. in parken, plantsoenen, bossen en langs wegen). ''picknicktafel'': Een
-          `picknicktafel` is een tafel met vaak daaraan gemonteerde zitbanken of stoelen die kan gebruikt worden om te picknicken.
-          ''fontein'': Een fontein is een natuurlijke of kunstmatige installatie die water spuit. ''lichtpunt'': Een lichtpunt
-          is een lamp die licht uitzendt niet verbonden met een mast die het maaiveld raakt. ''parkeerbeugel'': Een omklapbare
-          beugel voor het afschermen van een parkeerplaats. ''betaalautomaat'': Een apparaat dat betaalkaarten en/of contant
-          geld accepteert om betalingen uit te voeren. ''reclamezuil'': Vrijstaand bord/zuil waarop rondom of aan één of meer
-          zijden affiches kunnen worden (of zijn) geplakt. ''fietsenkluis'': Een fietskluis is een kluis om een fiets in te
-          bewaren, meestal ter voorkoming van diefstal of beschadiging. ''herdenkingsmonument'': Langs de weg of elders in
-          het terrein aangelegd object ter herdenking van personen of evenementen. Daarnaast reden voor het ontbreken van
-          een waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          bronhouder het bijhoudt. Waarden: codelijst TypeStraatmeubilairPlus.'
         constraints:
+          codelist: TypeStraatmeubilairPlus
           enum:
           - abri
           - bolder
@@ -7624,9 +7229,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -7635,12 +7240,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -7749,15 +7352,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort waterinrichtingselement (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld
-          als de bronhouder het bijhoudt. Waarden (waardelijst TypeWaterinrichtingPlus): ''remmingswerk'': Constructie langs
-          de opstelruimte en wachtruimte bedoeld voor het afmeren van schepen. ''betonning'': Een systeem van boeien en bakens,
-          waarmee in open zee of in een vaarwater ondiepten of de aanwezigheid van gevaarlijke objecten worden aangegeven.
-          ''geleidewerk'': Fuikvormige constructie aansluitend aan het hoofd van een kunstwerk voor het geven van mechanische
-          en visuele geleiding tijdens het invaren van dat kunstwerk. ''vuilvang'': Een voorziening om de waterloop dan wel
-          één of meerdere objecten benedenstrooms te vrijwaren van drijvend vuil en dergelijke. ''meerpaal'': Paal voor een
-          kade of in een haven waaraan een schip kan worden afgemeerd. ''hoogtemerk'': Relatief permanent merk, natuurlijk
-          of kunstmatig, met daarin een punt met een bekende hoogte ten opzichte van een bepaald referentievlak.'
+          als de bronhouder het bijhoudt. Waarden: codelijst TypeWaterinrichtingPlus.'
         constraints:
+          codelist: TypeWaterinrichtingPlus
           enum:
           - remmingswerk
           - betonning
@@ -7862,9 +7459,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -7873,12 +7470,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -7995,18 +7590,9 @@ types:
         type: STRING
         label: plus-type
         description: 'Het soort weginrichtingselement (IMGeo plus-populatie). IMGeo-plus, niet authentiek; alleen gevuld als
-          de bronhouder het bijhoudt. Waarden (waardelijst TypeWeginrichtingPlus): ''molgoot'': Smalle goot (lijngeometrie)
-          in de lengterichting van de verharding, met veelal een cirkelsegment als dwarsprofiel. ''lijnafwatering'': Goot
-          in de lengterichting van de verharding, niet zijnde molgoot. Bijvoorbeeld roostergoot en verholen goot. ''wegmarkering'':
-          Op of in het oppervlak van de verharding aangebrachte tekens ter geleiding, waarschuwing, regeling of informatie
-          van het verkeer. ''wildrooster'': Horizontaal raamwerk dat dient om wild de doorgang te beletten. ''rooster'': Een
-          rooster niet zijnde lijnafwatering of wildrooster. ''geleideconstructie'': Bermbeveiligingsconstructie bedoeld voor
-          fysieke geleiding van voertuigen die uit de koers zijn geraakt. ''balustrade'': Een balustrade is een hekwerk of
-          afzetting aan de rand van een overbrugging. Een balustrade beveiligt tegen het vallen. ''boomspiegel'': Het stuk
-          grond rondom de stam van een boom dat van boven toegankelijk is voor lucht en water. ''verblindingswering'': Constructie
-          bedoeld om verblinding van weggebruikers door tegenlicht te voorkomen. Daarnaast reden voor het ontbreken van een
-          waarde (VoidReasonValue): ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          de bronhouder het bijhoudt. Waarden: codelijst TypeWeginrichtingPlus.'
         constraints:
+          codelist: TypeWeginrichtingPlus
           enum:
           - molgoot
           - lijnafwatering
@@ -8132,9 +7718,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -8143,12 +7729,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie
@@ -8274,11 +7858,9 @@ types:
         type: STRING
         label: plus-type
         description: 'De specificatie van het soort vrijstaand vegetatieobject. IMGeo-plus, niet authentiek; alleen gevuld
-          als de bronhouder het bijhoudt. Waarden (waardelijst TypeVegetatieObjectPlus): ''boom'': Een markante boom die geen
-          onderdeel uitmaakt van een ander boom- of struikbeplanting. ''haag'': Een rijvormige afscheiding van zeer beperkte
-          breedte bestaande uit aangeplante aaneengesloten struiken. Daarnaast reden voor het ontbreken van een waarde (VoidReasonValue):
-          ''waardeOnbekend'': de waarde is bij de bronhouder niet bekend.'
+          als de bronhouder het bijhoudt. Waarden: codelijst TypeVegetatieObjectPlus.'
         constraints:
+          codelist: TypeVegetatieObjectPlus
           enum:
           - boom
           - haag
@@ -8402,9 +7984,9 @@ types:
         sourcePath: bgtstatus
         type: STRING
         label: bgt-status
-        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden (waardelijst Status): ''bestaand'':
-          Situatie waarin het object wordt / kan worden gebruikt voor het doel waarvoor het is gebouwd / aangelegd. BGT, authentiek.'
+        description: 'De status gekoppeld aan de levenscyclus van een geo-object. Waarden: codelijst Status. BGT, authentiek.'
         constraints:
+          codelist: Status
           enum:
           - bestaand
           required: true
@@ -8413,12 +7995,10 @@ types:
         type: STRING
         label: plus-status
         description: 'De status gekoppeld aan de levenscyclus van een geo-object, indien dit een uitbreiding van de populatie
-          betreft. Waarden (waardelijst StatusPlus): ''plan'': Situatie die ontstaat op het moment van verlening van een beschikking
-          voor bouw of aanleg en duurt tot het moment waarop het object gereed is voor het beoogde gebruik. ''historie'':
-          Situatie waarin het geregistreerde object fysiek niet meer bestaat. Daarnaast reden voor het ontbreken van een waarde
-          (VoidReasonValue): ''geenWaarde'': het gegeven heeft in werkelijkheid geen waarde. Zonder bijhouding door de bronhouder
-          ''geenWaarde''. IMGeo-plus, niet authentiek; alleen gevuld als de bronhouder het bijhoudt.'
+          betreft. Waarden: codelijst StatusPlus. Zonder bijhouding door de bronhouder ''geenWaarde''. IMGeo-plus, niet authentiek;
+          alleen gevuld als de bronhouder het bijhoudt.'
         constraints:
+          codelist: StatusPlus
           enum:
           - plan
           - historie

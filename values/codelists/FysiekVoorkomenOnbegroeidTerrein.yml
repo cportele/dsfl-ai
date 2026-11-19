@@ -1,0 +1,19 @@
+# generated - do not edit
+---
+label: FysiekVoorkomenOnbegroeidTerrein
+description: Waardelijst FysiekVoorkomenOnbegroeidTerrein van de Gegevenscatalogus BGT 1.2 en de Gegevenscatalogus IMGeo 2.2
+  (waardelijsten van 1 juli 2020), met de definitie van elke waarde; aangevuld met de waarden die in de gegevens voorkomen.
+sourceType: TEMPLATES
+entries:
+  erf: Terreindeel dat bij een pand of overig bouwwerk hoort, dat niet nader wordt ingewonnen en dat bestaat uit een mengvorm
+    van begroeiing, verharding, en/of water.
+  gesloten verharding: Verharding bestaande uit een materiaal dat niet verwijderbaar is zonder definitieve destructie, zoals
+    bijvoorbeeld bitumen, cement of kunststof.
+  open verharding: Verharding gevormd door in verband aangebrachte elementen van beperkte afmetingen, zoals bijvoorbeeld klinkers
+    en tegels.
+  half verhard: Verharding bestaande uit een door verdichting gebonden materiaal, of onsamenhangend materiaal.
+  onverhard: Terreindeel waar geen verharding of aaneengesloten vegetatie aanwezig is, niet zijnde zand. Braakliggend valt
+    hier wel onder.
+  zand: Terreindeel dat grotendeels bedekt is met zand.
+  transitie: Komt in de gegevens voor, maar staat niet in de waardelijsten van de gegevenscatalogi BGT 1.2 en IMGeo 2.2; een
+    definitie is niet gepubliceerd.

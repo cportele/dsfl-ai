@@ -1,12 +1,12 @@
 ---
 name: bag
 description: >-
-  Lees dit voor vragen over adressen en gebouwen in de BAG (Basisregistratie Adressen en Gebouwen):
-  welke tool bij welke vraag, het model (adres, verblijfsobject, pand), tellen en optellen per
-  gebied, statussen, bouwjaren, gebruiksdoelen, oppervlakten, historie, en de valkuilen die een
-  antwoord veranderen. English: read before answering questions about Dutch addresses and buildings
-  (BAG): choosing a tool, the data model, counting per area, status, construction year, use and
-  floor area, history, pitfalls.
+  Uitgebreide handleiding voor de BAG (Basisregistratie Adressen en Gebouwen), aanvullend op de
+  instructies van de server: welke tool bij welke vraag, het model (adres, verblijfsobject, pand),
+  tellen en optellen per gebied, alle statussen, bouwjaren, gebruiksdoelen, oppervlakten, historie,
+  met voorbeelden. English: extended guide to the Dutch addresses and buildings (BAG), beyond the
+  server instructions: choosing a tool, the data model, counting per area, status, construction
+  year, use and floor area, history, examples.
 ---
 
 # De BAG bevragen

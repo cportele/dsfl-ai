@@ -29,7 +29,7 @@ inputs:
       type: array
   aggregates:
     title: 'Aggregaten'
-    description: 'De aggregaten, elk "count" of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}. Standaard is count. Een aggregaat zonder waarden in een groep (bijvoorbeeld max van een eigenschap die daar niet voorkomt) ontbreekt in die groep.'
+    description: 'De aggregaten, elk "count" of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}. avg neemt optioneel "weight", de eigenschap of virtuele eigenschap (bijvoorbeeld $area) waarmee elke waarde gewogen wordt. Standaard is count. Een aggregaat zonder waarden in een groep (bijvoorbeeld max van een eigenschap die daar niet voorkomt) ontbreekt in die groep.'
     minOccurs: 0
     schema:
       type: array

@@ -31,6 +31,9 @@ metadata:
   - CBS
   attribution: '© CBS, © ESRI Nederland; Bron: Centraal Bureau voor de Statistiek (CBS), CBS Postcode6 2024'
   version: '261120104208'
+accessControl:
+  groups:
+    public: [read, 'processes:write']
 api:
 - buildingBlock: COMMON
   additionalLinks:
@@ -111,6 +114,12 @@ api:
   included:
     collections:
     - '*'
+    processes:
+    - '*'
+- buildingBlock: PROCESSES_CORE
+  enabled: true
+- buildingBlock: PROCESSES_FEATURES
+  enabled: true
 collections:
   postcode6:
     id: postcode6

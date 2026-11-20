@@ -1,0 +1,61 @@
+---
+id: aggregate-features
+title: 'Postcodegebieden aggregeren'
+description: |
+  Telt postcodegebieden en berekent aggregaten van hun statistische gegevens, in totaal en per groep, zonder de postcodegebieden zelf te leveren. Voor vragen als: hoeveel inwoners, huishoudens of woningen heeft een gemeente, wijk of buurt volgens de postcodegebieden, hoeveel ouderen per wijk. De postcodegebieden worden geselecteerd zoals bij een verzoek van de objecten van de collectie (`source.collection` "postcode6" met query-parameters in `source.parameters`, bijvoorbeeld gemeentecode, wijkcode, buurtcode of filter). Per gebied groeperen: `groupBy` ["wijkcode"] of ["buurtcode"]; elk postcodegebied hoort bij de wijk en buurt waarin een punt binnen het gebied ligt en telt dus in één buurt mee, ook als het over een grens heen ligt. Ontbrekende waarden (0 tot 4, of geheim) tellen niet mee: een som is daardoor een ondergrens, en de som van deelgroepen (bijvoorbeeld de leeftijdsklassen) is kleiner dan het totaal. Tel daarom met `{"function": "count", "property": "<eigenschap>"}` ook het aantal postcodegebieden met een waarde. Een aandeel voor een gebied (bijvoorbeeld koopwoningen of een herkomst) is uit de percentages per postcode niet betrouwbaar af te leiden: een ontbrekend percentage is vaak bijna 0 of hoort bij minder dan tien woningen of inwoners. Een gewogen gemiddelde, bijvoorbeeld `{"function": "avg", "property": "percentage_koopwoningen", "weight": "aantal_woningen"}`, laat die postcodegebieden weg en overschat het aandeel (koop- en huurwoningen samen ruim boven 100%); ontbrekend als 0 tellen onderschat het. Noem dan beide percentages, het aantal postcodegebieden met een waarde en dat het een benadering is. Aantallen zijn op vijftallen afgerond, percentages op tientallen.
+version: 1.0.0
+jobControlOptions: [SYNC_EXECUTE]
+readOnly: true
+inputs:
+  source:
+    title: 'Selectie van de postcodegebieden'
+    description: 'Ofwel {"collection": "postcode6", "parameters": {...}} met query-parameters van /collections/postcode6/items (bijvoorbeeld gemeentecode, wijkcode, buurtcode, filter, bbox), ofwel {"href": "<URL van een /items-verzoek van deze API>"}. Een zoekbare eigenschap in source.parameters heeft één waarde, geen lijst; voor meerdere waarden dient een filter met IN, bijvoorbeeld "filter": "wijkcode IN (''WK030701'',''WK030702'')".'
+    schema:
+      type: object
+      properties:
+        collection:
+          description: 'Het id van de collectie: postcode6.'
+        parameters:
+          type: object
+        href:
+          type: string
+  groupBy:
+    title: 'Groepssleutels'
+    description: 'De eigenschappen waarnaar gegroepeerd wordt, elk de naam van een eigenschap of {"property": "...", "bucket": <klassebreedte>}, bijvoorbeeld ["wijkcode"] voor de wijken of {"property": "aantal_inwoners", "bucket": 100}. De codes zijn die van de CBS Wijk- en Buurtkaart 2026; de namen van de gebieden staan in de API Wijken en buurten (/wijkenbuurten).'
+    minOccurs: 0
+    schema:
+      type: array
+  aggregates:
+    title: 'Aggregaten'
+    description: 'De aggregaten, elk "count" (het aantal postcodegebieden) of {"function": "count" | "sum" | "min" | "max" | "avg" | "median", "property": "..."}; count met een eigenschap telt de postcodegebieden met een waarde. avg neemt optioneel "weight", de eigenschap waarmee elke waarde gewogen wordt, bijvoorbeeld aantal_part_huishoudens voor gemiddelde_huishoudensgrootte; voor percentages zie de beschrijving van het proces. Standaard is count. Een aggregaat zonder waarden in een groep ontbreekt in die groep.'
+    minOccurs: 0
+    schema:
+      type: array
+  limit:
+    title: 'Maximaal aantal groepen'
+    description: 'De groepen zijn gesorteerd op het eerste aggregaat, de grootste eerst.'
+    minOccurs: 0
+    schema:
+      type: integer
+      minimum: 1
+outputs:
+  groups:
+    title: 'Groepen'
+    schema:
+      type: array
+      items:
+        type: object
+  total:
+    title: 'Aggregaten van alle postcodegebieden'
+    schema:
+      type: object
+  featuresScanned:
+    title: 'Aantal postcodegebieden'
+    schema:
+      type: integer
+  groupsTruncated:
+    title: 'Of groepen door de limiet zijn weggelaten'
+    schema:
+      type: boolean
+job:
+  partials: ['feature-aggregate:execute']

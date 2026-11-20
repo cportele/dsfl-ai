@@ -3,7 +3,7 @@ id: wijkenbuurten
 entityStorageVersion: 2
 label: Wijken en buurten 2026 (CBS)
 description: |
-  De gemeenten, wijken en buurten van Nederland per 1 januari 2026 volgens de Wijk- en Buurtkaart 2026 van het Centraal Bureau voor de Statistiek (CBS). Een gemeente is ingedeeld in wijken, een wijk in buurten. De gemeentegrenzen komen uit de Basisregistratie Kadaster.
+  De gemeenten, wijken en buurten van Nederland per 1 januari 2026 volgens de Wijk- en Buurtkaart 2026 van het Centraal Bureau voor de Statistiek (CBS). Een gemeente is ingedeeld in wijken, een wijk in buurten. De gemeentegrenzen komen uit de Basisregistratie Kadaster. Deze server bevat een uittreksel: welke gemeenten erin staan geeft de collectie gemeente (`/wijkenbuurten/collections/gemeente/items`).
 
   De codes worden in de API Basisregistratie Adressen en Gebouwen (`/bag`) gebruikt om panden, verblijfsobjecten, ligplaatsen en standplaatsen op gemeente (`gemeentecode`, bijvoorbeeld 0307), wijk (`wijkcode`, bijvoorbeeld WK030701) of buurt (`buurtcode`, bijvoorbeeld BU03070100) te filteren. De code bij een naam vindt men met bijvoorbeeld `/wijkenbuurten/collections/gemeente/items?naam=Amersfoort`; wijk- en buurtnamen zijn alleen binnen een gemeente uniek, zoek dan bijvoorbeeld met `/wijkenbuurten/collections/buurt/items?gemeente=0307&naam=Oranjebuurt`. De verwijzingen `gemeente` en `wijk` van wijken en buurten zijn codes; op de naam filtert men met `gemeentenaam` en `wijknaam`, bijvoorbeeld `/wijkenbuurten/collections/buurt/items?gemeentenaam=Amersfoort`.
 serviceType: OGC_API

@@ -58,6 +58,9 @@ api:
   included:
     processes:
     - '*'
+  excluded:
+    skills:
+    - dso
 - buildingBlock: PROCESSES_CORE
   enabled: true
 - buildingBlock: PROCESSES_ARAZZO

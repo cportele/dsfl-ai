@@ -113,6 +113,9 @@ api:
     - '*'
     processes:
     - '*'
+  excluded:
+    skills:
+    - bag
 - buildingBlock: PROCESSES_CORE
   enabled: true
 - buildingBlock: PROCESSES_FEATURES

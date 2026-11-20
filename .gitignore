@@ -5,5 +5,7 @@ db/data
 # local working directories, not published
 doc
 scripts
-/skills
+/skills/*
+!/skills/dsfl-ai-gebouwde-omgeving/
+/skills/dsfl-ai-gebouwde-omgeving/evals/
 tmp

@@ -72,11 +72,27 @@ done
 
 In Claude Desktop and claude.ai, add them as custom connectors.
 
+The skill `skills/dsfl-ai-gebouwde-omgeving` (in the [Agent Skills](https://agentskills.io)
+format, in Dutch) adds the guidance that the tool descriptions do not carry: which server and tool
+answer which question, and what changes an answer, for example clipping areas to a boundary,
+comparing two dates instead of counting construction years, 'Pand gesloopt' that is not always a
+demolition, and values that a registration holder does not maintain. It has a short `SKILL.md` and
+a reference file per API in `references/`. Install the folder where the agent looks for skills, for
+example in Claude Code:
+
+```sh
+cp -R skills/dsfl-ai-gebouwde-omgeving ~/.claude/skills/
+```
+
+In Claude Desktop and claude.ai, upload the folder as a ZIP file
+(`cd skills && zip -r dsfl-ai-gebouwde-omgeving.zip dsfl-ai-gebouwde-omgeving`).
+
 ## Layout
 
 - `cfg.yml`: ldproxy configuration
 - `entities/`: feature providers (`providers/`) and APIs (`services/`)
 - `values/`: codelists, stored queries, processes and Arazzo workflows
+- `skills/`: an agent skill for questions answered with the MCP servers
 - `db/dump`: PostgreSQL dump (pg_dump directory format, Git LFS)
 - `docker/`, `docker-compose.yml`: local setup
 

@@ -43,7 +43,7 @@ services:
   ldproxy:
     # an ldproxy build with features that are not released yet, for amd64 and arm64 (see README.md);
     # LDPROXY_IMAGE can point to another image, e.g. a fixed tag iide/ldproxy:aird-<yymmddHHMMSS>
-    image: ${LDPROXY_IMAGE:-iide/ldproxy:aird-261119184247}
+    image: ${LDPROXY_IMAGE:-iide/ldproxy:aird-261120140038}
     container_name: ldproxy_bag
     ports:
       - "7080:7080"

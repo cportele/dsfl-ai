@@ -58,6 +58,20 @@ DSO_APIKEY=<key>
 DSO_IHRAPIKEY=<key>
 ```
 
+## Using the MCP servers
+
+Every API is an MCP server at `https://bag.ldproxy.net/{api}/mcp` (Streamable HTTP, no
+authentication), with `{api}` one of `bag`, `bgt`, `wijkenbuurten`, `postcode6` and `dso`. The
+servers describe their tools and give instructions on how to use them. For example, in Claude Code:
+
+```sh
+for api in bag bgt wijkenbuurten postcode6 dso; do
+  claude mcp add --transport http --scope user $api https://bag.ldproxy.net/$api/mcp
+done
+```
+
+In Claude Desktop and claude.ai, add them as custom connectors.
+
 ## Layout
 
 - `cfg.yml`: ldproxy configuration

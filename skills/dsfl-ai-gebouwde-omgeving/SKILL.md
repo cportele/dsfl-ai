@@ -125,7 +125,8 @@ grens telt dan helemaal in de ene buurt en niet in de andere; voor water en grot
 tientallen procenten schelen. Voor elke oppervlakte of elk aandeel van een buurt of wijk, en rond
 een punt:
 
-1. de grens: `collection_buurt` (of `collection_wijk`) met de code, met geometrie;
+1. de grens: `collection_buurt` (of `collection_wijk`) met de code, met de volledige geometrie,
+   zonder `zoom-level`: een vereenvoudigde grens verschuift de oppervlakte;
 2. `process_aggregate-features` met `clip: {"geometry": <die geometrie>}` (of `{"point": [lon,
    lat], "distance": 250}`), `aggregates` met `{"function": "sum", "property": "$area"}`;
 3. in `source.parameters` **`gemeentecode`, niet `buurtcode`**: het buurtfilter laat precies de

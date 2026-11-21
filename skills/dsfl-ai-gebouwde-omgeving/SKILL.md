@@ -35,6 +35,37 @@ proeven met echte vragen tot verkeerde antwoorden leidde.
 - Elke server bevat een uittreksel; de instructies zeggen welk. Ligt een vraag erbuiten, zeg dan dat
   de gegevens daar ontbreken, niet dat er niets is of dat een adres niet bestaat.
 
+## Soorten tools
+
+| Soort | Tools | Gebruik voor | Niet voor |
+|---|---|---|---|
+| Collectie | `collection_*` | één objecttype: opzoeken op identificatie of eigenschap, filteren (CQL2), een eerdere toestand (`datetime`) | tellen of optellen; een vraag waarvoor een zoekopdracht bestaat |
+| Zoekopdracht | `query_*` | een vaste vraag, vaak over meer objecttypen samen, met passende standaarden (zoals de status) | een eerdere toestand (geen `datetime`); tellen |
+| Berekening | `process_aggregate-features`, `process_nearest-features` | tellen, optellen, gemiddelden, verdelen per groep; de dichtstbijzijnde objecten met afstand. De `source` is een collectie of een zoekopdracht met haar parameters | de objecten zelf bekijken |
+| Werkstroom | `process_pand-bij-adres` (BAG), alle tools van DSO | een vaste reeks aanroepen, bij DSO live naar het DSO: enkele seconden tot een halve minuut, soms in rondes | eigen combinaties; dezelfde aanroep herhalen |
+
+- **Wat terugkomt**: collecties en zoekopdrachten leveren een GeoJSON-FeatureCollection met
+  `features`, `numberReturned` en `nextOffset` voor de volgende pagina (Wijken en buurten en
+  Postcodegebieden ook `numberMatched`). Een verwijzing is `{id, title}`. Levert een zoekopdracht
+  meer objecttypen, dan heeft elk object zijn `objecttype`: splits daarop, niet op de volgorde.
+- **Klein houden**: `limit` zo laag als de vraag het toelaat (standaard 10, hoogstens 5000);
+  `limit` verhogen om "alles" te zien is bijna altijd fout, tel dan met een berekening. Vraag met
+  `properties` of `weglaten` alleen wat nodig is, geen geometrie tenzij voor een kaart, een afstand
+  of `clip`.
+- **Gegevens doorgeven, niet doorlezen**: elk resultaat van een collectie of zoekopdracht begint met
+  een link naar dezelfde aanvraag in de HTTP-API, en een te groot resultaat geeft een fout met die
+  link. Voor een kaart, een bestand of een grafiek geef je de link door; de objecten gaan dan niet
+  door het gesprek.
+- **Werkstroom in rondes**: geeft een werkstroom vragen terug in plaats van een antwoord, stel ze
+  letterlijk aan de gebruiker; beantwoord ze nooit zelf en neem niets aan. Roep de
+  werkstroom opnieuw aan met alle antwoorden tot nu toe, want de server onthoudt niets. Zonder
+  gebruiker (een taak zonder dialoog): geef het voorlopige antwoord en de open vragen. Details in
+  [references/dso.md](references/dso.md).
+- **Ketens**: naam → code → filter (stap 1 hieronder); adres → object → punt (voor DSO in het
+  Rijksdriehoeksstelsel, `crs` EPSG:28992); lijst → detail (geef `uriIdentificatie`, `wId` en de
+  peildatum letterlijk door). Onafhankelijke aanroepen tegelijk; nooit één aanroep per object, maar
+  één met `filter: "... IN (...)"` of een berekening. Een fout 400 zegt wat aan de invoer niet klopt.
+
 ## Werkwijze
 
 1. **Gebied → code.** Alle servers filteren op CBS-codes: gemeente `0307`, wijk `WK030701`, buurt
@@ -47,11 +78,7 @@ proeven met echte vragen tot verkeerde antwoorden leidde.
    de objecten ophalen. Een aanroep leest hoogstens 100.000 objecten; anders per collectie of per
    wijk splitsen. Een aanroep duurt 1 tot 5 seconden, een gemeentebrede telling in de BAG tot een
    minuut.
-3. **Resultaten klein houden**: `properties` of `weglaten` met alleen wat nodig is, geen geometrie
-   tenzij voor een kaart, een afstand of `clip`. Is een resultaat te groot, dan meldt de tool een
-   fout met de link naar het volledige resultaat: geef de link door (voor een kaart of een
-   download), niet de gegevens.
-4. **Fouten**: een verbindingsfout of time-out één keer opnieuw proberen. Een fout 502/503/504 of
+3. **Fouten**: een verbindingsfout of time-out één keer opnieuw proberen. Een fout 502/503/504 of
    een melding dat een document van `service.omgevingswet.overheid.nl` niet te lezen is: het DSO is
    niet bereikbaar, niet de invoer fout; probeer geen andere invoer en zeg het de gebruiker.
 

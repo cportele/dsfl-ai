@@ -9,6 +9,8 @@ Postcodegebieden, DSO, subsurface-models, groundwater-monitoring, virtual-ground
 |---|---|
 | `SKILL.md` | Combined skill, Dutch. Self-contained: no links to other files. |
 | `SKILL-EN.md` | English version of `SKILL.md`, same structure and content. Not picked up by a skill loader under this name; rename it to use it as a skill. |
+| `SKILL-EXTENDED.md` | Extended skill, Dutch (about 64k characters). Aggregates the content of both original skills and all their `references/` (except the `bgt-waarden/` value lists) into one file with a fixed structure per server: scope, model, which tool for which question, pitfalls, examples. Self-contained. |
+| `SKILL-EXTENDED-EN.md` | English version of `SKILL-EXTENDED.md`, same sections (1-12). |
 | `dsfl-ai-gebouwde-omgeving/` | Original skill for BAG, BGT, CBS and DSO, with `references/` per server. Kept as source for later re-analysis. |
 | `dsfl-ai-bodem-ondergrond-grondwater/` | Original skill for the subsurface and groundwater servers, with `references/` per server. Kept as source for later re-analysis. |
 

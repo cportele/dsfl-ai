@@ -7,5 +7,6 @@ doc
 scripts
 /skills/*
 !/skills/dsfl-ai-gebouwde-omgeving/
+!/skills/dsfl-ai-bodem-ondergrond-grondwater/
 /skills/dsfl-ai-gebouwde-omgeving/evals/
 tmp

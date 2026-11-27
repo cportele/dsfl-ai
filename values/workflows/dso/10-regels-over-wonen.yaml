@@ -314,7 +314,11 @@ workflows:
           $..inhoud vangt beide.
   outputs:
     label: $steps.subtree.outputs.label
-    tekst: $steps.subtree.outputs.tekst
+    tekst:
+      context: $steps.subtree.outputs.tekst
+      selector: normalize-space(/)
+      type: xpath
+      x-dso-waarom: De tekst zonder STOP-opmaak; een artikel met leden geeft een tekst per lid.
 - workflowId: wro-wonen-in-plan
   x-ldproxy-readOnly: true
   summary: Het bestemmingsvlak met hoofdgroep wonen op het punt, en het artikel erbij.

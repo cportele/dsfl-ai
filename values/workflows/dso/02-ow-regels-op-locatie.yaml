@@ -228,9 +228,24 @@ workflows:
     - reference: $components.failureActions.herhaalBijStoring
     - reference: $components.failureActions.stopBijClientfout
     outputs:
-      componenten: $response.body#/_embedded/documentComponenten
+      koppen:
+        context: $response.body
+        selector: $..kop
+        type: jsonpath
+      teksten:
+        context: $response.body
+        selector: $..inhoud
+        type: jsonpath
   outputs:
-    componenten: $steps.subtree.outputs.componenten
+    kop:
+      context: $steps.subtree.outputs.koppen
+      selector: normalize-space(concat(//*[local-name()='Label'], ' ', //*[local-name()='Nummer'], ' ', //*[local-name()='Opschrift']))
+      type: xpath
+    tekst:
+      context: $steps.subtree.outputs.teksten
+      selector: normalize-space(/)
+      type: xpath
+      x-dso-waarom: De tekst zonder STOP-opmaak; een artikel met leden geeft een tekst per lid.
   x-dso-cache:
     sleutel:
     - expressionId

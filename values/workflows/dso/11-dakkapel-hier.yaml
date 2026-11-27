@@ -88,12 +88,19 @@ workflows:
         - '1'
       activiteit:
         type: string
+        description: Een zoekterm uit de naam van de activiteit, zoals een gebruiker die noemt (bijvoorbeeld `dakkapel`
+          of `kappen`), geen identificatie; een urn als `nl.imow-gm0307.activiteit.Dakkapel` vindt niets.
         examples:
         - dakkapel
       datum:
         type: string
         description: Vandaag, als dd-MM-jjjj. RTR en STTR zijn geldigheidsgestuurd.
         pattern: ^[0-9]{2}-[0-9]{2}-[0-9]{4}$
+      metTekst:
+        type: boolean
+        default: true
+        description: Met de artikelen uit het omgevingsplan en hun tekst (owArtikelen, owTeksten). In een volgende ronde
+          van de vergunningcheck zijn ze al bekend; `false` laat ze weg.
       antwoorden:
         type: array
         default: []
@@ -288,6 +295,10 @@ workflows:
     successCriteria:
     - condition: $statusCode == 200
     onSuccess:
+    - name: zonder-tekst
+      type: end
+      criteria:
+      - condition: $inputs.metTekst == false
     - name: activiteit-niet-in-omgevingsplan-hier
       type: end
       criteria:

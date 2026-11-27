@@ -18,4 +18,5 @@ logging:
     de.ii: INFO
 
 jobs:
-  maxConcurrent: 4
+  # DSO workflows wait on external APIs, not on CPU; one job stays free for the processes they execute
+  maxConcurrent: 8

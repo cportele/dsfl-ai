@@ -5,6 +5,7 @@
 # Changes: YAML aliases expanded for the value store;
 # the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
 # examples changed to Stadhuisplein 1, Amersfoort
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.1.0
 info:
   title: 'DSO • Functionele vraag: welke regels gaan hier over wonen?'
@@ -42,6 +43,13 @@ workflows:
 - workflowId: regels-over-wonen
   x-ldproxy-readOnly: true
   summary: Postcode + huisnummer → woonregels uit het omgevingsplan en de geldende Wro-plannen.
+  description: >-
+    De regels over wonen op een adres: uit het omgevingsplan de gebiedsaanwijzingen en activiteiten over wonen met de tekst
+    van hun regels (`woonObjecten`, `owArtikelen`, `owTeksten`), uit de geldende bestemmingsplannen (Wro) het bestemmingsvlak
+    met hoofdgroep 'wonen' en het artikel erbij (`wroBestemmingen`, `wroArtikelen`). Of een bepaalde activiteit (een
+    dakkapel, een boom kappen) mag, zegt `dakkapel-hier`; wat er op het adres staat (gebruiksdoel, bouwjaar), zegt de BAG.
+    Een lege `wroBestemmingen` betekent niet dat wonen er niet mag: in binnensteden valt wonen vaak onder 'centrum' of
+    'gemengd'.
   inputs:
     type: object
     required:

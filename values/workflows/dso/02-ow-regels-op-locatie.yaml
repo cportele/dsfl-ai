@@ -5,6 +5,7 @@
 # Changes: YAML aliases expanded for the value store
 # examples changed to Stadhuisplein 1, Amersfoort
 # ow-tekst-ophalen: optional input peildatum (geldigOp and inWerkingOp), for the wIds of regels-op-peildatum
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.0.1
 info:
   title: DSO • Omgevingswet-document → regels en tekst op deze locatie
@@ -162,15 +163,10 @@ workflows:
 - workflowId: ow-tekst-ophalen
   x-ldproxy-readOnly: true
   summary: De tekst van één artikel (of lid) — een subtree, niet de hele documentstructuur.
-  description: 'Haal niet de hele documentstructuur op. Bij meerdere treffers in hetzelfde
-
-    document: haal de dichtstbijzijnde gemeenschappelijke subtree één keer op in
-
-    plaats van elk artikel apart. Een expressie is onveranderlijk: cache op
-
-    (expressionId, wId) en haal nooit opnieuw op.
-
-    '
+  description: >-
+    De tekst van één regel (artikel of lid) als gewone tekst (`kop`, `tekst`), met de `uriIdentificatie` van de regeling en
+    de `wId` uit `regels-op-peildatum` en dezelfde `peildatum`. Eén aanroep per regel; haal alleen de regels op die de vraag
+    nodig heeft.
   inputs:
     type: object
     required:

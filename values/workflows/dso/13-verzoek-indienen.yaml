@@ -6,6 +6,7 @@
 # the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
 # count() of an array is 1 in RFC 9535 (it counts nodes); length() where the number of items is meant
 # examples changed to Stadhuisplein 1, Amersfoort
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.1.0
 info:
   title: 'DSO • Functionele vraag: een verzoek indienen via het Open Stelsel'
@@ -70,6 +71,11 @@ workflows:
   x-ldproxy-readOnly: true
   summary: Adres + zoekterm + antwoorden → locaties, activiteit, bevoegd gezag, vragen en of het verzoek indienbaar is. Alleen
     lezen.
+  description: >-
+    Bereidt een aanvraag of melding op een adres voor zoals het Omgevingsloket: de activiteit, het bevoegd gezag, de vragen
+    en of het verzoek met de gegeven antwoorden indienbaar is. Alleen nodig als de gebruiker een verzoek wil indienen; of een
+    vergunning nodig is, zegt `dakkapel-hier`. `zoekterm` is specifiek (bijvoorbeeld `boom kappen`); een brede term levert
+    alleen `kandidaten`. De werkstroom dient niets in.
   inputs:
     type: object
     required:

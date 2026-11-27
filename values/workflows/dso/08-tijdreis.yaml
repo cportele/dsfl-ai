@@ -6,6 +6,7 @@
 # examples changed to Stadhuisplein 1, Amersfoort
 # documenten-op-peildatum and regels-op-peildatum return selected values for agents, with the ids for
 # regeling-detail (06) and ow-tekst-ophalen (02), instead of the complete responses
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.0.1
 info:
   title: DSO • Wat gold hier op datum X? — drie tijdsassen
@@ -114,12 +115,15 @@ workflows:
     typen: $steps.documenten.outputs.typen
     titels: $steps.documenten.outputs.titels
     uriIdentificaties: $steps.documenten.outputs.uriIdentificaties
-  description: Levert per document het type, de titel en de uriIdentificatie, in drie lijsten in dezelfde volgorde. De details
+  description: Welke documenten op een punt golden op een datum, ook vandaag. Levert per document het type, de titel en de uriIdentificatie, in drie lijsten in dezelfde volgorde. De details
     van een document volgen met regeling-detail en de uriIdentificatie (alleen voor documenten volgens de Omgevingswet, niet
     voor bestemmingsplannen en structuurvisies), de regels op een punt met regels-op-peildatum.
 - workflowId: versiehistorie
   x-ldproxy-readOnly: true
   summary: Alle voorkomens (versies) van één regeling.
+  description: >-
+    Alle versies (voorkomens) van één regeling volgens de Omgevingswet, met de `uriIdentificatie` uit
+    `documenten-op-peildatum`: per versie wanneer ze in het stelsel kwam, in werking trad en gold.
   inputs:
     type: object
     required:
@@ -234,7 +238,9 @@ workflows:
     activiteiten: $steps.annotaties.outputs.activiteiten
     activiteitIdentificaties: $steps.annotaties.outputs.activiteitIdentificaties
     regeltekstWIds: $steps.annotaties.outputs.regeltekstWIds
-  description: Levert de activiteiten op het punt (naam en identificatie, in twee lijsten in dezelfde volgorde) en de wId
+  description: Alle regels van één regeling op een punt op een datum, zonder tekst; bij een omgevingsplan een lange lijst
+    (vaak meer dan 50 KB). Voor de regels bij één activiteit vandaag is `dakkapel-hier` er (met de tekst), voor wonen
+    `regels-over-wonen`. Levert de activiteiten op het punt (naam en identificatie, in twee lijsten in dezelfde volgorde) en de wId
     van elke regeltekst. De tekst van een regel volgt met ow-tekst-ophalen, met de uriIdentificatie van de regeling, de wId
     en dezelfde peildatum.
 components:

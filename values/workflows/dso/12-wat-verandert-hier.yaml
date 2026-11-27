@@ -5,6 +5,7 @@
 # Changes: YAML aliases expanded for the value store;
 # the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
 # examples changed to Stadhuisplein 1, Amersfoort
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.1.0
 info:
   title: 'DSO • Functionele vraag: wat verandert hier binnenkort?'
@@ -39,6 +40,11 @@ workflows:
 - workflowId: wat-verandert-hier
   x-ldproxy-readOnly: true
   summary: Adres → lopende ontwerpen met hun wijzigingen hier, en vastgestelde maar nog niet geldende besluiten.
+  description: >-
+    Wat er op een adres gaat veranderen: de lopende ontwerpen (nog geen recht, wel inzage en zienswijzen) met wat ze hier
+    wijzigen en het einde van de inzagetermijn, de besluiten die al vaststaan maar nog niet gelden, en de bestemmingsplannen
+    die nog in procedure zijn. Alleen voor vragen over toekomstige veranderingen; de regels die vandaag gelden geven
+    `dakkapel-hier` (bij een activiteit) en `regels-over-wonen`.
   inputs:
     type: object
     required:

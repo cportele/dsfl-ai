@@ -5,6 +5,7 @@
 # Changes: YAML aliases expanded for the value store;
 # the step adres uses the BAG of this server (bag-adres.yaml) instead of the BAG API of PDOK
 # examples changed to Stadhuisplein 1, Amersfoort
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.1.0
 info:
   title: 'DSO • Functionele vraag: mag ik hier een dakkapel bouwen, en wat moet ik weten?'
@@ -59,6 +60,16 @@ workflows:
 - workflowId: dakkapel-hier
   x-ldproxy-readOnly: true
   summary: Adres + activiteit → vergunningcheck, regels uit het omgevingsplan en Wro-maatvoering.
+  description: >-
+    De vergunningcheck voor één activiteit op een adres: mag ik hier een dakkapel bouwen, een boom kappen of iets anders
+    doen, en heb ik daarvoor een vergunning nodig? `activiteit` is een zoekterm zoals de gebruiker de activiteit noemt
+    (bijvoorbeeld `dakkapel` of `boom kappen`); één aanroep per activiteit. Zonder `antwoorden` levert de werkstroom de
+    vragen van de vergunningcheck (`vragenVergunningcheck`, `vraagIds`); met alle antwoorden tot dan toe de volgende vragen
+    of, per activiteit van gemeente en Rijk, de `conclusie` (bijvoorbeeld Vergunningplicht, Toestemmingsvrij of Neem contact
+    op met). Daarnaast de artikelen uit het omgevingsplan bij de activiteit met hun tekst (`owArtikelen`, `owTeksten`; in een
+    volgende ronde weg te laten met `metTekst: false`) en de maatvoering uit de bestemmingsplannen (`wroMaatvoeringen`).
+    Deze werkstroom volstaat voor de vraag of een vergunning nodig is; `verzoek-voorbereiden` is pas nodig voor een aanvraag
+    of melding.
   inputs:
     type: object
     required:

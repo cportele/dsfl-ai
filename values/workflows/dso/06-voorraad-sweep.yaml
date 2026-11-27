@@ -3,6 +3,7 @@
 # https://developer.omgevingswet.overheid.nl/dso/dso/digitaal-stelsel/
 # Not covered by the CC BY 4.0 licence of this repository.
 # Changes: YAML aliases expanded for the value store
+# workflows offered as processes: a description for agents (when to call it, what it returns) instead of the notes for client developers
 arazzo: 1.0.1
 info:
   title: DSO • Een eigen voorraad opbouwen — de lijst-sweep
@@ -114,15 +115,10 @@ workflows:
 - workflowId: regeling-detail
   x-ldproxy-readOnly: true
   summary: Detail van één regeling mét pons en regelingsgebied in één call.
-  description: '`_expand=true` scheelt de N+1 waarin pons en regelingsgebied apart worden
-
-    opgehaald. Wie een Wro-voorraad bijhoudt, heeft de pons hier nodig:
-
-    effectieve Wro-dekking = plangebied MINUS pons-geometrie. Op deze route moet je
-
-    dat wél zelf doen; anders toon je plannen zonder gelding.
-
-    '
+  description: >-
+    De gegevens van één regeling volgens de Omgevingswet (`regeling`), met de `uriIdentificatie` uit
+    `documenten-op-peildatum`: het volledige antwoord van de API Presenteren, met het regelingsgebied. Niet voor
+    bestemmingsplannen en structuurvisies.
   inputs:
     $ref: '#/components/inputs/regeling'
   steps:

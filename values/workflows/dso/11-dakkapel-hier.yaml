@@ -64,10 +64,12 @@ workflows:
     De vergunningcheck voor één activiteit op een adres: mag ik hier een dakkapel bouwen, een boom kappen of iets anders
     doen, en heb ik daarvoor een vergunning nodig? `activiteit` is een zoekterm zoals de gebruiker de activiteit noemt
     (bijvoorbeeld `dakkapel` of `boom kappen`); één aanroep per activiteit. Zonder `antwoorden` levert de werkstroom de
-    vragen van de vergunningcheck (`vragenVergunningcheck`, `vraagIds`); met alle antwoorden tot dan toe de volgende vragen
+    vragen van de vergunningcheck (`vragenVergunningcheck`, `vraagIds`) met hun toelichting (`toelichtingVraagIds`,
+    `toelichtingen`: wat een vraag bedoelt, bijvoorbeeld welke handelingen ze noemt; beantwoord een vraag zoals de
+    toelichting haar uitlegt); met alle antwoorden tot dan toe de volgende vragen
     of, per activiteit van gemeente en Rijk, de `conclusie` (bijvoorbeeld Vergunningplicht, Toestemmingsvrij of Neem contact
     op met). Daarnaast de artikelen uit het omgevingsplan bij de activiteit met hun tekst (`owArtikelen`, `owTeksten`; in een
-    volgende ronde weg te laten met `metTekst: false`) en de maatvoering uit de bestemmingsplannen (`wroMaatvoeringen`).
+    volgende ronde weg te laten met `metTekst: false`, de toelichtingen bij bekende vragen met `metToelichting: false`) en de maatvoering uit de bestemmingsplannen (`wroMaatvoeringen`).
     Deze werkstroom volstaat voor de vraag of een vergunning nodig is; `verzoek-voorbereiden` is pas nodig voor een aanvraag
     of melding.
   inputs:
@@ -112,6 +114,11 @@ workflows:
         default: true
         description: Met de artikelen uit het omgevingsplan en hun tekst (owArtikelen, owTeksten). In een volgende ronde
           van de vergunningcheck zijn ze al bekend; `false` laat ze weg.
+      metToelichting:
+        type: boolean
+        default: true
+        description: Met de toelichtingen bij de vragen van de vergunningcheck (toelichtingVraagIds, toelichtingen). In een
+          volgende ronde zijn ze voor de vragen van een vorige ronde al bekend; `false` laat ze weg.
       antwoorden:
         type: array
         default: []
@@ -212,6 +219,8 @@ workflows:
       value: $inputs.datum
     - name: antwoorden
       value: $inputs.antwoorden
+    - name: metToelichting
+      value: $inputs.metToelichting
     - name: rdX
       value: $steps.adres.outputs.rdX
     - name: rdY
@@ -222,6 +231,8 @@ workflows:
       aanvragenVoor: $outputs.aanvragenVoor
       vragen: $outputs.vragen
       vraagIds: $outputs.vraagIds
+      toelichtingVraagIds: $outputs.toelichtingVraagIds
+      toelichtingen: $outputs.toelichtingen
   - stepId: documenten
     operationPath: '{$sourceDescriptions.ontsluiten.url}#/paths/~1documenten~1_zoek/post'
     parameters:
@@ -355,6 +366,8 @@ workflows:
     aanvragenVoor: $steps.vergunningcheck.outputs.aanvragenVoor
     vragenVergunningcheck: $steps.vergunningcheck.outputs.vragen
     vraagIds: $steps.vergunningcheck.outputs.vraagIds
+    toelichtingVraagIds: $steps.vergunningcheck.outputs.toelichtingVraagIds
+    toelichtingen: $steps.vergunningcheck.outputs.toelichtingen
     wroMaatvoeringen: $steps.wro-maatvoering.outputs.maatvoeringen
     owArtikelen: $steps.regels.outputs.artikelen
     owTeksten: $steps.regels.outputs.teksten
@@ -398,6 +411,9 @@ workflows:
       antwoorden:
         type: array
         default: []
+      metToelichting:
+        type: boolean
+        default: true
       rdX:
         type: number
       rdY:
@@ -455,12 +471,73 @@ workflows:
         context: $response.body
         selector: $[*].activiteiten[*].vraaggroepen[*].vragen[*].id
         type: jsonpath
+      toelichtingVraagIds:
+        context: $response.body
+        selector: $[*].activiteiten[*].vraaggroepen[*].vragen[?@.toelichting.korteToelichtingId].id
+        type: jsonpath
+      toelichtingIds:
+        context: $response.body
+        selector: $[*].activiteiten[*].vraaggroepen[*].vragen[?@.toelichting.korteToelichtingId].toelichting.korteToelichtingId
+        type: jsonpath
+    onSuccess:
+    - name: zonder-toelichting
+      type: end
+      criteria:
+      - condition: $inputs.metToelichting == false
+  - stepId: toelichtingen
+    description: Per vraag met een toelichting de tekst. POST /toelichtingen levert ze in één call, maar gesorteerd op id en
+      niet in de volgorde van de vragen; één GET per toelichting houdt de lijst parallel aan toelichtingVraagIds.
+    workflowId: toelichting-ophalen
+    x-dso-forEach:
+      items: $steps.conclusie.outputs.toelichtingIds
+      als: toelichtingId
+    parameters:
+    - name: apiKey
+      value: $inputs.apiKey
+    - name: userAgent
+      value: $inputs.userAgent
+    outputs:
+      teksten: $outputs.tekst
   outputs:
     activiteit: $steps.conclusie.outputs.activiteit
     conclusie: $steps.conclusie.outputs.conclusie
     aanvragenVoor: $steps.conclusie.outputs.aanvragenVoor
     vragen: $steps.conclusie.outputs.vragen
     vraagIds: $steps.conclusie.outputs.vraagIds
+    toelichtingVraagIds: $steps.conclusie.outputs.toelichtingVraagIds
+    toelichtingen: $steps.toelichtingen.outputs.teksten
+- workflowId: toelichting-ophalen
+  x-ldproxy-readOnly: true
+  summary: De tekst van één toelichting bij een vraag van de vergunningcheck (Markdown).
+  inputs:
+    type: object
+    required:
+    - apiKey
+    - userAgent
+    - toelichtingId
+    properties:
+      apiKey:
+        type: string
+        format: password
+      userAgent:
+        type: string
+      toelichtingId:
+        type: integer
+  steps:
+  - stepId: toelichting
+    operationPath: '{$sourceDescriptions.uitvoeren.url}#/paths/~1toelichtingen~1{toelichtingId}/get'
+    parameters:
+    - reference: $components.parameters.apiKey
+    - reference: $components.parameters.userAgent
+    - name: toelichtingId
+      in: path
+      value: $inputs.toelichtingId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      tekst: $response.body#/toelichting
+  outputs:
+    tekst: $steps.toelichting.outputs.tekst
 - workflowId: vragenlijst-uit-dmn
   x-ldproxy-readOnly: true
   summary: Alternatief zonder uitrekenen — de hele vragenlijst en alle mogelijke uitkomsten uit het regelbestand (STTR → DMN).

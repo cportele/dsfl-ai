@@ -38,7 +38,7 @@ metadata:
   - woonplaatsen
   attribution: 'Bron: Kadaster, Basisregistratie Adressen en Gebouwen (BAG)'
   # the version of this configuration (date of the last change, yymmdd)
-  version: '261120115005'
+  version: '261128090659'
 accessControl:
   groups:
     public: [read, 'processes:write']
@@ -91,7 +91,8 @@ api:
   # larger results fail with a hint and the link to the result in the HTTP API, instead of filling the
   # context of the model (2,768 panden with geometry are about 1.1 million characters)
   maxResultSize: 100000
-  # rarely used on their own, available in the argument filter; ids selects by identificatie
+  # rarely used on their own, available in the argument filter; ids selects by identificatie;
+  # the references to addresses and the derived pand values were never arguments in the measurements
   filterOnlyQueryables:
   - identificatie
   - beginGeldigheid
@@ -99,6 +100,11 @@ api:
   - gemeentenaam
   - wijknaam
   - buurtnaam
+  - heeftAlsHoofdadres
+  - heeftAlsNevenadres
+  - grondoppervlakte
+  - aantalVerblijfsobjecten
+  - verkorteNaam
   included:
     # kenmerkinonderzoek (data quality) only via the OGC API, to keep the tool list small
     collections:
